@@ -1,0 +1,28 @@
+{
+  "slug": "drinks",
+  "title": "Drinks, foods & market",
+  "hero": "/assets/hero-drinks.png",
+  "heroSize": "md",
+  "blocks": [
+    {
+      "type": "p",
+      "html": "<strong>Drinks</strong> are available at the main- and campingbar and are paid using tokens, available at ?."
+    },
+    {
+      "type": "p",
+      "html": "We offer a wide variety of softdrinks, juices, beers, cocktails, hot drinks, snacks? and more."
+    },
+    {
+      "type": "p",
+      "html": "A broad diversity of <strong>food</strong> is offered at the market by a fine selection foodstands . Payment is cash or electronicly."
+    },
+    {
+      "type": "p",
+      "html": "At the <strong>nonfood</strong> market you can wonder around the clothes, records and jewelry shops, get your dreads done or enjoy the craftmanship."
+    },
+    {
+      "type": "p",
+      "html": "At the <strong>Global market</strong>, Kortemark's North-South Initiative highlights organizations that support development in third world countries, promote fair trade, and address the need for sustainable development goals."
+    }
+  ]
+}

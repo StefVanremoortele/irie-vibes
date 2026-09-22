@@ -1,0 +1,258 @@
+---
+import { site, nav } from '../data/site';
+
+interface Props {
+  path: string;
+}
+const { path } = Astro.props;
+
+function isActive(href: string): boolean {
+  if (href === '/') return path === '/' || path === '';
+  return path === href || path.startsWith(href + '/');
+}
+---
+
+<header class="hdr">
+  <div class="hdr__inner">
+    <div class="hdr__bannerwrap">
+      <img class="hdr__banner" src={site.assets.headerBanner} alt={site.name} />
+    </div>
+    <div class="hdr__bar">
+      <div class="hdr__menu" data-menu>
+        <button type="button" class="burger" aria-label="Open menu" aria-expanded="false" data-menu-toggle>
+          <span class="burger__bar burger__bar--r"></span>
+          <span class="burger__bar burger__bar--y"></span>
+          <span class="burger__bar burger__bar--g"></span>
+        </button>
+        <nav class="drawer" data-menu-drawer hidden>
+          <ul class="drawer__list">
+            {
+              nav.map((n) => (
+                <li>
+                  {isActive(n.href) ? (
+                    <span class="drawer__item drawer__item--active">{n.label}</span>
+                  ) : (
+                    <a class="drawer__item" href={n.href}>
+                      {n.label}
+                    </a>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <a class="ticket-btn" href={site.ticketUrl} target="_blank" rel="noopener noreferrer">
+        <span class="ticket-btn__top">
+          <span class="ticket-btn__get">GET</span>
+          <span class="ticket-btn__your">YOUR</span>
+        </span>
+        <span class="ticket-btn__main">TICKET</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="hdr__overlay" data-menu-overlay hidden></div>
+<div class="hdr__spacer"></div>
+
+<style>
+  .hdr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9000;
+    background: var(--surface);
+    box-shadow: var(--shadow-header);
+  }
+  .hdr__inner {
+    position: relative;
+    line-height: 0;
+    height: var(--header-h);
+  }
+  .hdr__bannerwrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .hdr__banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hdr__bar {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(12px, 3vw, 40px);
+  }
+  .hdr__menu {
+    position: relative;
+  }
+  .hdr__spacer {
+    height: var(--header-h);
+    flex: none;
+  }
+  .hdr__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+
+  /* Hamburger --------------------------------------------------------------- */
+  .burger {
+    width: clamp(44px, 6vw, 56px);
+    height: clamp(44px, 6vw, 56px);
+    border-radius: var(--radius-full);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 0;
+  }
+  .burger:hover {
+    background: #000;
+  }
+  .burger__bar {
+    width: 26px;
+    height: 7px;
+    border-radius: var(--radius-full);
+    display: block;
+  }
+  .burger__bar--r {
+    background: var(--reggae-red);
+  }
+  .burger__bar--y {
+    background: var(--reggae-yellow);
+  }
+  .burger__bar--g {
+    background: var(--reggae-green);
+  }
+
+  /* Drawer ------------------------------------------------------------------ */
+  .drawer {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 12px);
+    width: min(288px, 78vw);
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-modal);
+    padding: 12px 8px;
+    z-index: 60;
+  }
+  .drawer[hidden] {
+    display: none;
+  }
+  .drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .drawer__item {
+    display: block;
+    padding: 9px 16px;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--on-surface);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  a.drawer__item:hover {
+    color: var(--secondary);
+    background: var(--surface-container-high);
+  }
+  .drawer__item--active {
+    color: #e0e0e0;
+    background: rgba(38, 43, 38, 0.6);
+  }
+
+  /* Ticket button ----------------------------------------------------------- */
+  .ticket-btn {
+    width: clamp(44px, 6vw, 56px);
+    height: clamp(44px, 6vw, 56px);
+    border-radius: var(--radius-full);
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    text-align: center;
+  }
+  .ticket-btn:hover {
+    background: #000;
+  }
+  .ticket-btn__top {
+    display: flex;
+    gap: 2px;
+    line-height: 1;
+  }
+  .ticket-btn__get,
+  .ticket-btn__your,
+  .ticket-btn__main {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .ticket-btn__get {
+    font-size: 9px;
+    color: #e53935;
+  }
+  .ticket-btn__your {
+    font-size: 9px;
+    color: #fbc02d;
+  }
+  .ticket-btn__main {
+    font-size: 13px;
+    color: #43a047;
+    letter-spacing: 0.06em;
+  }
+</style>
+
+<script>
+  function initMenu() {
+    const root = document.querySelector<HTMLElement>('[data-menu]');
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    const drawer = document.querySelector<HTMLElement>('[data-menu-drawer]');
+    const overlay = document.querySelector<HTMLElement>('[data-menu-overlay]');
+    if (!root || !toggle || !drawer || !overlay) return;
+
+    const setOpen = (open: boolean) => {
+      drawer.hidden = !open;
+      overlay.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(drawer.hidden);
+    });
+    overlay.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    // Close when a drawer link is clicked (navigation happens anyway).
+    drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  }
+
+  initMenu();
+</script>

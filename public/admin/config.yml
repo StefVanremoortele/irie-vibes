@@ -1,0 +1,291 @@
+# Sveltia CMS configuration for the Irie Vibes Roots Festival site.
+# Collections map 1:1 to the JSON files in content/. Editors change content
+# here; the static site is rebuilt from those same files.
+#
+# Local editing (no cloud needed):
+#   Terminal 1:  npm run dev
+#   Terminal 2:  npm run cms:proxy
+#   Open:        http://localhost:4321/admin/  (choose "Work with Local Repository")
+#
+# Production auth: set the `backend.repo` below to your GitHub repo, deploy the
+# site, and connect an OAuth relay (see CMS-CONVERSION.md). Paths here assume
+# the git repository root is this `site/` folder.
+
+backend:
+  name: github
+  repo: StefVanremoortele/irie-vibes
+  branch: main
+
+# Enables the "Work with Local Repository" button when the proxy is running.
+local_backend: true
+
+media_folder: "public/assets"
+public_folder: "/assets"
+
+collections:
+  # ---- Singletons (one file each) --------------------------------------
+  - name: settings
+    label: "Settings"
+    files:
+      - name: site
+        label: "Site settings"
+        file: "content/site.json"
+        icon: settings
+        fields:
+          - { name: name, label: "Festival name", widget: string }
+          - { name: organisation, label: "Organisation", widget: string }
+          - { name: datesLabel, label: "Dates label (home)", widget: string }
+          - { name: festivalDate, label: "Gates open (countdown target)", widget: datetime, format: "YYYY-MM-DDTHH:mm:ss" }
+          - name: location
+            label: "Location"
+            widget: object
+            fields:
+              - { name: label, label: "Address label", widget: string }
+              - { name: query, label: "Map search query", widget: string }
+          - { name: email, label: "Contact email", widget: string }
+          - { name: ticketUrl, label: "Ticket shop URL", widget: string }
+          - { name: volunteerUrl, label: "Volunteer link", widget: string }
+          - { name: intro, label: "Home intro text", widget: text }
+          - { name: showCountdown, label: "Show countdown", widget: boolean, default: true }
+          - { name: showAftermovie, label: "Show aftermovie", widget: boolean, default: true }
+          - name: aftermovie
+            label: "Aftermovie"
+            widget: object
+            fields:
+              - { name: title, label: "Title", widget: string }
+              - { name: embedUrl, label: "YouTube embed URL", widget: string }
+          - name: assets
+            label: "Chrome images"
+            widget: object
+            fields:
+              - { name: headerBanner, label: "Header banner", widget: image }
+              - { name: footerBg, label: "Footer background", widget: image }
+              - { name: greenforward, label: "Greenforward logo", widget: image }
+          - name: nav
+            label: "Navigation"
+            widget: list
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: href, label: "Link", widget: string }
+          - name: socials
+            label: "Social links"
+            widget: list
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: href, label: "URL", widget: string }
+              - { name: icon, label: "Icon", widget: image }
+
+      - name: media
+        label: "Hero images"
+        file: "content/media.json"
+        icon: image
+        fields:
+          - name: heroes
+            label: "Page heroes"
+            widget: object
+            fields:
+              - { name: home, label: "Home", widget: image }
+              - { name: tickets, label: "Tickets", widget: image }
+              - { name: lineup, label: "Line-up", widget: image }
+              - { name: act, label: "Act detail", widget: image }
+              - { name: where, label: "Where", widget: image }
+              - { name: camping, label: "Camping", widget: image }
+              - { name: about, label: "About", widget: image }
+          - name: images
+            label: "Shared images"
+            widget: object
+            fields:
+              - { name: circulatieplan, label: "Circulation plan", widget: image }
+              - { name: actPoster, label: "Default act poster", widget: image }
+
+      - name: lineup
+        label: "Line-up settings"
+        file: "content/lineup.json"
+        icon: tune
+        fields:
+          - name: stages
+            label: "Stages"
+            widget: list
+            fields:
+              - { name: key, label: "Key (inner/den/chill)", widget: string }
+              - { name: name, label: "Name", widget: string }
+              - { name: sub, label: "Sub-label", widget: string }
+              - { name: color, label: "Accent colour", widget: string }
+          - name: days
+            label: "Days"
+            widget: list
+            fields:
+              - { name: name, label: "Name", widget: string }
+              - { name: sub, label: "Sub-label", widget: string, required: false }
+              - { name: order, label: "Order", widget: number, value_type: int }
+          - name: defaultActDescription
+            label: "Default act description"
+            widget: list
+            field: { name: paragraph, label: "Paragraph", widget: text }
+
+      - name: tickets
+        label: "Tickets & fees"
+        file: "content/tickets.json"
+        icon: local_activity
+        fields:
+          - name: passes
+            label: "Passes"
+            widget: list
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - { name: passesNote, label: "Passes note", widget: string }
+          - name: campingParking
+            label: "Camping & parking fees"
+            widget: list
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - name: ticketNotes
+            label: "Notes"
+            widget: list
+            field: { name: note, label: "Note", widget: string }
+
+      - name: sponsors
+        label: "Sponsors"
+        file: "content/sponsors.json"
+        icon: handshake
+        fields:
+          - name: main
+            label: "Main partners"
+            widget: list
+            summary: "{{fields.alt}}{{fields.label}}"
+            fields:
+              - { name: image, label: "Logo", widget: image, required: false }
+              - { name: alt, label: "Name (alt text)", widget: string, required: false }
+              - { name: label, label: "Text label (no logo)", widget: string, required: false }
+              - { name: sub, label: "Text sub-label", widget: string, required: false }
+          - name: regular
+            label: "Regular sponsors"
+            widget: list
+            summary: "{{fields.alt}}{{fields.label}}"
+            fields:
+              - { name: image, label: "Logo", widget: image, required: false }
+              - { name: alt, label: "Name (alt text)", widget: string, required: false }
+              - { name: label, label: "Text label (no logo)", widget: string, required: false }
+              - { name: sub, label: "Text sub-label", widget: string, required: false }
+
+      - name: about
+        label: "About page"
+        file: "content/about.json"
+        icon: info
+        fields:
+          - name: greenforward
+            label: "VZW Greenforward"
+            widget: list
+            summary: "{{fields.text}}"
+            fields:
+              - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
+              - { name: text, label: "Text", widget: text }
+          - name: initiatives
+            label: "Initiatives & partnerships"
+            widget: list
+            summary: "{{fields.text}}"
+            fields:
+              - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
+              - { name: text, label: "Text", widget: text }
+          - { name: shopIntro, label: "Shop intro", widget: text }
+          - name: shop
+            label: "Shop items"
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { name: name, label: "Name", widget: string }
+              - { name: description, label: "Description", widget: text }
+          - { name: band, label: "Band text", widget: string }
+          - { name: editionMinYear, label: "Earliest edition year", widget: number, value_type: int }
+          - { name: editionMaxYear, label: "Latest edition year", widget: number, value_type: int }
+          - { name: defaultEditionText, label: "Default edition text", widget: string }
+          - name: editions
+            label: "Editions (throwbacks)"
+            widget: list
+            summary: "{{fields.year}}"
+            fields:
+              - { name: year, label: "Year", widget: number, value_type: int }
+              - { name: poster, label: "Poster", widget: image, required: false }
+              - name: paragraphs
+                label: "Paragraphs"
+                widget: list
+                field: { name: paragraph, label: "Paragraph", widget: text }
+
+      - name: regulations
+        label: "Regulations"
+        file: "content/regulations.json"
+        icon: gavel
+        fields:
+          - name: sections
+            label: "Sections"
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: "Title", widget: string }
+              - name: items
+                label: "Items"
+                widget: list
+                fields:
+                  - { name: p, label: "Paragraph", widget: text, required: false }
+                  - name: ul
+                    label: "Bullet list"
+                    widget: list
+                    required: false
+                    field: { name: item, label: "Item", widget: string }
+
+  # ---- Line-up acts (one file per act) ---------------------------------
+  - name: acts
+    label: "Line-up — acts"
+    label_singular: "Act"
+    folder: "content/acts"
+    extension: json
+    format: json
+    identifier_field: name
+    create: true
+    icon: music_note
+    summary: "{{fields.day}} · {{fields.time}} — {{fields.name}}"
+    fields:
+      - { name: name, label: "Act name", widget: string }
+      - { name: day, label: "Day", widget: select, options: ["Thursday", "Friday", "Saturday"] }
+      - name: stage
+        label: "Stage"
+        widget: select
+        options:
+          - { label: "Inner Lion (open air)", value: "inner" }
+          - { label: "Lions Den (main)", value: "den" }
+          - { label: "Chilling Lion (camping)", value: "chill" }
+      - { name: time, label: "Time", widget: string, hint: "e.g. 18:00 - 19:00" }
+      - { name: order, label: "Order within stage", widget: number, value_type: int, default: 1 }
+      - { name: website, label: "Artist website", widget: string, required: false }
+      - { name: image, label: "Artist image", widget: image, required: false }
+      - name: description
+        label: "Description (detail page)"
+        widget: list
+        required: false
+        field: { name: paragraph, label: "Paragraph", widget: text }
+
+  # ---- Simple content pages --------------------------------------------
+  - name: pages
+    label: "Content pages"
+    label_singular: "Page"
+    folder: "content/pages"
+    extension: json
+    format: json
+    identifier_field: title
+    create: false
+    icon: description
+    summary: "{{fields.title}}"
+    fields:
+      - { name: slug, label: "Slug", widget: hidden }
+      - { name: title, label: "Title", widget: string }
+      - { name: hero, label: "Hero image", widget: image }
+      - { name: heroSize, label: "Hero size", widget: select, options: ["sm", "md", "lg"], default: "md" }
+      - name: blocks
+        label: "Content blocks"
+        widget: list
+        summary: "{{fields.html}}"
+        fields:
+          - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
+          - { name: html, label: "Text (allows <strong>, <a>)", widget: text }

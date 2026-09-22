@@ -1,0 +1,39 @@
+{
+  "passes": [
+    {
+      "label": "Thursday",
+      "value": "Free entrance"
+    },
+    {
+      "label": "Friday",
+      "value": "50€"
+    },
+    {
+      "label": "Saturday",
+      "value": "50€"
+    },
+    {
+      "label": "Weekend",
+      "value": "75€"
+    }
+  ],
+  "passesNote": "To be paid upon entry",
+  "campingParking": [
+    {
+      "label": "Camping",
+      "value": "15€"
+    },
+    {
+      "label": "Vehicle fee parking",
+      "value": "5€"
+    },
+    {
+      "label": "Vehicle fee camping",
+      "value": "15€"
+    }
+  ],
+  "ticketNotes": [
+    "Free entrance for children up to 14 years old.",
+    "Pets are not allowed on the festival area, campings and parkings."
+  ]
+}

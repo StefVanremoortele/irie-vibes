@@ -1,0 +1,279 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { heroImages } from '../data/pages';
+import {
+  greenforward,
+  initiatives,
+  getEdition,
+  EDITION_MIN_YEAR,
+  EDITION_MAX_YEAR,
+  defaultEditionText,
+  shop,
+  band,
+} from '../data/about';
+
+const edition2002 = getEdition(2002);
+---
+
+<Base title="All about Irie Vibes">
+  <div class="about">
+    <Hero src={heroImages.about} alt="All about Irie Vibes" size="sm" />
+    <div class="section section--mid">
+      <h1 class="title">All about Irie Vibes</h1>
+
+      <div class="accs">
+        <details name="about" class="acc">
+          <summary class="acc__head">
+            <span class="acc__title">VZW Greenforward</span>
+            <span class="acc__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="acc__panel">
+            {
+              greenforward.map((b) =>
+                b.type === 'h' ? <h4 class="acc__h">{b.text}</h4> : <p class="acc__p">{b.text}</p>,
+              )
+            }
+          </div>
+        </details>
+
+        <details name="about" class="acc">
+          <summary class="acc__head">
+            <span class="acc__title">Socio-environmental initiatives &amp; partnerships</span>
+            <span class="acc__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="acc__panel">
+            {
+              initiatives.map((b) =>
+                b.type === 'h' ? <h4 class="acc__h">{b.text}</h4> : <p class="acc__p">{b.text}</p>,
+              )
+            }
+          </div>
+        </details>
+
+        <details name="about" class="acc">
+          <summary class="acc__head">
+            <span class="acc__title">Previous editions</span>
+            <span class="acc__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="acc__panel">
+            <div class="years" data-years data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
+              <div class="years__nav">
+                <button type="button" class="years__btn years__btn--step" data-year-step="-5">-5y</button>
+                <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
+                <span class="years__value" data-year-value>{edition2002.year}</span>
+                <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
+                <button type="button" class="years__btn years__btn--step" data-year-step="5">+5y</button>
+              </div>
+              <div class="years__content">
+                <div class="years__paras" data-year-paras>
+                  {edition2002.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
+                </div>
+                <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details name="about" class="acc">
+          <summary class="acc__head">
+            <span class="acc__title">Irie shop</span>
+            <span class="acc__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="acc__panel">
+            <p class="acc__p acc__p--intro">{shop.intro}</p>
+            <div class="shop">
+              {
+                shop.items.map((item) => (
+                  <div class="shop__item">
+                    <div class="shop__name">{item.name}</div>
+                    <div class="shop__desc">{item.description}</div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </details>
+
+        <details name="about" class="acc">
+          <summary class="acc__head">
+            <span class="acc__title">The Irie Vibes band</span>
+            <span class="acc__chev" aria-hidden="true">▾</span>
+          </summary>
+          <div class="acc__panel">
+            <p class="acc__p">{band.text}</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .about {
+    width: 100%;
+  }
+  .accs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .acc {
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+  .acc__head {
+    list-style: none;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .acc__head::-webkit-details-marker {
+    display: none;
+  }
+  .acc__title {
+    font-family: var(--font-display);
+    font-size: clamp(14px, 1.8vw, 18px);
+    letter-spacing: 0.06em;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  .acc__chev {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+  }
+  .acc[open] .acc__chev {
+    transform: rotate(180deg);
+  }
+  .acc__panel {
+    padding: 0 24px 26px;
+  }
+  .acc__h {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    color: var(--secondary);
+    text-transform: uppercase;
+    margin: 22px 0 10px;
+  }
+  .acc__p {
+    color: var(--on-surface);
+    font-size: 15px;
+    line-height: 1.75;
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+  .acc__p:last-child {
+    margin-bottom: 0;
+  }
+  .acc__p--intro {
+    margin-bottom: 20px;
+  }
+
+  /* Year navigator ---------------------------------------------------------- */
+  .years__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 6px 0 22px;
+  }
+  .years__btn {
+    background: var(--surface-container-high);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--on-surface);
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .years__btn--step {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .years__btn:hover {
+    border-color: var(--secondary);
+  }
+  .years__value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--secondary);
+    min-width: 92px;
+    text-align: center;
+  }
+  .years__content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+  .years__poster {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    display: block;
+    border: 1px solid var(--border-hairline);
+  }
+  .years__poster[hidden] {
+    display: none;
+  }
+</style>
+
+<script define:vars={{ editions2002: edition2002.paragraphs, poster2002: edition2002.poster, defaultEditionText }}>
+  function initYears() {
+    const root = document.querySelector('[data-years]');
+    if (!root) return;
+    const min = Number(root.dataset.min);
+    const max = Number(root.dataset.max);
+    const valueEl = root.querySelector('[data-year-value]');
+    const parasEl = root.querySelector('[data-year-paras]');
+    const posterEl = root.querySelector('[data-year-poster]');
+    let year = 2002;
+
+    const render = () => {
+      valueEl.textContent = String(year);
+      const paras = year === 2002 ? editions2002 : [defaultEditionText];
+      parasEl.replaceChildren(
+        ...paras.map((text) => {
+          const p = document.createElement('p');
+          p.className = 'acc__p';
+          p.textContent = text;
+          return p;
+        }),
+      );
+      if (year === 2002) {
+        posterEl.src = poster2002;
+        posterEl.hidden = false;
+      } else {
+        posterEl.hidden = true;
+      }
+    };
+
+    root.querySelectorAll('[data-year-step]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const step = Number(btn.dataset.yearStep);
+        year = Math.min(max, Math.max(min, year + step));
+        render();
+      });
+    });
+
+    render();
+  }
+
+  initYears();
+</script>

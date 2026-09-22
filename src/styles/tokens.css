@@ -1,0 +1,75 @@
+/* ---------------------------------------------------------------------------
+   Roots Vanguard design tokens (from docs DESIGN.md), reconciled with the exact
+   rendered values used across the reference export. These CSS custom properties
+   are the single source of truth for colour, type and spacing.
+   --------------------------------------------------------------------------- */
+:root {
+  /* Surfaces --------------------------------------------------------------- */
+  --surface: #101510; /* night-forest canvas */
+  --surface-container-lowest: #0a0f0b;
+  --surface-container-low: #181d18;
+  --surface-container: #1c211c;
+  --surface-container-high: #262b26;
+  --surface-container-highest: #313630;
+
+  /* Card surfaces as used in the reference layout */
+  --card: #1a201a;
+  --card-alt: #181d18;
+  --card-panel: #182018;
+  --card-deep: #141a14;
+
+  /* Text ------------------------------------------------------------------- */
+  --on-surface: #dfe4db; /* warm canvas white */
+  --on-surface-strong: #ffffff;
+  --on-surface-variant: #c2c9bb;
+  --muted: #9aa596; /* desaturated sage — metadata, set times */
+  --outline: #8c9387;
+  --outline-variant: #42493e;
+
+  /* Borders ---------------------------------------------------------------- */
+  --border: #262b26;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-hairline: rgba(255, 255, 255, 0.12);
+  --border-strong: #2f372f;
+
+  /* Accents ---------------------------------------------------------------- */
+  --primary: #a1d494; /* evergreen root highlight */
+  --secondary: #fabc4d; /* amber gold — the dominant accent */
+  --secondary-hover: #ffd782;
+  --secondary-deep: #f59e0b;
+  --tertiary: #ffb4a5; /* earthy clay */
+
+  /* Stage accent colours */
+  --stage-inner: #ef4444;
+  --stage-den: #fabc4d;
+  --stage-chill: #22c55e;
+
+  /* Reggae tri-colour (hamburger, ticket button) */
+  --reggae-red: #c82b2b;
+  --reggae-yellow: #e5c12f;
+  --reggae-green: #3b9343;
+
+  /* Typography ------------------------------------------------------------- */
+  --font-display: 'Anton', system-ui, sans-serif;
+  --font-body: 'Work Sans', system-ui, sans-serif;
+
+  /* Radii ------------------------------------------------------------------ */
+  --radius-sm: 8px;
+  --radius: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-full: 999px;
+
+  /* Elevation -------------------------------------------------------------- */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.75);
+  --shadow-header: 0 10px 30px rgba(0, 0, 0, 0.65);
+
+  /* Layout ----------------------------------------------------------------- */
+  --header-h: clamp(76px, 11vw, 150px);
+  --max-narrow: 820px;
+  --max-mid: 880px;
+  --max-wide: 960px;
+  --max-page: 1040px;
+  --max-lineup: 1200px;
+}

@@ -1,0 +1,22 @@
+---
+import type { PriceRow } from '../data/types';
+
+interface Props {
+  rows: PriceRow[];
+}
+const { rows } = Astro.props;
+const isAccent = (value: string) => /free/i.test(value);
+---
+
+<div class="prices">
+  {
+    rows.map((row) => (
+      <div class="prices__row">
+        <span class="prices__label">{row.label}</span>
+        <span class={`prices__value${isAccent(row.value) ? ' prices__value--accent' : ''}`}>
+          {row.value}
+        </span>
+      </div>
+    ))
+  }
+</div>

@@ -1,0 +1,565 @@
+{
+  "assets": {
+    "headerBanner": "assets/header-banner.png",
+    "footerBg": "assets/footer.png",
+    "greenforward": "assets/greenforward-logo.png",
+    "socials": [
+      {
+        "href": "https://www.facebook.com/IrieVibesRootsFestival",
+        "alt": "Facebook",
+        "src": "assets/social-facebook.png"
+      },
+      {
+        "href": "https://www.instagram.com/irievibesroots/",
+        "alt": "Instagram",
+        "src": "assets/social-instagram.png"
+      },
+      {
+        "href": "https://www.youtube.com/@irievibesrootsfestival9001",
+        "alt": "YouTube",
+        "src": "assets/social-youtube.png"
+      },
+      {
+        "href": "https://open.spotify.com/user/g8ixeapl5313lbru3b9o7ygdk",
+        "alt": "Spotify",
+        "src": "assets/social-spotify.png"
+      }
+    ]
+  },
+  "heroes": {
+    "home": "assets/hero-home.png",
+    "tickets": "assets/hero-tickets.png",
+    "lineup": "assets/hero-lineup.png",
+    "act": "assets/actposter.png",
+    "when": "assets/hero-where.png",
+    "camping": "assets/hero-camping.png",
+    "drinks": "assets/hero-drinks.png",
+    "kids": "assets/hero-kids.png",
+    "volunteer": "assets/hero-volunteer.png",
+    "about": "assets/hero-about.png",
+    "where": "assets/hero-where.png"
+  },
+  "images": {
+    "actPoster": "assets/actposter.png",
+    "circulatieplan": "assets/circulatieplan.png",
+    "poster2002": "assets/poster2002.jpg"
+  },
+  "sponsorsMain": [
+    [
+      {
+        "src": "assets/sponsors/main-bavik-super-pils.png",
+        "alt": "Bavik Super Pils"
+      },
+      {
+        "src": "assets/sponsors/main-radio-i-r-o.jpg",
+        "alt": "Radio I.R.O."
+      },
+      {
+        "src": "assets/sponsors/main-vanham-tenten-podia.jpg",
+        "alt": "Vanham Tenten & Podia"
+      },
+      {
+        "src": "assets/sponsors/main-ten-boogaerde.jpg",
+        "alt": "Ten Boogaerde"
+      },
+      {
+        "src": "assets/sponsors/main-drank-center-rojo.jpg",
+        "alt": "Drank Center Rojo"
+      },
+      {
+        "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuCx8Yr0jkD1DeW46racHczCXqytH6HjuTxmwF1QafHMT7djQCfoVIfEhrg-fR7JQLJEZ3VXSgRsJjuxi47ANgMe9RfBX2ZgTIP0fp8E5NU93M7zLsYvbZan5_RJ9lDaJWxI5-tremtS-Nr42z3GN0BinRtMlnJx1PbI2ul2qbEA-a9atQijY98mvSRcDL40-p1hn4AgRFESAAcp95iXTAsACKBpyr0bBnfUKpPhnazXeJE2vDxZEpT0YhHIclwdovBHWc",
+        "alt": "4AD"
+      },
+      {
+        "src": "assets/sponsors/main-hotel-pax.png",
+        "alt": "Hotel Pax"
+      }
+    ],
+    [
+      {
+        "src": "assets/sponsors/main-desotec.png",
+        "alt": "Desotec"
+      },
+      {
+        "src": "assets/sponsors/main-alkover.png",
+        "alt": "Alkover"
+      },
+      {
+        "src": "assets/sponsors/main-twins-vervoer.jpg",
+        "alt": "Twins Vervoer"
+      },
+      {
+        "src": "assets/sponsors/main-ijzerweelde.jpg",
+        "alt": "IJzerweelde"
+      },
+      {
+        "src": "assets/sponsors/main-coach-partners.jpg",
+        "alt": "Coach Partners"
+      },
+      {
+        "src": "assets/sponsors/main-verthus.png",
+        "alt": "Verthus"
+      }
+    ]
+  ],
+  "sponsorsReg": [
+    [
+      {
+        "src": "assets/sponsors/bakkerij-kimpe.jpg",
+        "alt": "Bakkerij Kimpe"
+      },
+      {
+        "src": "assets/sponsors/cannahopper.jpg",
+        "alt": "Cannahopper"
+      },
+      {
+        "src": "assets/sponsors/st-georges-caf.png",
+        "alt": "St. Georges Café"
+      },
+      {
+        "src": "assets/sponsors/realtime-systems.jpg",
+        "alt": "Realtime Systems"
+      },
+      {
+        "src": "assets/sponsors/vrs-motors-eernegem.jpg",
+        "alt": "VRS Motors Eernegem"
+      },
+      {
+        "src": "assets/sponsors/vandaele-rental.png",
+        "alt": "Vandaele Rental"
+      }
+    ],
+    [
+      {
+        "src": "assets/sponsors/oerbier.png",
+        "alt": "Oerbier"
+      },
+      {
+        "label": "WORLDWINEWEB",
+        "sub": "FINE WINES"
+      },
+      {
+        "src": "assets/sponsors/toekoer-toilets.png",
+        "alt": "Toekoer Toilets"
+      },
+      {
+        "src": "assets/sponsors/delbeke-apotheek.jpg",
+        "alt": "Delbeke Apotheek"
+      },
+      {
+        "src": "assets/sponsors/caf-de-hopbeurs.jpg",
+        "alt": "Café De Hopbeurs"
+      },
+      {
+        "src": "assets/sponsors/carrefour-market.png",
+        "alt": "Carrefour Market"
+      }
+    ],
+    [
+      {
+        "src": "assets/sponsors/proxy-zarren.png",
+        "alt": "Proxy Zarren"
+      },
+      {
+        "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuBjaneUBu99XNwTterLVJhh3zvCa7ESd08t7Poehs_BOhnpVFqBX1DALSYTJXiGRzJg4QZnU-k9ko53zxhLzP9x3HUVAqQc_vixEv5AF-heU0vKouB9YWBcnGUhBA6v7xS9AAgGzzHI4ldcVpqIx0PRyDbDedFMid2mo1V-MvMXvJe_AYms3vfOvcPE1GF4ykTNEYFoGill91P25ezZ33cm9jfaQRo9g02KJJCf2bVs7bFCMRRQGdzQDBTS99pw-NP0pU",
+        "alt": "Oxfam België"
+      },
+      {
+        "src": "assets/sponsors/c-hotels.png",
+        "alt": "C-Hotels"
+      },
+      {
+        "src": "assets/sponsors/le-couvert.png",
+        "alt": "Le Couvert"
+      },
+      {
+        "src": "assets/sponsors/t-haantje.jpg",
+        "alt": "'t Haantje"
+      },
+      {
+        "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuCdKurCOfm8H3UzK4_aUSw6HyavBHn3aN9kF0QCb2grCDgdTCRwfiRhLMNToYH0anaCDROiSuulZCTC49aiP4w1G18lVZVXbifLiX8_YbFM6fwiCNnVLQ_kLsZ-72_SIQGrb00tcHaWzAfXX1iQuvKgfKf1JgOuAVpcJwBfd-RC1WMsjGDcJ74TpVsi0hQOkLEMinWEUCpwInUusJ4GVStm2B4KjVnB2KhXcPlyRd-Ru_HFkGjwe1HZs2ayywq3dZVIrE",
+        "alt": "Vernafix"
+      }
+    ],
+    [
+      {
+        "src": "assets/sponsors/terrest-brewery.jpg",
+        "alt": "Terrest Brewery"
+      },
+      {
+        "label": "REGGAE.FR",
+        "sub": "LE SITE DU REGGAE"
+      },
+      {
+        "src": "assets/sponsors/ford-veys-vanclooster-bv.png",
+        "alt": "Ford Veys - Vanclooster BV"
+      },
+      {
+        "label": "BEDRUKT",
+        "sub": "DIRK V."
+      },
+      {
+        "src": "https://lh3.googleusercontent.com/aida-public/AB6AXuBZEhcZg93NIg04EU11KB7ruSBOkSVLdiL3ATZXhSVq0B_tODlpO7c9omd31AprspCkrJSDEOQseIKMH5TdO-0siQhC3l4K_kggBWy2lpWUMwTWYjf32ZNGajKmEV8enQh_8dmbbbZ-b7zoaMUM1X-3P4Xs_076tnqJxCAMx9KMmMBBg-_lLZGfBwgSikXXOxVauaU8uq1DpxI5ZPFpFkK9cV87we7mokGg4G8exdC1B9zyKYT_8UrKJ_70mNSbe4zk2E",
+        "alt": "OKay Kortemark"
+      },
+      {
+        "src": "assets/sponsors/brood-banket-deleu.png",
+        "alt": "Brood - Banket Deleu"
+      }
+    ],
+    [
+      {
+        "src": "assets/sponsors/vershuis.png",
+        "alt": "Vershuis"
+      },
+      {
+        "src": "assets/sponsors/aveve.jpg",
+        "alt": "Aveve"
+      },
+      {
+        "src": "assets/sponsors/spar-handzame.png",
+        "alt": "Spar Handzame"
+      },
+      {
+        "src": "assets/sponsors/crelan.png",
+        "alt": "Crelan"
+      },
+      {
+        "src": "assets/sponsors/de-flitspaele.png",
+        "alt": "De Flitspaele"
+      },
+      {
+        "src": "assets/sponsors/brukout.png",
+        "alt": "Brukout"
+      }
+    ]
+  ],
+  "regulations": [
+    {
+      "title": "FESTIVAL- EN CAMPINGREGLEMENT IRIE VIBES ROOTS FESTIVAL 2027 (INCLUSIEF KORTEMARK CONGE)",
+      "items": [
+        {
+          "p": "De koper van een toegangsbewijs, en eenieder die het festival- en campingterrein betreedt, is verplicht zich te houden aan de hieronder vermelde richtlijnen en stemt in met alle preventieve en controlerende maatregelen die de organisatie oplegt met het oog op veiligheid en/of voorkoming van overlast. De koper stemt hierbij onder meer in met de mogelijkheid tot fouillering en controle van handbagage. Bij weigering of niet-naleving behoudt de organisatie zich het recht voor de toegang op elk moment tijdens het evenement te weigeren of in te trekken."
+        },
+        {
+          "p": "De artiesten, medewerkers en de organisatie van Irie Vibes Roots Festival 2027 (inclusief Kortemark Conge) kunnen niet aansprakelijk worden gesteld voor diefstal, verlies, schade of enig ander ongeval, zowel op het festivalterrein als op de camping."
+        },
+        {
+          "p": "Gevallen van overmacht leiden onder geen enkel beding tot aansprakelijkheid van de festivalorganisatie."
+        },
+        {
+          "p": "Festivaltickets worden noch terugbetaald noch omgeruild."
+        },
+        {
+          "p": "Het namaken of vervalsen van festivaltickets is ten strengste verboden."
+        },
+        {
+          "p": "Het is verboden om zonder voorafgaande uitdrukkelijke toestemming van de organisatie commerciële activiteiten te ontplooien op het festival- en campingterrein."
+        },
+        {
+          "p": "De organisatie is niet aansprakelijk voor verlies of diefstal van toegangskaarten, hetgeen derhalve op geen enkele wijze aanleiding kan geven tot enige vorm van vergoeding, vervanging of terugbetaling."
+        },
+        {
+          "p": "Het maken van open vuur is ten strengste verboden."
+        },
+        {
+          "p": "Het meebrengen van eigen drank en voedsel is enkel toegestaan op de camping, niet op het festivalterrein."
+        },
+        {
+          "p": "Volgende niet-exhaustieve lijst van voorwerpen is niet toegestaan op de camping en het festivalterrein:"
+        },
+        {
+          "ul": [
+            "Glas",
+            "Geluidsinstallaties / audioapparatuur",
+            "Tapinstallaties",
+            "Elektrische kooktoestellen, gasbranders of andere gastoestellen",
+            "Barbecues",
+            "Drugs",
+            "Dieren, met uitzondering van blindengeleidehonden",
+            "Professionele film-, foto- of opnameapparatuur",
+            "Wapens",
+            "Gevaarlijke voorwerpen"
+          ]
+        },
+        {
+          "p": "De organisatie behoudt zich bovendien het recht voor de toegang te allen tijde te weigeren of te ontzeggen in situaties waaronder, doch niet uitsluitend:"
+        },
+        {
+          "ul": [
+            "Het veroorzaken van situaties die door het festival als gevaarlijk worden beschouwd",
+            "De indruk wekken te handelen in drugs of andere ongeoorloofde items en middelen op het terrein",
+            "Overmatig alcoholgebruik",
+            "Onder invloed zijn van drugs",
+            "Het veroorzaken van ernstige overlast die anderen kan hinderen of belemmeren in hun beleving van het festival",
+            "Het niet kunnen voorleggen van een geldig toegangsbewijs"
+          ]
+        },
+        {
+          "p": "Wijzigingen in het programma of andere gevallen van overmacht geven geen recht op gehele of gedeeltelijke terugbetaling van het toegangsbewijs."
+        },
+        {
+          "p": "De ticketkoper is ervan op de hoogte dat tijdens het festival op het festivalterrein en de camping foto- of video-opnamen gemaakt kunnen worden. Bij betreding van het festivalterrein doet iedere bezoeker automatisch afstand van alle rechten op het gebruik daarvan en van diens portretrecht."
+        },
+        {
+          "p": "De organisatie behoudt zich het recht voor om:"
+        },
+        {
+          "ul": [
+            "De identiteit te verifiëren",
+            "De leeftijd te controleren",
+            "Handtassen en andere tassen te laten openen en controleren op de inhoud",
+            "Goederen van festivalgangers te inspecteren"
+          ]
+        },
+        {
+          "p": "Het is verboden om flyers uit te delen of andere merchandisingactiviteiten te verrichten op en rond het festival- en campingterrein."
+        },
+        {
+          "p": "Wanneer overtredingen of misdrijven worden vastgesteld, worden de politiediensten te allen tijde ingelicht."
+        },
+        {
+          "p": "De koper dient zich te houden aan de wet betreffende de verkoop van toegangsbewijzen tot evenementen (Belgisch Staatsblad, 30 juli 2013)."
+        }
+      ]
+    },
+    {
+      "title": "FESTIVAL AND CAMPING REGULATIONS IRIE VIBES ROOTS FESTIVAL 2027 (INCLUDING KORTEMARK CONGE)",
+      "items": [
+        {
+          "p": "De koper van een toegangsbewijs, en eenieder die het festival- en campingterrein betreedt, is verplicht zich te houden aan de hieronder vermelde richtlijnen en stemt in met alle preventieve en controlerende maatregelen die de organisatie oplegt met het oog op veiligheid en/of voorkoming van overlast. De koper stemt hierbij onder meer in met de mogelijkheid tot fouillering en controle van handbagage. Bij weigering of niet-naleving behoudt de organisatie zich het recht voor de toegang op elk moment tijdens het evenement te weigeren of in te trekken."
+        },
+        {
+          "p": "De artiesten, medewerkers en de organisatie van Irie Vibes Roots Festival 2027 (inclusief Kortemark Conge) kunnen niet aansprakelijk worden gesteld voor diefstal, verlies, schade of enig ander ongeval, zowel op het festivalterrein als op de camping."
+        },
+        {
+          "p": "Gevallen van overmacht leiden onder geen enkel beding tot aansprakelijkheid van de festivalorganisatie."
+        },
+        {
+          "p": "Festivaltickets worden noch terugbetaald noch omgeruild."
+        },
+        {
+          "p": "Het namaken of vervalsen van festivaltickets is ten strengste verboden."
+        },
+        {
+          "p": "Het is verboden om zonder voorafgaande uitdrukkelijke toestemming van de organisatie commerciële activiteiten te ontplooien op het festival- en campingterrein."
+        },
+        {
+          "p": "De organisatie is niet aansprakelijk voor verlies of diefstal van toegangskaarten, hetgeen derhalve op geen enkele wijze aanleiding kan geven tot enige vorm van vergoeding, vervanging of terugbetaling."
+        },
+        {
+          "p": "Het maken van open vuur is ten strengste verboden."
+        },
+        {
+          "p": "Het meebrengen van eigen drank en voedsel is enkel toegestaan op de camping, niet op het festivalterrein."
+        },
+        {
+          "p": "Volgende niet-exhaustieve lijst van voorwerpen is niet toegestaan op de camping en het festivalterrein:"
+        },
+        {
+          "ul": [
+            "Glas",
+            "Geluidsinstallaties / audioapparatuur",
+            "Tapinstallaties",
+            "Elektrische kooktoestellen, gasbranders of andere gastoestellen",
+            "Barbecues",
+            "Drugs",
+            "Dieren, met uitzondering van blindengeleidehonden",
+            "Professionele film-, foto- of opnameapparatuur",
+            "Wapens",
+            "Gevaarlijke voorwerpen"
+          ]
+        },
+        {
+          "p": "De organisatie behoudt zich bovendien het recht voor de toegang te allen tijde te weigeren of te ontzeggen in situaties waaronder, doch niet uitsluitend:"
+        },
+        {
+          "ul": [
+            "Het veroorzaken van situaties die door het festival als gevaarlijk worden beschouwd",
+            "De indruk wekken te handelen in drugs of andere ongeoorloofde items en middelen op het terrein",
+            "Overmatig alcoholgebruik",
+            "Onder invloed zijn van drugs",
+            "Het veroorzaken van ernstige overlast die anderen kan hinderen of belemmeren in hun beleving van het festival",
+            "Het niet kunnen voorleggen van een geldig toegangsbewijs"
+          ]
+        },
+        {
+          "p": "Wijzigingen in het programma of andere gevallen van overmacht geven geen recht op gehele of gedeeltelijke terugbetaling van het toegangsbewijs."
+        },
+        {
+          "p": "De ticketkoper is ervan op de hoogte dat tijdens het festival op het festivalterrein en de camping foto- of video-opnamen gemaakt kunnen worden. Bij betreding van het festivalterrein doet iedere bezoeker automatisch afstand van alle rechten op het gebruik daarvan en van diens portretrecht."
+        },
+        {
+          "p": "De organisatie behoudt zich het recht voor om:"
+        },
+        {
+          "ul": [
+            "De identiteit te verifiëren",
+            "De leeftijd te controleren",
+            "Handtassen en andere tassen te laten openen en controleren op de inhoud",
+            "Goederen van festivalgangers te inspecteren"
+          ]
+        },
+        {
+          "p": "Het is verboden om flyers uit te delen of andere merchandisingactiviteiten te verrichten op en rond het festival- en campingterrein."
+        },
+        {
+          "p": "Wanneer overtredingen of misdrijven worden vastgesteld, worden de politiediensten te allen tijde ingelicht."
+        },
+        {
+          "p": "De koper dient zich te houden aan de wet betreffende de verkoop van toegangsbewijzen tot evenementen (Belgisch Staatsblad, 30 juli 2013)."
+        }
+      ]
+    }
+  ],
+  "about": {
+    "greenforward": [
+      {
+        "t": "p",
+        "x": "Greenforward is the organisation behind the Irie Vibes Roots Festival and Kortemark Conge. In addition to the preparation required for these events, we occasionally organise smaller events and aim to be actively involved in local cultural, ecological and social initiatives."
+      },
+      {
+        "t": "p",
+        "x": "Greenforward’s mission is to bring people together in an inclusive, diverse and family-friendly atmosphere by organising small-scale, affordable and locally rooted cultural events."
+      },
+      {
+        "t": "p",
+        "x": "With trust, respect, honesty, enthusiasm, responsibility and open communication as our core values, we strive to give our members opportunities to engage in cultural activities."
+      },
+      {
+        "t": "p",
+        "x": "Sustainability, social engagement and collaboration are central to Greenforward’s vision. We aim to minimise our ecological impact while giving members the opportunity to develop their talents, both individually and as part of a group."
+      },
+      {
+        "t": "p",
+        "x": "Our strategy is to keep events financially accessible, make them family- and child-friendly and wheelchair accessible, and focus on local partnerships, social inclusion, zero food waste and recycling."
+      },
+      {
+        "t": "h",
+        "x": "IRIE VIBES ROOTS FESTIVAL"
+      },
+      {
+        "t": "p",
+        "x": "After more than 20 years, Irie Vibes Roots Festival has become a firm fixture on the festival calendar for many reggae and dub enthusiasts. This small-scale event certainly lives up to high international standards, as reflected not only by the many international acts, but also by the large number of visitors from abroad."
+      },
+      {
+        "t": "h",
+        "x": "KORTEMARK CONGÉ"
+      },
+      {
+        "t": "p",
+        "x": "Since 2017, Kortemark Congé has kicked off the Irie Vibes Roots Festival on Thursday evening. This free entrance festival opening offers a lively evening with great bands followed by a funky DJ. In this way, we bring the people of Kortemark together and envolve them into the festival spirit."
+      },
+      {
+        "t": "h",
+        "x": "VOLUNTEERS"
+      },
+      {
+        "t": "p",
+        "x": "The festival is fully organised by about twenty unpaid members and brought to life by some 250 volunteers during the festival. The warm family vibe creates an open and safe atmosphere where people discover their talents, take initiative and embrace responsibility."
+      }
+    ],
+    "initiatives": [
+      {
+        "t": "h",
+        "x": "North-South Initiative"
+      },
+      {
+        "t": "p",
+        "x": "Through its World Market, Kortemark's North-South Initiative puts organisations in the spotlight that are committed to supporting the Global South, promoting fair trade and raising awareness of the need to achieve the Sustainable Development Goals. In addition to their biennial World Market in Kortemark, they are also present at Irie Vibes, where they are happy to share their sustainable global vision with festival visitors."
+      },
+      {
+        "t": "h",
+        "x": "Weedo Tanzania"
+      },
+      {
+        "t": "p",
+        "x": "Women Empowerment and Entrepreneurship Development Organization helps adolescent girls and young women from disadvantaged backgrounds become financially independent. How did we collaborate with them?"
+      },
+      {
+        "t": "h",
+        "x": "Asylum Centre in Poelkapelle"
+      },
+      {
+        "t": "p",
+        "x": "What did we do together?"
+      },
+      {
+        "t": "h",
+        "x": "‘t Schoederkloptje"
+      },
+      {
+        "t": "p",
+        "x": "What did we do together?"
+      },
+      {
+        "t": "h",
+        "x": "Christelijke Mutualiteit"
+      },
+      {
+        "t": "p",
+        "x": "Thanks to the support of the Christelijke Mutualiteit, we are able to provide hearing protection for children free of charge."
+      },
+      {
+        "t": "h",
+        "x": "Restore the Landscape (Natuurpunt)"
+      },
+      {
+        "t": "p",
+        "x": "Pollarded willows help dry out waterlogged meadows, provide shelter for many animals and insects, stabilise stream banks and offer shade. As part of this project, we planted 50 willow trees on the festival site. Some of them survived and now help shape the festival grounds."
+      },
+      {
+        "t": "h",
+        "x": "Zero Food Waste Initiative"
+      },
+      {
+        "t": "p",
+        "x": "For crew catering during the build-up, festival and dismantling periods, we collect surplus food from local businesses and retailers."
+      },
+      {
+        "t": "h",
+        "x": "World Cleanup Day"
+      },
+      {
+        "t": "p",
+        "x": "We are happy to take part in this global initiative, during which organisations and communities around the world come together to clean up litter. We participate both in Kortemark and in the home municipalities of our members across Flanders."
+      },
+      {
+        "t": "h",
+        "x": "Water Recovery"
+      },
+      {
+        "t": "p",
+        "x": "Although Irie Vibes is not legally required to do so, all wastewater from the showers is fully filtered and reused in cooperation with Desotec. As a result, we have more than halved our water consumption and only discharge clean water into the drainage ditches."
+      },
+      {
+        "t": "h",
+        "x": "Reusable Cups"
+      },
+      {
+        "t": "p",
+        "x": "Since the early years of Irie Vibes, we have used reusable cups that are washed on site. In addition, our straws are fully biodegradable, and we require food trucks to use only washable or biodegradable food containers."
+      },
+      {
+        "t": "h",
+        "x": "GreenEvent Award"
+      },
+      {
+        "t": "p",
+        "x": "Thanks to our ecological initiatives at the Irie Vibes Roots Festival, VZW Greenforward was among the finalists for the GreenEvent Award in 2017. In 2018, we won the award in the Small Events category."
+      }
+    ],
+    "editions2002": [
+      "Het begon allemaal in 2002...",
+      "Eigenlijk organiseerden we met enkelen al technofeesten onder de naam Dionysos. Filip (Verhaeghe) was toen verantwoordelijk voor de chill-out en die werd opgeluisterd door de tweeling Bram en Pieter Horré en Gorik Casier (aka jayokay, medewerkers van het vroegere DK in Roeselare). Het idee om dan een reggaefestival op poten te zetten, is gekomen onder vrienden aan de toog in café Delirium in Handzame (Kortemark). Eigenaar Dominiek Hemeryck organiseerde al een festival (Delirium Blues) en de handen werden in elkaar geslagen.",
+      "Na deze eerste editie kwam de noodzaak om een vzw op te richten. Wijlen Steven Decoodt is toen afgekomen met de naam 'Greenforward'. De vzw was een feit. Dat allereerste jaar was tijdens het pinksterweekend in OC Hansam (indoor). Op het podium kon je onder andere GT Moore zien, Elijah and his Roots Reggae Team, Thabazzco, Ionyouth (met band!), Sunscape en Eric Judah (toen nog verkeerdelijk op de affiche geplaatst als Eric Judas – wat wisten wij toen over reggae – waarvoor na 22 jaar nogmaals onze excuses 🙏). In open lucht kon je toen genieten van sounds met onder andere Jah Free en Dello (Forward Fever)."
+    ],
+    "shop": [
+      "Welcome to our physical festival shop! Here is a preview of the official merchandise and exclusive festival souvenirs available on-site at the merchandise stand during festival days. Please note: these items are available exclusively in our physical shop on the festival grounds (no online webshop or pre-orders).",
+      "100% organic cotton, screen-printed edition artwork on front and back lineup.",
+      "Premium heavy fleece hoodie with kangaroo pocket and embroidered chest badge.",
+      "Adjustable snapback cap with detailed Rasta tri-color Irie Vibes badge.",
+      "Woven festival lanyard complete with official metal enamel souvenir pin."
+    ]
+  }
+}

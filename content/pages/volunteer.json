@@ -1,0 +1,16 @@
+{
+  "slug": "volunteer",
+  "title": "Volunteer",
+  "hero": "/assets/hero-volunteer.png",
+  "heroSize": "md",
+  "blocks": [
+    {
+      "type": "p",
+      "html": "Irie Vibes is run by volunteers. They turn an empty meadow into a full festival, do every job during the festival, then cleanup and restore the fields for the cows and horses to return."
+    },
+    {
+      "type": "p",
+      "html": "<a href=\"mailto:info@irievibes.be\">Click here to volunteer</a>."
+    }
+  ]
+}

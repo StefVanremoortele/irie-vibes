@@ -1,0 +1,228 @@
+---
+import { site, socials } from '../data/site';
+import { sponsorsMain, sponsorsReg } from '../data/sponsors';
+---
+
+<footer class="footer" style={`background-image:url(${site.assets.footerBg});`}>
+  <div class="footer__sponsors">
+    <div class="footer__inner">
+      <h3 class="footer__heading">Sponsors</h3>
+      <div class="sponsors">
+        <div class="sponsors__row">
+          {
+            sponsorsMain.map((s) => (
+              <div class="sponsor sponsor--main">
+                {s.src ? (
+                  <img class="sponsor__img" src={s.src} alt={s.alt} loading="lazy" />
+                ) : (
+                  <div class="sponsor__text">
+                    <span class="sponsor__label">{s.label}</span>
+                    <span class="sponsor__sub">{s.sub}</span>
+                  </div>
+                )}
+              </div>
+            ))
+          }
+        </div>
+        <div class="sponsors__row">
+          {
+            sponsorsReg.map((s) => (
+              <div class="sponsor sponsor--reg">
+                {s.src ? (
+                  <img class="sponsor__img" src={s.src} alt={s.alt} loading="lazy" />
+                ) : (
+                  <div class="sponsor__text">
+                    <span class="sponsor__label sponsor__label--sm">{s.label}</span>
+                    <span class="sponsor__sub sponsor__sub--sm">{s.sub}</span>
+                  </div>
+                )}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="footer__credit">
+      <img class="footer__logo" src={site.assets.greenforward} alt="Greenforward" />
+      <div class="footer__creditlines">
+        <span>© {site.organisation}</span>
+        <span>{site.name}</span>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </div>
+    <div class="footer__socials">
+      {
+        socials.map((s) => (
+          <a class="footer__social" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+            <img src={s.icon} alt={s.label} loading="lazy" />
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    width: 100%;
+    position: relative;
+    margin-top: auto;
+    background-color: var(--surface);
+    background-size: 100% auto;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .footer__sponsors {
+    width: 100%;
+    padding: 48px clamp(12px, 3vw, 40px) 0;
+  }
+  .footer__inner {
+    width: 100%;
+    max-width: var(--max-lineup);
+    margin: 0 auto;
+  }
+  .footer__heading {
+    font-family: var(--font-display);
+    font-size: clamp(19px, 2.6vw, 28px);
+    letter-spacing: 0.2em;
+    color: var(--secondary-deep);
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 30px;
+  }
+
+  .sponsors {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .sponsors__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+  .sponsor {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sponsor--main {
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    padding: 4px 12px;
+    height: clamp(48px, 7vw, 80px);
+  }
+  .sponsor--reg {
+    border-radius: var(--radius);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.3);
+    padding: 4px clamp(8px, 1.5vw, 22px);
+    height: clamp(38px, 5vw, 56px);
+  }
+  .sponsor__img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .sponsor__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .sponsor__label {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: #9f1239;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .sponsor__label--sm {
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+  .sponsor__sub {
+    font-size: 9px;
+    color: #6b7280;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .sponsor__sub--sm {
+    font-size: 8px;
+  }
+
+  .footer__bottom {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--max-lineup);
+    margin: 24px auto 0;
+    padding: 56px clamp(12px, 3vw, 40px) 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer__credit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  }
+  .footer__logo {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    display: block;
+  }
+  .footer__creditlines {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .footer__creditlines span,
+  .footer__creditlines a {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--secondary);
+    text-transform: uppercase;
+  }
+  .footer__creditlines a:hover {
+    text-decoration: underline;
+  }
+  .footer__socials {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .footer__social {
+    display: block;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    opacity: 0.9;
+  }
+  .footer__social:hover {
+    opacity: 1;
+  }
+  .footer__social img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import { regulations } from '../data/regulations';
+---
+
+<Base title="Festival & Camping Regulations">
+  <div class="section section--wide regs">
+    {
+      regulations.map((sec) => (
+        <div class="regs__section">
+          <h2 class="regs__title">{sec.title}</h2>
+          {sec.items.map((it) =>
+            it.p ? (
+              <p class="regs__p">{it.p}</p>
+            ) : (
+              <ul class="regs__ul">{it.ul?.map((li) => <li>{li}</li>)}</ul>
+            ),
+          )}
+        </div>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .regs__section {
+    margin-bottom: 48px;
+  }
+  .regs__title {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 2.6vw, 26px);
+    letter-spacing: 0.04em;
+    color: var(--secondary);
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 26px;
+    line-height: 1.35;
+  }
+  .regs__p {
+    color: var(--on-surface);
+    font-size: 14px;
+    line-height: 1.75;
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+  .regs__ul {
+    margin: 0 0 18px;
+    padding-left: 22px;
+    color: var(--on-surface);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .regs__ul li {
+    margin-bottom: 6px;
+  }
+</style>

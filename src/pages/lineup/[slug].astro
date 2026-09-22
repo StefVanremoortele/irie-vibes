@@ -1,0 +1,147 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import { heroImages, pageImages } from '../../data/pages';
+import { allActs, stageByKey, defaultActDescription } from '../../data/lineup';
+import type { Act } from '../../data/types';
+
+export function getStaticPaths() {
+  return allActs.map((act) => ({ params: { slug: act.slug }, props: { act } }));
+}
+
+interface Props {
+  act: Act;
+}
+const { act } = Astro.props;
+const stage = stageByKey[act.stage];
+const paragraphs = act.description ?? defaultActDescription;
+const poster = act.image ?? pageImages.actPoster;
+---
+
+<Base title={act.name}>
+  <div class="actpage">
+    <Hero src={heroImages.act} alt={`${act.name} — ${stage.name}`} size="md" />
+    <div class="section section--page">
+      <h1 class="actpage__title">{act.name}</h1>
+      <div class="actpage__meta">
+        <span class="actpage__day">{act.day}</span>
+        <span class="actpage__dot">•</span>
+        <span class="actpage__stage" style={`color:${stage.color};`}>{stage.name}</span>
+        <span class="actpage__dot">•</span>
+        <span class="actpage__time">{act.time}</span>
+      </div>
+
+      <div class="actpage__grid">
+        <div class="actpage__body">
+          {
+            paragraphs.map((p, i) => (
+              <p class={i === 0 ? 'actpage__lead' : 'actpage__para'}>{p}</p>
+            ))
+          }
+        </div>
+        <div class="actpage__aside">
+          <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
+          <a
+            class="actpage__link"
+            href={act.website ?? '#'}
+            target={act.website ? '_blank' : undefined}
+            rel={act.website ? 'noopener noreferrer' : undefined}
+          >
+            Official website
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .actpage__title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5.4vw, 46px);
+    letter-spacing: 0.05em;
+    color: var(--secondary);
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0 0 14px;
+    line-height: 1.1;
+  }
+  .actpage__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    align-items: baseline;
+    margin: 0 0 36px;
+  }
+  .actpage__day,
+  .actpage__stage,
+  .actpage__time {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .actpage__day,
+  .actpage__time {
+    color: #ffffff;
+  }
+  .actpage__dot {
+    color: var(--muted);
+  }
+
+  .actpage__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+  .actpage__lead {
+    color: #ffffff;
+    font-size: clamp(15px, 1.7vw, 18px);
+    line-height: 1.7;
+    font-weight: 600;
+    margin: 0 0 18px;
+    text-wrap: pretty;
+  }
+  .actpage__para {
+    color: var(--on-surface);
+    font-size: clamp(14px, 1.6vw, 16px);
+    line-height: 1.75;
+    margin: 0 0 16px;
+    text-wrap: pretty;
+  }
+  .actpage__para:last-child {
+    margin-bottom: 0;
+  }
+  .actpage__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .actpage__poster {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    display: block;
+    border: 1px solid var(--border-hairline);
+  }
+  .actpage__link {
+    align-self: flex-start;
+    background: var(--card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+  .actpage__link:hover {
+    border-color: rgba(250, 188, 77, 0.5);
+    color: var(--secondary);
+  }
+</style>

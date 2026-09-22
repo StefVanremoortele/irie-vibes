@@ -1,0 +1,44 @@
+{
+  "stages": [
+    {
+      "key": "inner",
+      "name": "Inner Lion",
+      "sub": "Open air stage",
+      "color": "#ef4444"
+    },
+    {
+      "key": "den",
+      "name": "Lions Den",
+      "sub": "Mainstage",
+      "color": "#fabc4d"
+    },
+    {
+      "key": "chill",
+      "name": "Chilling Lion",
+      "sub": "Camping bar stage",
+      "color": "#22c55e"
+    }
+  ],
+  "days": [
+    {
+      "name": "Thursday",
+      "sub": "Kortemark Congé",
+      "order": 0
+    },
+    {
+      "name": "Friday",
+      "sub": "",
+      "order": 1
+    },
+    {
+      "name": "Saturday",
+      "sub": "",
+      "order": 2
+    }
+  ],
+  "defaultActDescription": [
+    "Kickstarting the festival weekend at the legendary Lions Den stage, this act sets the tone with heavy roots vibrations and spiritual dub energy.",
+    "Known for their deep organic basslines, authentic Jamaican vintage rhythm sections, and uplifting conscious messages, this performance marks an unmissable moment at Irie Vibes Roots Festival.",
+    "Prepare your mind and body for an hour of pure spiritual elevation and sonic meditation under the open skies of Kortemark."
+  ]
+}

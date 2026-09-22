@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import CopyPage from '../components/CopyPage.astro';
+import { contentPages } from '../data/pages';
+
+const page = contentPages.kids;
+---
+
+<Base title={page.title}>
+  <CopyPage page={page} width="mid" />
+</Base>

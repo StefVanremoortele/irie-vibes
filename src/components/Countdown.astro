@@ -1,0 +1,108 @@
+---
+interface Props {
+  date: string; // ISO datetime
+}
+const { date } = Astro.props;
+
+// Build-time initial values; the client script recomputes on load and each second.
+const target = new Date(date).getTime();
+const diff = Math.max(0, target - Date.now());
+const pad = (n: number) => String(n).padStart(2, '0');
+const initial = {
+  days: String(Math.floor(diff / 86400000)),
+  hours: pad(Math.floor((diff % 86400000) / 3600000)),
+  minutes: pad(Math.floor((diff % 3600000) / 60000)),
+  seconds: pad(Math.floor((diff % 60000) / 1000)),
+};
+const units: [keyof typeof initial, string][] = [
+  ['days', 'Days'],
+  ['hours', 'Hours'],
+  ['minutes', 'Minutes'],
+  ['seconds', 'Seconds'],
+];
+---
+
+<div class="countdown" data-countdown data-target={date}>
+  {
+    units.map(([key, label]) => (
+      <div class="cd">
+        <div class="cd__num" data-unit={key}>
+          {initial[key]}
+        </div>
+        <div class="cd__label">{label}</div>
+      </div>
+    ))
+  }
+</div>
+<p class="countdown__caption">Till the gates open</p>
+
+<style>
+  .countdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin: 0 0 14px;
+  }
+  .cd {
+    background: var(--card-panel);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 16px clamp(18px, 3vw, 34px);
+    min-width: 104px;
+    text-align: center;
+  }
+  .cd__num {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 5vw, 44px);
+    color: var(--secondary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cd__label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .countdown__caption {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin: 0 0 28px;
+    text-align: center;
+  }
+</style>
+
+<script>
+  function initCountdown() {
+    const root = document.querySelector<HTMLElement>('[data-countdown]');
+    if (!root) return;
+    const target = new Date(root.dataset.target || '').getTime();
+    if (Number.isNaN(target)) return;
+
+    const nums = {
+      days: root.querySelector<HTMLElement>('[data-unit="days"]'),
+      hours: root.querySelector<HTMLElement>('[data-unit="hours"]'),
+      minutes: root.querySelector<HTMLElement>('[data-unit="minutes"]'),
+      seconds: root.querySelector<HTMLElement>('[data-unit="seconds"]'),
+    };
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      if (nums.days) nums.days.textContent = String(Math.floor(diff / 86400000));
+      if (nums.hours) nums.hours.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+      if (nums.minutes) nums.minutes.textContent = pad(Math.floor((diff % 3600000) / 60000));
+      if (nums.seconds) nums.seconds.textContent = pad(Math.floor((diff % 60000) / 1000));
+    };
+
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  initCountdown();
+</script>

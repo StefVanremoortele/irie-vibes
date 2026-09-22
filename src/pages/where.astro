@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { site } from '../data/site';
+import { heroImages, pageImages } from '../data/pages';
+
+const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.location.query)}&t=m&z=15&output=embed`;
+---
+
+<Base title="Where">
+  <div class="where">
+    <Hero src={heroImages.where} alt="Route to the festival" size="md" />
+    <div class="section section--page">
+      <h1 class="title">Where</h1>
+      <div class="copy copy--center where__copy">
+        <p>
+          The festival entrance is at
+          <strong>{site.location.label}</strong>.
+        </p>
+        <p>
+          <strong>Bicycles</strong> can drive up to the entrance gates and park next to the
+          campingbar at the Chilling Lion stage.
+        </p>
+        <p>
+          If you come by <strong>train</strong> to Kortemark, find the Irie Vibes shuttlebus stop
+          sign just outside the station. The bus drives according to train arrival times, so it will
+          probably be waiting to take you to the festival.
+        </p>
+        <p>
+          When approaching Kortemark by <strong>car</strong>, you should notice direction signs.
+          Follow these to arrive safely.
+        </p>
+      </div>
+
+      <div class="where__grid">
+        <div class="where__tile">
+          <iframe
+            src={mapSrc}
+            title={`Route to ${site.location.label}`}
+            loading="lazy"
+          ></iframe>
+        </div>
+        <div class="where__tile">
+          <img src={pageImages.circulatieplan} alt="Irie Vibes circulation plan" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .where__copy {
+    margin-bottom: 36px;
+  }
+  .where__copy p {
+    margin-bottom: 20px;
+  }
+  .where__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .where__tile {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background: var(--card-panel);
+  }
+  .where__tile iframe,
+  .where__tile img {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+    display: block;
+  }
+</style>

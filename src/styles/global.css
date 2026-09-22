@@ -1,0 +1,219 @@
+@import './tokens.css';
+
+/* Reset ------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--secondary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--secondary-hover);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 400;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* App shell --------------------------------------------------------------- */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+.main {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Hero -------------------------------------------------------------------- */
+.hero {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero--lg {
+  height: clamp(200px, 38vw, 460px);
+}
+.hero--md {
+  height: clamp(120px, 20vw, 250px);
+}
+.hero--sm {
+  height: clamp(90px, 14vw, 180px);
+}
+
+/* Section wrapper --------------------------------------------------------- */
+.section {
+  width: 100%;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+}
+.section--narrow {
+  max-width: var(--max-narrow);
+}
+.section--mid {
+  max-width: var(--max-mid);
+}
+.section--wide {
+  max-width: var(--max-wide);
+}
+.section--page {
+  max-width: var(--max-page);
+}
+.section--lineup {
+  max-width: var(--max-lineup);
+  padding: 44px 20px 64px;
+}
+
+/* Page title -------------------------------------------------------------- */
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 42px);
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 30px;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+/* Copy -------------------------------------------------------------------- */
+.copy {
+  color: var(--on-surface);
+  font-size: clamp(15px, 1.7vw, 17px);
+  line-height: 1.75;
+}
+.copy--center {
+  text-align: center;
+}
+.copy p {
+  margin: 0 0 22px;
+  text-wrap: pretty;
+}
+.copy p:last-child {
+  margin-bottom: 0;
+}
+.copy strong {
+  color: var(--on-surface-strong);
+  font-weight: 700;
+}
+.copy a {
+  color: var(--secondary);
+  text-decoration: underline;
+  font-weight: 700;
+}
+.copy a:hover {
+  color: var(--secondary-hover);
+}
+
+/* Price tables ------------------------------------------------------------ */
+.prices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+  margin: 0 auto 32px;
+}
+.prices__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.prices__row:last-child {
+  border-bottom: 0;
+}
+.prices__label {
+  font-weight: 600;
+}
+.prices__value {
+  font-weight: 700;
+}
+.prices__value--accent {
+  color: var(--secondary);
+}
+.prices__note {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 14px;
+}
+
+/* Cards ------------------------------------------------------------------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+}
+
+/* Responsive show/hide helpers ------------------------------------------- */
+@media (max-width: 860px) {
+  .iv-desk {
+    display: none !important;
+  }
+}
+@media (min-width: 861px) {
+  .iv-mob {
+    display: none !important;
+  }
+}
+
+/* Reduced motion ---------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

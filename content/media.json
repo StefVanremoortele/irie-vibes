@@ -1,0 +1,15 @@
+{
+  "heroes": {
+    "home": "/assets/hero-home.png",
+    "tickets": "/assets/hero-tickets.png",
+    "lineup": "/assets/hero-lineup.png",
+    "act": "/assets/actposter.png",
+    "where": "/assets/hero-where.png",
+    "camping": "/assets/hero-camping.png",
+    "about": "/assets/hero-about.png"
+  },
+  "images": {
+    "circulatieplan": "/assets/circulatieplan.png",
+    "actPoster": "/assets/actposter.png"
+  }
+}

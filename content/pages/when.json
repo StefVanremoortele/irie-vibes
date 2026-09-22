@@ -1,0 +1,32 @@
+{
+  "slug": "when",
+  "title": "When",
+  "hero": "/assets/hero-where.png",
+  "heroSize": "md",
+  "blocks": [
+    {
+      "type": "p",
+      "html": "Camping opens on <strong>Thursday</strong>, 22 July at ??h??"
+    },
+    {
+      "type": "p",
+      "html": "The festival area opens on <strong>Thursday</strong> at 18h with Kortemark Cong, a free entrance festival day. The festival area closes at 1h."
+    },
+    {
+      "type": "p",
+      "html": "On <strong>Friday</strong> the festival area opens at 17h and closes at 4h."
+    },
+    {
+      "type": "p",
+      "html": "On <strong>Saturday</strong> the festival area opens at 12h and closes at 4h."
+    },
+    {
+      "type": "p",
+      "html": "The camping bar at the Chilling Lion stage opens every festival day from ??h?? till ??h??. Breakfast is also served here, from ??h?? till we are out."
+    },
+    {
+      "type": "p",
+      "html": "The camping closes on <strong>Sunday</strong>, 25 July at 14h."
+    }
+  ]
+}

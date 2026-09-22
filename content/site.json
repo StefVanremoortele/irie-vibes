@@ -1,0 +1,89 @@
+{
+  "name": "Irie Vibes Roots Festival",
+  "organisation": "VZW Greenforward",
+  "datesLabel": "22, 23 & 24 JULY 2027",
+  "festivalDate": "2027-07-22T18:00:00",
+  "location": {
+    "label": "Koekelarestraat 16, 8610 Kortemark, Belgium",
+    "query": "Koekelarestraat 16, 8610 Kortemark, Belgium"
+  },
+  "email": "info@irievibes.be",
+  "ticketUrl": "https://irie-vibes.eventsquare.store/nl/6tkhqowc5ovk/ldpytyyieckh",
+  "volunteerUrl": "mailto:info@irievibes.be",
+  "intro": "Irie Vibes Roots Festival brings you the best of live Roots Reggae and Dub soundsystem culture. This multiday, familyfriendly, ecological aware festivety has been creating a cozy, free and joyful place and atmosphere for over 20 years. As free entrance opening night, Kortemark Conge aims to bring the local community together for some quality time with nice music and irie vibes.",
+  "showCountdown": true,
+  "showAftermovie": true,
+  "aftermovie": {
+    "title": "Irie Vibes Roots Festival 2026 aftermovie",
+    "embedUrl": "https://www.youtube.com/embed/knswTYKdwh0"
+  },
+  "assets": {
+    "headerBanner": "/assets/header-banner.png",
+    "footerBg": "/assets/footer.png",
+    "greenforward": "/assets/greenforward-logo.png"
+  },
+  "nav": [
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "Tickets",
+      "href": "/tickets"
+    },
+    {
+      "label": "Line up",
+      "href": "/lineup"
+    },
+    {
+      "label": "When",
+      "href": "/when"
+    },
+    {
+      "label": "Where",
+      "href": "/where"
+    },
+    {
+      "label": "Parking & Camping",
+      "href": "/camping"
+    },
+    {
+      "label": "Drinks, Foods & Market",
+      "href": "/drinks"
+    },
+    {
+      "label": "Kids Corner",
+      "href": "/kids"
+    },
+    {
+      "label": "Volunteer",
+      "href": "/volunteer"
+    },
+    {
+      "label": "All About Irie Vibes",
+      "href": "/about"
+    }
+  ],
+  "socials": [
+    {
+      "label": "Facebook",
+      "href": "https://www.facebook.com/IrieVibesRootsFestival",
+      "icon": "/assets/social-facebook.png"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/irievibesroots/",
+      "icon": "/assets/social-instagram.png"
+    },
+    {
+      "label": "YouTube",
+      "href": "https://www.youtube.com/@irievibesrootsfestival9001",
+      "icon": "/assets/social-youtube.png"
+    },
+    {
+      "label": "Spotify",
+      "href": "https://open.spotify.com/user/g8ixeapl5313lbru3b9o7ygdk",
+      "icon": "/assets/social-spotify.png"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "irie-vibes",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "cms:proxy": "npx -y decap-server",
+    "content:migrate": "node scripts/migrate-to-cms.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.6.0"
+  }
+}

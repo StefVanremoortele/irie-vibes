@@ -1,0 +1,28 @@
+{
+  "slug": "kids",
+  "title": "Kids corner",
+  "hero": "/assets/hero-kids.png",
+  "heroSize": "md",
+  "blocks": [
+    {
+      "type": "p",
+      "html": "Irie Vibes is a family festival. Children up to 14 years old get free entrance."
+    },
+    {
+      "type": "p",
+      "html": "At the kids corner children can discover a magical world filled with toys, arts, games, suprises and entertainment."
+    },
+    {
+      "type": "p",
+      "html": "Kids can enjoy the live bands or take their first steps on the dancefloor safely as childrens noise reducing headphones are available at the infostand for free (security deposit required)."
+    },
+    {
+      "type": "p",
+      "html": "Wristbands for lost kids are available at the entrance, the infostand and the kids corner."
+    },
+    {
+      "type": "p",
+      "html": "Woven wristband for your kids are available on Saturday at the infostand"
+    }
+  ]
+}
