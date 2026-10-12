@@ -6,6 +6,14 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://www.irievibes.be',
   trailingSlash: 'ignore',
+  vite: {
+    server: {
+      allowedHosts: [
+        'irie-vibes.concept.vanremoortele.be',
+        'steftop-1.xantu-fir.ts.net',
+      ],
+    },
+  },
   build: {
     format: 'directory',
   },
