@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 ---
 
 <Base title="Feedback inbox" description="Website feedback inbox" noIndex>
+  <div class="inbox-backdrop" aria-hidden="true"></div>
   <section class="inbox section section--page">
     <header class="inbox__head">
       <div>
@@ -41,7 +42,10 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .inbox { gap: 28px; }
+  /* The inbox sits as an opaque sheet above the site, which is dimmed by a
+     half-transparent layer over the whole screen (header included). */
+  .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
+  .inbox { position: relative; z-index: 9600; gap: 28px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
   .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
   .inbox__head .title { margin: 0 0 6px; text-align: left; }
   .inbox__lead { margin: 0; color: var(--on-surface-variant); }
@@ -100,7 +104,7 @@ import Base from '../layouts/Base.astro';
   .lightbox form { position: absolute; top: 8px; right: 8px; }
   .lightbox button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; font-size: 20px; cursor: pointer; }
   @media (max-width: 640px) {
-    .inbox { padding-left: 16px; padding-right: 16px; }
+    .inbox { margin: 12px 8px 32px; padding-left: 16px; padding-right: 16px; }
     :global(.fb-item) { grid-template-columns: minmax(0, 1fr); }
     :global(.fb-item__shot) { height: 160px; }
   }
