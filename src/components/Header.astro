@@ -1,5 +1,6 @@
 ---
 import { site, nav } from '../data/site';
+import { COLORS, GROOVES, LABEL_R, VIEWBOX, recordFrame } from '../lib/record-burger';
 
 interface Props {
   path: string;
@@ -10,6 +11,9 @@ function isActive(href: string): boolean {
   if (href === '/') return path === '/' || path === '';
   return path === href || path.startsWith(href + '/');
 }
+
+// First frame of the record animation: the resting hamburger.
+const rec = recordFrame(0);
 
 function canonicalHref(href: string): string {
   if (href.startsWith('/') && href !== '/' && !href.endsWith('/')) return `${href}/`;
@@ -25,9 +29,41 @@ function canonicalHref(href: string): string {
     <div class="hdr__bar">
       <div class="hdr__menu" data-menu>
         <button type="button" class="burger" aria-label="Open navigation" aria-expanded="false" aria-controls="menu" data-menu-toggle>
-          <span class="burger__bar burger__bar--r"></span>
-          <span class="burger__bar burger__bar--y"></span>
-          <span class="burger__bar burger__bar--g"></span>
+          <svg class="burger__record" viewBox={VIEWBOX} aria-hidden="true" focusable="false" data-record>
+            <defs>
+              <clipPath id="record-label"><circle r={rec.clipR} data-r="clip" /></clipPath>
+              <filter id="record-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14" /></filter>
+            </defs>
+            <ellipse cx="0" cy={rec.R * 0.12 + 14} rx={rec.R * 0.98} ry={rec.R * 0.96} fill="#000" opacity="0.3" filter="url(#record-soft)" data-r="shadow" />
+            <circle r={rec.R} fill="#121212" data-r="disc" />
+            <g data-r="spin">
+              <g opacity={rec.m} data-r="grooves">
+                {GROOVES.map((r, i) => (
+                  <circle r={r * (rec.R / 215)} data-groove={r} fill="none" stroke={i % 7 === 3 ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.075)'} stroke-width={i % 7 === 3 ? 3 : 0.8} />
+                ))}
+              </g>
+              <g clip-path="url(#record-label)">
+                {rec.bars.map((bar, i) => <rect {...bar} fill={COLORS[i]} data-r="bar" />)}
+              </g>
+              <g opacity={rec.labelOpacity} data-r="label">
+                <circle r={LABEL_R} fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="2" />
+                <text y={-LABEL_R * 0.52} text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="15" fill="#1a1b26" letter-spacing="1">side a</text>
+                <circle r="7" fill="#d9a62a" />
+                <circle r="7" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" />
+              </g>
+            </g>
+            <g opacity={rec.m * 0.9} data-r="reflection">
+              <path d={rec.reflection[0]} fill="rgba(255,255,255,0.07)" />
+              <path d={rec.reflection[1]} fill="rgba(255,255,255,0.05)" />
+            </g>
+            <circle r={rec.R - 0.5} fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" data-r="rim" />
+            <g opacity={rec.armOpacity} transform={`translate(232 -222) rotate(${rec.arm})`} data-r="arm">
+              <circle r="22" fill="#2b2b2e" />
+              <circle r="10" fill="#8a8a90" />
+              <path d="M0 0 L-38 210 L-92 262" fill="none" stroke="#c8c8cc" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+              <rect x="-112" y="252" width="34" height="20" rx="4" transform="rotate(-42 -92 262)" fill="#2b2b2e" />
+            </g>
+          </svg>
         </button>
         <nav id="menu" class="drawer" aria-label="Main navigation" data-menu-drawer hidden>
           <ul class="drawer__list">
@@ -114,37 +150,31 @@ function canonicalHref(href: string): string {
 
   /* Hamburger --------------------------------------------------------------- */
   .burger {
-    width: clamp(44px, 6vw, 56px);
-    height: clamp(44px, 6vw, 56px);
+    --burger-size: clamp(44px, 6vw, 56px);
+    position: relative;
+    width: var(--burger-size);
+    height: var(--burger-size);
+    border: 0;
     border-radius: var(--radius-full);
-    background: rgba(0, 0, 0, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+    background: transparent;
     cursor: pointer;
     padding: 0;
   }
-  .burger:hover {
-    background: #000;
+  /* The record's disc (r=180 in a 600-unit viewBox) is the button itself; the
+     SVG overflows the button so the bigger record and tonearm fit. */
+  .burger__record {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--burger-size) * 600 / 360);
+    height: calc(var(--burger-size) * 600 / 360);
+    transform: translate(-50%, -50%);
+    overflow: visible;
+    pointer-events: none;
   }
-  .burger__bar {
-    width: 26px;
-    height: 7px;
-    border-radius: var(--radius-full);
-    display: block;
-  }
-  .burger__bar--r {
-    background: var(--reggae-red);
-  }
-  .burger__bar--y {
-    background: var(--reggae-yellow);
-  }
-  .burger__bar--g {
-    background: var(--reggae-green);
+  .burger:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 3px;
   }
 
   /* Drawer ------------------------------------------------------------------ */
@@ -248,6 +278,51 @@ function canonicalHref(href: string): string {
 </style>
 
 <script>
+  import { recordFrame } from '../lib/record-burger';
+
+  // Animate the hamburger ↔ record loop. Skipped for reduced motion (the
+  // server-rendered first frame is the plain hamburger).
+  function initRecord() {
+    const svg = document.querySelector<SVGSVGElement>('[data-record]');
+    if (!svg || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const part = <T extends Element>(name: string) => svg.querySelector<T>(`[data-r="${name}"]`)!;
+    const shadow = part<SVGEllipseElement>('shadow');
+    const disc = part<SVGCircleElement>('disc');
+    const rim = part<SVGCircleElement>('rim');
+    const clip = part<SVGCircleElement>('clip');
+    const spin = part<SVGGElement>('spin');
+    const grooves = part<SVGGElement>('grooves');
+    const grooveCircles = [...svg.querySelectorAll<SVGCircleElement>('[data-groove]')];
+    const bars = [...svg.querySelectorAll<SVGRectElement>('[data-r="bar"]')];
+    const label = part<SVGGElement>('label');
+    const reflection = part<SVGGElement>('reflection');
+    const wedges = [...reflection.querySelectorAll('path')];
+    const arm = part<SVGGElement>('arm');
+    const set = (el: Element, attrs: Record<string, number | string>) => {
+      for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, typeof value === 'number' ? value.toFixed(2) : value);
+    };
+
+    const start = performance.now();
+    const tick = (now: number) => {
+      const f = recordFrame((now - start) / 1000);
+      set(shadow, { cy: f.R * 0.12 + 14, rx: f.R * 0.98, ry: f.R * 0.96 });
+      set(disc, { r: f.R });
+      set(rim, { r: f.R - 0.5 });
+      set(clip, { r: f.clipR });
+      set(spin, { transform: `rotate(${f.angle.toFixed(2)})` });
+      set(grooves, { opacity: f.m });
+      if (f.m > 0) grooveCircles.forEach((circle) => set(circle, { r: Number(circle.dataset.groove) * (f.R / 215) }));
+      f.bars.forEach((bar, i) => set(bars[i], bar));
+      set(label, { opacity: f.labelOpacity });
+      set(reflection, { opacity: f.m * 0.9 });
+      wedges.forEach((wedge, i) => set(wedge, { d: f.reflection[i] }));
+      set(arm, { opacity: f.armOpacity, transform: `translate(232 -222) rotate(${f.arm.toFixed(2)})` });
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  initRecord();
+
   function initMenu() {
     const root = document.querySelector<HTMLElement>('[data-menu]');
     const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
