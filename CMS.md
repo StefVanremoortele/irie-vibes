@@ -27,6 +27,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions, band |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
 | Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
+| Feedback → Developer notes | `content/dev-notes.json` | messages for testers, shown on the *Developer notes* tab of `/feedback` |
 
 ## Editing locally (no account needed)
 

@@ -123,3 +123,12 @@ export interface ShopItem {
   description: string;
   image?: string;
 }
+
+/** A message from the developer to testers, shown on /feedback. */
+export interface DevNote {
+  title: string;
+  date: string;
+  author: string;
+  message: string;
+  page?: string;
+}

@@ -1,8 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import { devNotes } from '../data/devNotes';
+
+const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+// Escape, then turn URLs into links (notes are plain text from the CMS).
+const linkify = (text: string) =>
+  text
+    .replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!)
+    .replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
 ---
 
-<Base title="Feedback inbox" description="Website feedback inbox" noIndex>
+<Base title="Feedback inbox" description="Website feedback inbox" noIndex hideFooter>
   <div class="inbox-backdrop" aria-hidden="true"></div>
   <section class="inbox section section--page">
     <header class="inbox__head">
@@ -15,9 +23,11 @@ import Base from '../layouts/Base.astro';
         <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
         <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
         <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
+        <a class="tab tab--notes" href="#notes" data-filter="Notes">Developer notes <span>{devNotes.length || ''}</span></a>
       </nav>
     </header>
 
+    <div id="feedback-view" class="view">
     <div id="entries" class="entries" aria-live="polite"><p class="empty">Loading feedback…</p></div>
 
     <details class="note card">
@@ -36,6 +46,25 @@ import Base from '../layouts/Base.astro';
         <div class="note__actions"><button class="fb-btn fb-btn--primary" type="submit">Add note</button><p id="form-status" role="status"></p></div>
       </form>
     </details>
+    </div>
+
+    <div id="notes-view" class="view" hidden>
+      <p class="inbox__lead">Updates from the developer for everyone testing the site: what changed, what to check, answers to feedback.</p>
+      <div id="notes" class="entries">
+        {devNotes.length ? devNotes.map((note) => (
+          <article class="dev-note" data-date={note.date}>
+            <h2 class="dev-note__title">{note.title}</h2>
+            <div class="fb-item__meta">
+              <strong>{note.author}</strong>
+              <time datetime={note.date}>{formatDate(note.date)}</time>
+              {note.page && <a href={note.page}>{note.page}</a>}
+              <span class="fb-item__badge fb-item__badge--new" hidden>New</span>
+            </div>
+            <p class="dev-note__message" set:html={linkify(note.message)} />
+          </article>
+        )) : <p class="empty">No notes from the developer yet.</p>}
+      </div>
+    </div>
   </section>
 
   <dialog id="lightbox" class="lightbox"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
@@ -55,6 +84,16 @@ import Base from '../layouts/Base.astro';
   .tab.is-active { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
   .tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
   .tab span:empty { display: none; }
+  .view { width: 100%; max-width: var(--max-wide); display: grid; justify-items: center; gap: 28px; }
+  .view[hidden] { display: none; }
+  .view > .inbox__lead { justify-self: stretch; }
+  .tab--notes { border-style: dashed; }
+  .tab--notes.has-unseen:not(.is-active) { border-color: var(--primary); color: var(--primary); }
+  :global(.dev-note) { display: grid; gap: 8px; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-left: 3px solid var(--primary); border-radius: var(--radius-lg); }
+  :global(.dev-note__title) { margin: 0; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
+  :global(.dev-note__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
+  :global(.dev-note__message a), :global(.dev-note .fb-item__meta a) { color: var(--secondary); }
+  :global(.fb-item__badge.fb-item__badge--new) { background: var(--primary); color: var(--surface); }
   .entries { width: 100%; max-width: var(--max-wide); display: grid; gap: 12px; }
   .empty { margin: 0; padding: 32px 20px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
   :global(.fb-item) { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 16px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
@@ -129,7 +168,7 @@ import Base from '../layouts/Base.astro';
   let entries: Entry[] = [];
   let loaded = false;
 
-  const filter = () => FILTERS[location.hash] || 'New';
+  const filter = () => (location.hash === '#notes' ? 'Notes' : FILTERS[location.hash] || 'New');
   const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!);
   const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
   function ago(iso: string) {
@@ -143,6 +182,9 @@ import Base from '../layouts/Base.astro';
   function render() {
     const current = filter();
     document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.filter === current));
+    document.querySelector<HTMLElement>('#feedback-view')!.hidden = current === 'Notes';
+    document.querySelector<HTMLElement>('#notes-view')!.hidden = current !== 'Notes';
+    renderNotes();
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
       const status = count.dataset.count!;
       const n = status === 'All' ? entries.length : entries.filter((entry) => entry.status === status).length;
@@ -179,16 +221,33 @@ import Base from '../layouts/Base.astro';
     }).join('');
   }
 
+  // Bumped by every status change / delete. A refresh that started before a
+  // change finished is dropped, so it can't bring back a deleted item or an
+  // old status (e.g. the refresh triggered by refocusing after confirm()).
+  let revision = 0;
   async function load() {
+    const startedAt = revision;
     try {
       const response = await fetch(API, { cache: 'no-store' });
       if (!response.ok) throw new Error();
-      entries = (await response.json()).entries;
+      const fresh = (await response.json()).entries;
+      if (startedAt !== revision) return;
+      entries = fresh;
       loaded = true;
       render();
     } catch {
       if (!loaded) list.innerHTML = '<p class="empty">The feedback service is unavailable.</p>';
     }
+  }
+
+  async function mutate(request: () => Promise<Response>, apply: () => void, undo: () => void, failure: string) {
+    revision += 1;
+    apply();
+    render();
+    const response = await request().catch(() => undefined);
+    revision += 1;
+    if (!response?.ok) { undo(); render(); alert(failure); }
+    void load();
   }
 
   list.addEventListener('click', async (event) => {
@@ -201,27 +260,53 @@ import Base from '../layouts/Base.astro';
     }
     const id = button.closest<HTMLElement>('[data-id]')?.dataset.id;
     const entry = entries.find((item) => item.id === id);
-    if (!entry) return;
+    if (!id || !entry) return;
+    const setStatus = (status: string) => { const current = entries.find((item) => item.id === id); if (current) current.status = status; };
     if (button.dataset.status) {
       const previous = entry.status;
-      entry.status = button.dataset.status;
-      render();
-      const response = await fetch(`${API}/${entry.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: entry.status }) }).catch(() => undefined);
-      if (!response?.ok) { entry.status = previous; render(); alert('Could not update the status.'); }
+      const status = button.dataset.status;
+      await mutate(
+        () => fetch(`${API}/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) }),
+        () => setStatus(status),
+        () => setStatus(previous),
+        'Could not update the status.',
+      );
     } else if ('delete' in button.dataset) {
       const preview = entry.message.length > 160 ? `${entry.message.slice(0, 160)}…` : entry.message;
       if (!confirm(`Delete this feedback?\n\n“${preview}”`)) return;
-      button.disabled = true;
-      const response = await fetch(`${API}/${entry.id}`, { method: 'DELETE' }).catch(() => undefined);
-      if (!response?.ok) { button.disabled = false; alert('Could not delete this feedback.'); return; }
-      entries = entries.filter((item) => item !== entry);
-      render();
+      const removed = entry;
+      await mutate(
+        () => fetch(`${API}/${id}`, { method: 'DELETE' }),
+        () => { entries = entries.filter((item) => item.id !== id); },
+        () => { if (!entries.some((item) => item.id === id)) entries = [...entries, removed].sort((a, b) => b.createdAt.localeCompare(a.createdAt)); },
+        'Could not delete this feedback.',
+      );
     }
   });
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
 
-  window.addEventListener('hashchange', render);
-  window.addEventListener('focus', load);
+
+  // ---- Developer notes (rendered at build time from content/dev-notes.json) ----
+  // Notes newer than this browser's last visit to the tab get a "New" badge.
+  const SEEN_KEY = 'feedback-notes-seen';
+  const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } };
+  let seenBefore = readSeen();
+  const noteDates = [...document.querySelectorAll<HTMLElement>('.dev-note')].map((note) => note.dataset.date || '');
+  const latestNote = noteDates.reduce((latest, date) => (Date.parse(date) > Date.parse(latest || '0') ? date : latest), '');
+  function renderNotes() {
+    const seen = Date.parse(seenBefore || '0');
+    const unseen = noteDates.filter((date) => Date.parse(date) > seen).length;
+    document.querySelectorAll<HTMLElement>('.dev-note').forEach((note) => {
+      note.querySelector<HTMLElement>('.fb-item__badge--new')!.hidden = Date.parse(note.dataset.date || '') <= seen;
+    });
+    document.querySelector<HTMLElement>('.tab--notes')!.classList.toggle('has-unseen', unseen > 0);
+    if (filter() === 'Notes' && latestNote) {
+      try { localStorage.setItem(SEEN_KEY, latestNote); } catch { /* private mode */ }
+    }
+  }
+
+  window.addEventListener('hashchange', () => { seenBefore = readSeen(); render(); });
+  window.addEventListener('focus', () => void load());
   setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 30000);
   render();
   void load();
