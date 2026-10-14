@@ -41,24 +41,27 @@ nobody edits, a sibling `production/` folder next to the development checkout:
 
 1. Builds the site and serves `dist/` with `astro preview` on an internal port.
    A small front server on the public port proxies to it.
-2. **Deploy webhook:** the front server answers `POST /__deploy`. A GitHub
+2. The front server also serves the feedback API (`/__feedback/`, see
+   [Feedback tool](#feedback-tool)).
+3. **Deploy webhook:** the front server answers `POST /__deploy`. A GitHub
    webhook on the repo (push events, JSON, signed with a shared secret) calls
    it on every push. Requests with an invalid `X-Hub-Signature-256` are
    rejected; pushes to other branches are ignored.
-3. On a push to the tracked branch it fetches and fast-forwards (it never
+4. On a push to the tracked branch it fetches and fast-forwards (it never
    merges or rebases; a diverged clone only logs a warning), runs `npm ci` when
    `package-lock.json` changed, builds into `.release-next/`, and swaps it into
    `dist/` only if the build succeeds. A failed build keeps the previous
    release online. Pushes that arrive mid-build queue one follow-up deploy, and
    visitors are held briefly (not errored) while the release swaps.
-4. A periodic check (every 5 minutes) catches pushes whose webhook was missed,
+5. A periodic check (every 5 minutes) catches pushes whose webhook was missed,
    e.g. while the host was offline.
 
 Environment: `PORT` (default `4321`), `HOST` (`0.0.0.0`), `PREVIEW_PORT`
-(internal, `4331`), `PRODUCTION_SYNC_INTERVAL` (seconds, `300`), and
+(internal, `4331`), `PRODUCTION_SYNC_INTERVAL` (seconds, `300`),
 `DEPLOY_WEBHOOK_SECRET` (the GitHub webhook secret; without it the webhook is
-disabled and only the periodic check runs). Changes to `scripts/production.mjs`
-itself need a restart of the service.
+disabled and only the periodic check runs), and `FEEDBACK_DIR` (see
+[Feedback tool](#feedback-tool)). Changes to `scripts/production.mjs` and
+`scripts/feedback-server.mjs` need a restart of the service.
 
 On the host it runs as the systemd user service `irie-vibes-production`
 (defined in `~/.config/systemd/user/irie-vibes-production.service`, not in this
@@ -95,15 +98,26 @@ warning). On a feature branch, merge `main` to pick up CMS edits.
 The build outputs a fully static site in `dist/`, so it can also be hosted on
 any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 
-## Local feedback tool
+## Feedback tool
 
-When running `npm run dev`, press **Shift+F** on any page (except `/admin`) to
-draw a region, add a comment, and submit it; the
-page URL, viewport/scroll coordinates, and captured PNG are stored with the
-entry. The hidden `/feedback` page is available for the shared inbox. This is
-dev-only and is not included in `npm run build`. Feedback is stored outside this repository in
-`~/sources/repos/stef/irie-vibes-feedback/` (including `index.md` and images);
-set `FEEDBACK_DIR` to use another private folder. Do not commit feedback data.
+Testers can send feedback from any page (except `/admin`), on both the dev
+server and production: click the **Feedback** button (bottom left) or press
+**Shift+F**, drag over the area in question (or click for the whole screen,
+or skip the screenshot), and type a comment. The screenshot of the visible
+screen renders in the background while they draw, and is stored with the page
+URL, viewport size, scroll position, selected region and browser.
+
+`/feedback` is the inbox: status tabs (*New*, *In progress*, *Done*, *All*)
+with counts, one-click status changes, delete, a screenshot lightbox, and a
+form for notes without a screenshot. It refreshes every 30 seconds. The inbox
+is not linked from the site and has no login, so anyone with the URL can read
+and manage it.
+
+The API lives in `scripts/feedback-server.mjs` and is served by the dev server
+and by the production server under `/__feedback/`. Entries are stored outside
+this repository in `~/sources/repos/stef/irie-vibes-feedback/` (one JSON file
+per entry, `images/`, and a generated `index.md`); set `FEEDBACK_DIR` to use
+another private folder. Do not commit feedback data.
 
 ## What's on the site
 
@@ -146,6 +160,7 @@ irie-vibes/
 │   └── assets/               # all images (heroes, sponsors, socials, posters)
 ├── scripts/
 │   ├── production.mjs        # self-updating production server (npm run production)
+│   ├── feedback-server.mjs   # feedback API + storage (dev and production)
 │   ├── extract-content.mjs   # one-time: export → generated/irie.json
 │   └── migrate-to-cms.mjs    # one-time: seeded content/ from the export
 └── src/
@@ -154,8 +169,8 @@ irie-vibes/
     │   ├── site.ts  lineup.ts  tickets.ts  pages.ts
     │   ├── about.ts  sponsors.ts  regulations.ts
     │   └── generated/irie.json  # archival extract (migration input only)
-    ├── integrations/         # dev-only Astro integrations: feedback tool, content sync
-    ├── dev/                  # dev-only feedback page + inline capture script
+    ├── integrations/         # Astro integrations: feedback tool, dev content sync
+    ├── feedback/             # /feedback inbox page + capture script (Shift+F)
     ├── lib/assets.ts         # asset URL helper
     ├── styles/               # tokens.css (Roots Vanguard) + global.css
     ├── components/           # Header, Footer, Hero, Countdown, PriceTable, CopyPage
