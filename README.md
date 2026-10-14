@@ -31,6 +31,14 @@ are in [`CMS.md`](./CMS.md).
 The build outputs a fully static site in `dist/` that can be hosted anywhere
 (Netlify, Vercel, Cloudflare Pages, GitHub Pages, or any static host).
 
+## Local feedback tool
+
+When running `npm run dev`, the hidden `/feedback` page is available for sharing
+website feedback and screenshots. It is dev-only and is not included in
+`npm run build`. Feedback is stored outside this repository in
+`~/sources/repos/stef/irie-vibes-feedback/` (including `index.md` and images);
+set `FEEDBACK_DIR` to use another private folder. Do not commit feedback data.
+
 ## What's on the site
 
 Real, SEO-friendly routes (not a single-page app):

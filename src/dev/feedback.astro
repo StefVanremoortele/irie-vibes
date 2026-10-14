@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Website feedback" description="Private website feedback tool" noIndex>
+  <section class="feedback section section--page">
+    <div class="feedback__intro">
+      <p class="feedback__eyebrow">Captain's workspace</p>
+      <h1 class="title">Website feedback</h1>
+      <p>Share what should change on the site. Add screenshots when they make the problem easier to understand.</p>
+    </div>
+
+    <form class="feedback__form card" id="feedback-form">
+      <div class="feedback__form-heading">
+        <h2>Send feedback</h2>
+        <span>Required fields marked *</span>
+      </div>
+      <label>Name<input id="feedback-name" name="name" autocomplete="name" maxlength="120" placeholder="Your name" /></label>
+      <label>Page or URL <span>(optional)</span><input name="page" maxlength="500" placeholder="e.g. /tickets or https://…" /></label>
+      <label>What should we know? *<textarea name="message" required maxlength="10000" rows="5" placeholder="Describe what you noticed…"></textarea></label>
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add screenshots">
+        <strong>Add screenshots</strong>
+        <span>Drop images here, paste from your clipboard, or <button type="button" id="pick-images">choose files</button></span>
+        <input id="image-input" type="file" name="images" accept="image/*" multiple hidden />
+      </div>
+      <div class="previews" id="previews" aria-live="polite"></div>
+      <div class="feedback__actions"><button class="button button--primary" type="submit">Send feedback</button><p id="form-status" role="status"></p></div>
+    </form>
+
+    <section class="feedback__inbox" aria-labelledby="inbox-heading">
+      <div class="feedback__inbox-heading"><div><p class="feedback__eyebrow">Shared inbox</p><h2 id="inbox-heading">All feedback</h2></div><label class="filter">Filter <select id="status-filter"><option>All</option><option>New</option><option>In progress</option><option>Done</option></select></label></div>
+      <div id="entries" class="entries"><p class="empty">Loading feedback…</p></div>
+    </section>
+  </section>
+</Base>
+
+<style>
+  .feedback { gap: 38px; }
+  .feedback__intro { max-width: 680px; text-align: center; }
+  .feedback__intro .title { margin-bottom: 12px; }
+  .feedback__intro p:last-child { margin: 0; color: var(--on-surface-variant); }
+  .feedback__eyebrow { margin: 0 0 8px; color: var(--primary); font: 600 12px/1 var(--font-display); letter-spacing: .16em; text-transform: uppercase; }
+  .feedback__form { width: 100%; max-width: 680px; padding: clamp(20px, 4vw, 32px); display: grid; gap: 18px; box-shadow: var(--shadow-card); }
+  .feedback__form-heading, .feedback__inbox-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  h2 { color: var(--secondary); font: 400 clamp(24px, 4vw, 32px)/1.1 var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
+  .feedback__form-heading span, .feedback label span { color: var(--muted); font-size: 13px; }
+  .feedback label { display: grid; gap: 7px; color: var(--on-surface-strong); font-weight: 600; }
+  input, textarea, select { width: 100%; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); padding: 12px 13px; font: inherit; }
+  textarea { resize: vertical; min-height: 130px; }
+  input:focus, textarea:focus, select:focus { border-color: var(--secondary); outline: 2px solid rgba(250,188,77,.22); }
+  .dropzone { display: grid; justify-items: center; gap: 4px; padding: 22px 14px; border: 1px dashed var(--outline); border-radius: var(--radius); color: var(--on-surface-variant); text-align: center; cursor: pointer; }
+  .dropzone.is-over { border-color: var(--secondary); background: rgba(250,188,77,.08); }
+  .dropzone strong { color: var(--on-surface-strong); }
+  .dropzone button { border: 0; padding: 0; background: none; color: var(--secondary); text-decoration: underline; cursor: pointer; font: inherit; }
+  .previews { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .preview { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); background: var(--surface-container-high); }
+  .preview img { width: 100%; height: 100%; object-fit: cover; }
+  .preview button { position: absolute; top: 4px; right: 4px; width: 25px; height: 25px; border: 0; border-radius: 50%; background: var(--surface); color: white; cursor: pointer; }
+  .feedback__actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .button { border: 0; border-radius: var(--radius-sm); padding: 12px 18px; font-weight: 700; cursor: pointer; }
+  .button--primary { background: var(--secondary); color: var(--surface); }
+  .button--primary:hover { background: var(--secondary-hover); }
+  #form-status { margin: 0; color: var(--primary); }
+  .feedback__inbox { width: 100%; max-width: 960px; }
+  .feedback__inbox-heading { margin-bottom: 18px; }
+  .filter { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .filter select { width: auto; min-width: 130px; padding: 8px 10px; }
+  .entries { display: grid; gap: 14px; }
+  .entry { padding: 20px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
+  .entry__meta { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+  .entry__author { color: var(--on-surface-strong); font-weight: 700; }
+  .entry__page { margin: 10px 0 0; color: var(--secondary); overflow-wrap: anywhere; }
+  .entry__message { margin: 12px 0 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .entry__toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .entry__toolbar select { width: auto; padding: 7px 10px; font-size: 14px; }
+  .entry__images { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .entry__images a { aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); background: var(--surface-container-high); }
+  .entry__images img { width: 100%; height: 100%; object-fit: cover; transition: transform .15s ease; }
+  .entry__images a:hover img { transform: scale(1.04); }
+  .empty { padding: 24px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
+  @media (max-width: 560px) { .feedback { padding-left: 16px; padding-right: 16px; } .feedback__form-heading, .feedback__inbox-heading { align-items: flex-start; flex-direction: column; } .filter select { min-width: 160px; } }
+</style>
+
+<script>
+  // @ts-nocheck — this script is injected only into the dev-only feedback page.
+  const form = document.querySelector('#feedback-form');
+  const input = document.querySelector('#image-input');
+  const dropzone = document.querySelector('#dropzone');
+  const previews = document.querySelector('#previews');
+  const statusMessage = document.querySelector('#form-status');
+  const entriesElement = document.querySelector('#entries');
+  const filter = document.querySelector('#status-filter');
+  const imageFiles = [];
+  const maxImages = 10;
+
+  const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
+  const formatDate = (value) => new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  const renderPreviews = () => {
+    previews.innerHTML = '';
+    imageFiles.forEach((file, index) => {
+      const item = document.createElement('div'); item.className = 'preview';
+      const image = document.createElement('img'); image.src = URL.createObjectURL(file); image.alt = file.name;
+      const remove = document.createElement('button'); remove.type = 'button'; remove.setAttribute('aria-label', `Remove ${file.name}`); remove.textContent = '×';
+      remove.addEventListener('click', () => { imageFiles.splice(index, 1); renderPreviews(); });
+      item.append(image, remove); previews.append(item);
+    });
+  };
+  const addFiles = (files) => {
+    for (const file of files) { if (file.type.startsWith('image/') && imageFiles.length < maxImages) imageFiles.push(file); }
+    renderPreviews();
+  };
+  document.querySelector('#pick-images').addEventListener('click', () => input.click());
+  dropzone.addEventListener('click', (event) => { if (event.target !== document.querySelector('#pick-images')) input.click(); });
+  dropzone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') input.click(); });
+  input.addEventListener('change', () => addFiles(input.files));
+  ['dragenter', 'dragover'].forEach((eventName) => dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.add('is-over'); }));
+  ['dragleave', 'drop'].forEach((eventName) => dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.remove('is-over'); }));
+  dropzone.addEventListener('drop', (event) => addFiles(event.dataTransfer.files));
+  dropzone.addEventListener('paste', (event) => addFiles(event.clipboardData.files));
+
+  async function loadEntries() {
+    const response = await fetch('/__feedback/api/entries');
+    const { entries } = await response.json();
+    const selected = filter.value;
+    const visible = selected === 'All' ? entries : entries.filter((entry) => entry.status === selected);
+    entriesElement.innerHTML = visible.length ? visible.map((entry) => `<article class="entry"><div class="entry__meta"><span class="entry__author">${escapeHtml(entry.name)}</span><time datetime="${entry.createdAt}">${formatDate(entry.createdAt)}</time></div>${entry.page ? `<p class="entry__page">${escapeHtml(entry.page)}</p>` : ''}<p class="entry__message">${escapeHtml(entry.message)}</p>${entry.images.length ? `<div class="entry__images">${entry.images.map((image) => `<a href="${image.url}" target="_blank" rel="noreferrer"><img src="${image.url}" alt="${escapeHtml(image.name)}" loading="lazy"></a>`).join('')}</div>` : ''}<div class="entry__toolbar"><label>Status <select data-entry-id="${entry.id}">${['New', 'In progress', 'Done'].map((status) => `<option ${status === entry.status ? 'selected' : ''}>${status}</option>`).join('')}</select></label></div></article>`).join('') : '<p class="empty">No feedback matches this filter.</p>';
+    entriesElement.querySelectorAll('select[data-entry-id]').forEach((select) => select.addEventListener('change', async () => { await fetch(`/__feedback/api/entries/${select.dataset.entryId}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: select.value }) }); loadEntries(); }));
+  }
+  filter.addEventListener('change', loadEntries);
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault(); statusMessage.textContent = 'Sending…';
+    const data = new FormData(form); imageFiles.forEach((file) => data.append('images', file));
+    try { const response = await fetch('/__feedback/api/entries', { method: 'POST', body: data }); const result = await response.json(); if (!response.ok) throw new Error(result.error); localStorage.setItem('feedback-name', data.get('name')); form.reset(); imageFiles.splice(0); renderPreviews(); statusMessage.textContent = 'Thanks — your feedback was added.'; loadEntries(); } catch (error) { statusMessage.textContent = error.message || 'Could not send feedback.'; }
+  });
+  document.querySelector('#feedback-name').value = localStorage.getItem('feedback-name') || '';
+  loadEntries().catch(() => { entriesElement.innerHTML = '<p class="empty">Feedback service is unavailable.</p>'; });
+</script>
