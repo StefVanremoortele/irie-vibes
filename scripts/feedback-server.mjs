@@ -14,6 +14,8 @@ const MAX_IMAGES = 10;
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
 const STATUSES = ['New', 'In progress', 'Done'];
 const ENTRY_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+// All feedback is anonymous: every entry is stored and shown under this name.
+export const PSEUDONYM = 'Jah a the Creator';
 const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif' };
 
 class HttpError extends Error {
@@ -115,7 +117,7 @@ async function regenerateIndex(dir) {
   const lines = ['# Website feedback', '', `Updated: ${new Date().toISOString()}`, ''];
   if (!entries.length) lines.push('No feedback yet.');
   for (const entry of entries) {
-    lines.push(`## ${entry.status} — ${entry.name} — ${entry.createdAt}`);
+    lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
     if (entry.page) lines.push(`Page: ${entry.page}`);
     lines.push('', entry.message, '');
     if (entry.images.length) {
@@ -184,7 +186,7 @@ async function createEntry(req, dir) {
   }
   const entry = {
     id,
-    name: fields.name?.trim().slice(0, 120) || 'Anonymous',
+    name: PSEUDONYM,
     page: fields.page?.trim().slice(0, 500) || '',
     message,
     status: 'New',

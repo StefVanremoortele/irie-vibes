@@ -105,7 +105,9 @@ server and production: click the **Feedback** button (bottom left) or press
 **Shift+F**, drag over the area in question (or click for the whole screen,
 or skip the screenshot), and type a comment. The screenshot of the visible
 screen renders in the background while they draw, and is stored with the page
-URL, viewport size, scroll position, selected region and browser.
+URL, viewport size, scroll position, selected region and browser. Feedback is
+anonymous: there is no name field, and every post is stored and shown under the
+pseudonym *Jah a the Creator*.
 
 `/feedback` is the inbox: status tabs (*New*, *In progress*, *Done*, *All*)
 with counts, one-click status changes, delete, a screenshot lightbox, and a

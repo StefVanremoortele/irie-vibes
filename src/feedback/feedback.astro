@@ -34,10 +34,7 @@ const linkify = (text: string) =>
       <summary>Add a note without a screenshot</summary>
       <form id="feedback-form" class="note__form">
         <label>Comment *<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
-        <div class="note__row">
-          <label>Your name<input id="feedback-name" name="name" autocomplete="name" maxlength="120" /></label>
-          <label>Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
-        </div>
+        <label>Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
         <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
           Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
           <input id="image-input" type="file" accept="image/*" multiple hidden />
@@ -49,7 +46,6 @@ const linkify = (text: string) =>
     </div>
 
     <div id="notes-view" class="view" hidden>
-      <p class="inbox__lead">Updates from the developer for everyone testing the site: what changed, what to check, answers to feedback.</p>
       <div id="notes" class="entries">
         {devNotes.length ? devNotes.map((note) => (
           <article class="dev-note" data-date={note.date}>
@@ -74,7 +70,7 @@ const linkify = (text: string) =>
   /* The inbox sits as an opaque sheet above the site, which is dimmed by a
      half-transparent layer over the whole screen (header included). */
   .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
-  .inbox { position: relative; z-index: 9600; gap: 28px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
+  .inbox { position: relative; z-index: 9600; display: grid; justify-items: center; gap: 32px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
   .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
   .inbox__head .title { margin: 0 0 6px; text-align: left; }
   .inbox__lead { margin: 0; color: var(--on-surface-variant); }
@@ -86,7 +82,6 @@ const linkify = (text: string) =>
   .tab span:empty { display: none; }
   .view { width: 100%; max-width: var(--max-wide); display: grid; justify-items: center; gap: 28px; }
   .view[hidden] { display: none; }
-  .view > .inbox__lead { justify-self: stretch; }
   .tab--notes { border-style: dashed; }
   .tab--notes.has-unseen:not(.is-active) { border-color: var(--primary); color: var(--primary); }
   :global(.dev-note) { display: grid; gap: 8px; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-left: 3px solid var(--primary); border-radius: var(--radius-lg); }
@@ -122,7 +117,6 @@ const linkify = (text: string) =>
   .note { width: 100%; max-width: var(--max-wide); padding: 0; }
   .note summary { padding: 14px 18px; color: var(--on-surface-variant); font-weight: 600; cursor: pointer; }
   .note__form { display: grid; gap: 14px; padding: 0 18px 18px; }
-  .note__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
   .note label { display: grid; gap: 6px; color: var(--on-surface-strong); font-weight: 600; }
   .note label span { color: var(--muted); font-weight: 400; }
   .note input, .note textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 400; }
@@ -156,6 +150,8 @@ const linkify = (text: string) =>
     metadata?: { viewport?: { width: number; height: number }; screenshotFailed?: boolean };
   };
   const API = '/__feedback/api/entries';
+  // Feedback is anonymous; older entries may still carry a name, never shown.
+  const PSEUDONYM = 'Jah a the Creator';
   const FILTERS: Record<string, string> = { '#new': 'New', '#in-progress': 'In progress', '#done': 'Done', '#all': 'All' };
   const ACTIONS: Record<string, [string, string][]> = {
     New: [['Start', 'In progress'], ['Done', 'Done']],
@@ -203,7 +199,7 @@ const linkify = (text: string) =>
         ${first ? `<button class="fb-item__shot" type="button" data-zoom="${first.url}" aria-label="Enlarge screenshot"><img src="${first.url}" alt="" loading="lazy"></button>` : '<div class="fb-item__shot fb-item__shot--none">No screenshot</div>'}
         <div class="fb-item__body">
           <div class="fb-item__meta">
-            <strong>${escapeHtml(entry.name)}</strong>
+            <strong>${PSEUDONYM}</strong>
             <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time>
             ${entry.page ? `<a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a>` : ''}
             ${viewport ? `<span>${viewport.width}×${viewport.height}</span>` : ''}
@@ -317,9 +313,7 @@ const linkify = (text: string) =>
   const dropzone = document.querySelector<HTMLElement>('#dropzone')!;
   const previews = document.querySelector<HTMLElement>('#previews')!;
   const formStatus = document.querySelector<HTMLElement>('#form-status')!;
-  const nameInput = document.querySelector<HTMLInputElement>('#feedback-name')!;
   const files: File[] = [];
-  try { nameInput.value = localStorage.getItem('feedback-name') || ''; } catch { /* private mode */ }
 
   function renderPreviews() {
     previews.replaceChildren(...files.map((file, index) => {
@@ -358,9 +352,7 @@ const linkify = (text: string) =>
       const response = await fetch(API, { method: 'POST', body: data });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || (response.status === 413 ? 'Too large: the public site accepts about 1 MB per note. Use fewer or smaller images.' : 'Could not add the note.'));
-      try { localStorage.setItem('feedback-name', String(data.get('name') || '')); } catch { /* private mode */ }
       form.reset();
-      nameInput.value = String(data.get('name') || '');
       files.splice(0);
       renderPreviews();
       formStatus.textContent = 'Added.';
