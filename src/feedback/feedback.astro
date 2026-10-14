@@ -1,0 +1,284 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Feedback inbox" description="Website feedback inbox" noIndex>
+  <section class="inbox section section--page">
+    <header class="inbox__head">
+      <div>
+        <h1 class="title">Feedback</h1>
+        <p class="inbox__lead">Use the <strong>Feedback</strong> button (or Shift+F) on any page to send a comment with a screenshot.</p>
+      </div>
+      <nav class="tabs" aria-label="Filter by status">
+        <a class="tab" href="#new" data-filter="New">New <span data-count="New"></span></a>
+        <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
+        <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
+        <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
+      </nav>
+    </header>
+
+    <div id="entries" class="entries" aria-live="polite"><p class="empty">Loading feedback…</p></div>
+
+    <details class="note card">
+      <summary>Add a note without a screenshot</summary>
+      <form id="feedback-form" class="note__form">
+        <label>Comment *<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
+        <div class="note__row">
+          <label>Your name<input id="feedback-name" name="name" autocomplete="name" maxlength="120" /></label>
+          <label>Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
+        </div>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
+          Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
+          <input id="image-input" type="file" accept="image/*" multiple hidden />
+        </div>
+        <div class="previews" id="previews"></div>
+        <div class="note__actions"><button class="fb-btn fb-btn--primary" type="submit">Add note</button><p id="form-status" role="status"></p></div>
+      </form>
+    </details>
+  </section>
+
+  <dialog id="lightbox" class="lightbox"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
+</Base>
+
+<style>
+  .inbox { gap: 28px; }
+  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
+  .inbox__head .title { margin: 0 0 6px; text-align: left; }
+  .inbox__lead { margin: 0; color: var(--on-surface-variant); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-full); color: var(--on-surface-variant); font-weight: 600; font-size: 14px; text-decoration: none; }
+  .tab:hover { border-color: var(--outline); color: var(--on-surface-strong); }
+  .tab.is-active { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
+  .tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
+  .tab span:empty { display: none; }
+  .entries { width: 100%; max-width: var(--max-wide); display: grid; gap: 12px; }
+  .empty { margin: 0; padding: 32px 20px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
+  :global(.fb-item) { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 16px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
+  :global(.fb-item.is-new) { border-left: 3px solid var(--secondary); }
+  :global(.fb-item__shot) { display: block; height: 120px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); background: var(--surface-container-lowest); cursor: zoom-in; }
+  :global(.fb-item__shot img) { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  :global(.fb-item__shot--none) { display: grid; place-items: center; color: var(--muted); font-size: 13px; cursor: default; }
+  :global(.fb-item__body) { display: grid; align-content: start; gap: 8px; min-width: 0; }
+  :global(.fb-item__meta) { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 13px; }
+  :global(.fb-item__meta strong) { color: var(--on-surface-strong); }
+  :global(.fb-item__meta a) { color: var(--secondary); overflow-wrap: anywhere; }
+  :global(.fb-item__badge) { padding: 1px 8px; border-radius: var(--radius-full); background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 12px; font-weight: 600; }
+  :global(.fb-item__badge--warn) { color: var(--tertiary); }
+  :global(.fb-item__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
+  :global(.fb-item__actions) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  :global(.fb-item__more) { display: flex; flex-wrap: wrap; gap: 6px; }
+  :global(.fb-item__more button) { width: 54px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: 6px; background: none; cursor: zoom-in; }
+  :global(.fb-item__more img) { width: 100%; height: 100%; object-fit: cover; }
+  :global(.fb-btn) { padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: transparent; color: var(--on-surface); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  :global(.fb-btn:hover) { border-color: var(--outline); color: var(--on-surface-strong); }
+  :global(.fb-btn:disabled) { opacity: .5; cursor: progress; }
+  :global(.fb-btn--primary) { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
+  :global(.fb-btn--primary:hover) { background: var(--secondary-hover); color: var(--surface); }
+  :global(.fb-btn--danger) { margin-left: auto; color: var(--muted); }
+  :global(.fb-btn--danger:hover) { border-color: var(--stage-inner); color: var(--stage-inner); }
+  .note { width: 100%; max-width: var(--max-wide); padding: 0; }
+  .note summary { padding: 14px 18px; color: var(--on-surface-variant); font-weight: 600; cursor: pointer; }
+  .note__form { display: grid; gap: 14px; padding: 0 18px 18px; }
+  .note__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .note label { display: grid; gap: 6px; color: var(--on-surface-strong); font-weight: 600; }
+  .note label span { color: var(--muted); font-weight: 400; }
+  .note input, .note textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 400; }
+  .note input:focus, .note textarea:focus { border-color: var(--secondary); outline: 2px solid rgba(250,188,77,.22); }
+  .dropzone { padding: 16px; border: 1px dashed var(--outline); border-radius: var(--radius); color: var(--on-surface-variant); text-align: center; cursor: pointer; }
+  .dropzone.is-over { border-color: var(--secondary); background: rgba(250,188,77,.08); }
+  .dropzone button { padding: 0; border: 0; background: none; color: var(--secondary); text-decoration: underline; font: inherit; cursor: pointer; }
+  .previews { display: flex; flex-wrap: wrap; gap: 8px; }
+  .previews:empty { display: none; }
+  :global(.preview) { position: relative; width: 80px; height: 80px; overflow: hidden; border-radius: var(--radius-sm); }
+  :global(.preview img) { width: 100%; height: 100%; object-fit: cover; }
+  :global(.preview button) { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; cursor: pointer; }
+  .note__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  #form-status { margin: 0; color: var(--primary); }
+  .lightbox { max-width: min(1200px, 94vw); max-height: 92vh; padding: 0; border: 1px solid var(--secondary); border-radius: var(--radius-lg); background: var(--surface-container-lowest); }
+  .lightbox::backdrop { background: rgba(0,0,0,.8); }
+  .lightbox img { display: block; max-width: 100%; max-height: 90vh; }
+  .lightbox form { position: absolute; top: 8px; right: 8px; }
+  .lightbox button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; font-size: 20px; cursor: pointer; }
+  @media (max-width: 640px) {
+    .inbox { padding-left: 16px; padding-right: 16px; }
+    :global(.fb-item) { grid-template-columns: minmax(0, 1fr); }
+    :global(.fb-item__shot) { height: 160px; }
+  }
+</style>
+
+<script>
+  type Entry = {
+    id: string; name: string; page: string; message: string; status: string; createdAt: string;
+    images: { name: string; url: string }[];
+    metadata?: { viewport?: { width: number; height: number }; screenshotFailed?: boolean };
+  };
+  const API = '/__feedback/api/entries';
+  const FILTERS: Record<string, string> = { '#new': 'New', '#in-progress': 'In progress', '#done': 'Done', '#all': 'All' };
+  const ACTIONS: Record<string, [string, string][]> = {
+    New: [['Start', 'In progress'], ['Done', 'Done']],
+    'In progress': [['Done', 'Done'], ['Back to new', 'New']],
+    Done: [['Reopen', 'New']],
+  };
+
+  const list = document.querySelector<HTMLElement>('#entries')!;
+  const lightbox = document.querySelector<HTMLDialogElement>('#lightbox')!;
+  let entries: Entry[] = [];
+  let loaded = false;
+
+  const filter = () => FILTERS[location.hash] || 'New';
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!);
+  const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+  function ago(iso: string) {
+    const seconds = (new Date(iso).getTime() - Date.now()) / 1000;
+    for (const [unit, size] of [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]] as const) {
+      if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit);
+    }
+    return 'just now';
+  }
+
+  function render() {
+    const current = filter();
+    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.filter === current));
+    document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
+      const status = count.dataset.count!;
+      const n = status === 'All' ? entries.length : entries.filter((entry) => entry.status === status).length;
+      count.textContent = loaded && n ? String(n) : '';
+    });
+    if (!loaded) return;
+    const visible = current === 'All' ? entries : entries.filter((entry) => entry.status === current);
+    if (!visible.length) {
+      list.innerHTML = `<p class="empty">${current === 'New' ? 'No new feedback. 🎉' : 'Nothing here.'}</p>`;
+      return;
+    }
+    list.innerHTML = visible.map((entry) => {
+      const [first, ...rest] = entry.images;
+      const viewport = entry.metadata?.viewport;
+      return `<article class="fb-item ${entry.status === 'New' ? 'is-new' : ''}" data-id="${entry.id}">
+        ${first ? `<button class="fb-item__shot" type="button" data-zoom="${first.url}" aria-label="Enlarge screenshot"><img src="${first.url}" alt="" loading="lazy"></button>` : '<div class="fb-item__shot fb-item__shot--none">No screenshot</div>'}
+        <div class="fb-item__body">
+          <div class="fb-item__meta">
+            <strong>${escapeHtml(entry.name)}</strong>
+            <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time>
+            ${entry.page ? `<a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a>` : ''}
+            ${viewport ? `<span>${viewport.width}×${viewport.height}</span>` : ''}
+            ${current === 'All' ? `<span class="fb-item__badge">${entry.status}</span>` : ''}
+            ${entry.metadata?.screenshotFailed ? '<span class="fb-item__badge fb-item__badge--warn">screenshot failed</span>' : ''}
+          </div>
+          <p class="fb-item__message">${escapeHtml(entry.message)}</p>
+          ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
+          <div class="fb-item__actions">
+            ${(ACTIONS[entry.status] || ACTIONS.New).map(([label, status], index) => `<button class="fb-btn ${index === 0 ? 'fb-btn--primary' : ''}" type="button" data-status="${status}">${label}</button>`).join('')}
+            <button class="fb-btn fb-btn--danger" type="button" data-delete>Delete</button>
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  async function load() {
+    try {
+      const response = await fetch(API, { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      entries = (await response.json()).entries;
+      loaded = true;
+      render();
+    } catch {
+      if (!loaded) list.innerHTML = '<p class="empty">The feedback service is unavailable.</p>';
+    }
+  }
+
+  list.addEventListener('click', async (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('button');
+    if (!button) return;
+    if (button.dataset.zoom) {
+      lightbox.querySelector('img')!.src = button.dataset.zoom;
+      lightbox.showModal();
+      return;
+    }
+    const id = button.closest<HTMLElement>('[data-id]')?.dataset.id;
+    const entry = entries.find((item) => item.id === id);
+    if (!entry) return;
+    if (button.dataset.status) {
+      const previous = entry.status;
+      entry.status = button.dataset.status;
+      render();
+      const response = await fetch(`${API}/${entry.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: entry.status }) }).catch(() => undefined);
+      if (!response?.ok) { entry.status = previous; render(); alert('Could not update the status.'); }
+    } else if ('delete' in button.dataset) {
+      const preview = entry.message.length > 160 ? `${entry.message.slice(0, 160)}…` : entry.message;
+      if (!confirm(`Delete this feedback?\n\n“${preview}”`)) return;
+      button.disabled = true;
+      const response = await fetch(`${API}/${entry.id}`, { method: 'DELETE' }).catch(() => undefined);
+      if (!response?.ok) { button.disabled = false; alert('Could not delete this feedback.'); return; }
+      entries = entries.filter((item) => item !== entry);
+      render();
+    }
+  });
+  lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
+
+  window.addEventListener('hashchange', render);
+  window.addEventListener('focus', load);
+  setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 30000);
+  render();
+  void load();
+
+  // ---- Manual note form ----
+  const form = document.querySelector<HTMLFormElement>('#feedback-form')!;
+  const fileInput = document.querySelector<HTMLInputElement>('#image-input')!;
+  const dropzone = document.querySelector<HTMLElement>('#dropzone')!;
+  const previews = document.querySelector<HTMLElement>('#previews')!;
+  const formStatus = document.querySelector<HTMLElement>('#form-status')!;
+  const nameInput = document.querySelector<HTMLInputElement>('#feedback-name')!;
+  const files: File[] = [];
+  try { nameInput.value = localStorage.getItem('feedback-name') || ''; } catch { /* private mode */ }
+
+  function renderPreviews() {
+    previews.replaceChildren(...files.map((file, index) => {
+      const item = document.createElement('div');
+      item.className = 'preview';
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(file);
+      image.alt = file.name;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = '×';
+      remove.setAttribute('aria-label', `Remove ${file.name}`);
+      remove.addEventListener('click', () => { files.splice(index, 1); renderPreviews(); });
+      item.append(image, remove);
+      return item;
+    }));
+  }
+  function addFiles(list: FileList | null | undefined) {
+    for (const file of list || []) if (file.type.startsWith('image/') && files.length < 10) files.push(file);
+    renderPreviews();
+  }
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fileInput.click(); } });
+  fileInput.addEventListener('change', () => addFiles(fileInput.files));
+  ['dragenter', 'dragover'].forEach((name) => dropzone.addEventListener(name, (event) => { event.preventDefault(); dropzone.classList.add('is-over'); }));
+  ['dragleave', 'drop'].forEach((name) => dropzone.addEventListener(name, (event) => { event.preventDefault(); dropzone.classList.remove('is-over'); }));
+  dropzone.addEventListener('drop', (event) => addFiles((event as DragEvent).dataTransfer?.files));
+  form.addEventListener('paste', (event) => addFiles(event.clipboardData?.files));
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    formStatus.textContent = 'Sending…';
+    const data = new FormData(form);
+    files.forEach((file) => data.append('images', file));
+    try {
+      const response = await fetch(API, { method: 'POST', body: data });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not add the note.');
+      try { localStorage.setItem('feedback-name', String(data.get('name') || '')); } catch { /* private mode */ }
+      form.reset();
+      nameInput.value = String(data.get('name') || '');
+      files.splice(0);
+      renderPreviews();
+      formStatus.textContent = 'Added.';
+      location.hash = '#new';
+      await load();
+    } catch (error) {
+      formStatus.textContent = error instanceof Error ? error.message : 'Could not add the note.';
+    }
+  });
+</script>

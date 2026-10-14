@@ -19,4 +19,9 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  // Pre-bundle the feedback screenshot library so its first use in dev doesn't
+  // trigger a dependency re-optimisation and full page reload.
+  vite: {
+    optimizeDeps: { include: ['modern-screenshot'] },
+  },
 });

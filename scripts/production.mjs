@@ -1,7 +1,8 @@
 // Self-updating production server for a dedicated checkout of this repo.
 //
 // A small front server on PORT answers GitHub push webhooks at
-// `POST /__deploy` and proxies every other request to `astro preview`, which
+// `POST /__deploy`, serves the feedback API under `/__feedback/`, and proxies
+// every other request to `astro preview`, which
 // serves the static build on an internal port. A push (e.g. a Sveltia CMS
 // save) triggers an immediate fast-forward + rebuild into a staging folder;
 // the release is swapped in only when the build succeeds, so a failed build
@@ -10,7 +11,8 @@
 //
 // Env: PORT (4321), HOST (0.0.0.0), PREVIEW_PORT (4331),
 //      PRODUCTION_SYNC_INTERVAL seconds (300),
-//      DEPLOY_WEBHOOK_SECRET (GitHub webhook secret; webhook disabled if unset).
+//      DEPLOY_WEBHOOK_SECRET (GitHub webhook secret; webhook disabled if unset),
+//      FEEDBACK_DIR (feedback storage, see feedback-server.mjs).
 import { execFile, spawn } from 'node:child_process';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -19,6 +21,7 @@ import { createServer, request } from 'node:http';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
+import { handleFeedbackRequest } from './feedback-server.mjs';
 
 const run = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -143,7 +146,8 @@ async function sync(reason) {
     log(`Pulled ${behind} commit(s) (${reason}):\n  ${(await git('log', '--format=%h %s', `${before}..HEAD`)).split('\n').join('\n  ')}`);
 
     if (changed.includes('package-lock.json')) await exec('npm', ['ci']);
-    if (changed.includes('scripts/production.mjs')) warnOnce('scripts/production.mjs changed; restart this process to use the new version.');
+    const serverScripts = changed.filter((file) => file === 'scripts/production.mjs' || file === 'scripts/feedback-server.mjs');
+    if (serverScripts.length) warnOnce(`${serverScripts.join(' and ')} changed; restart this process to use the new version.`);
 
     log('Building…');
     await build();
@@ -241,7 +245,13 @@ const front = createServer((req, res) => {
     });
     return;
   }
-  proxy(req, res);
+  handleFeedbackRequest(req, res).then(
+    (handled) => handled || proxy(req, res),
+    (error) => {
+      log(`Feedback error: ${error.message}`);
+      if (!res.headersSent) respond(res, 500, 'Feedback error');
+    },
+  );
 });
 
 // ---- Main ----------------------------------------------------------------
