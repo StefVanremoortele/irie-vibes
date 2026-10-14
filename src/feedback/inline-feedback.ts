@@ -96,15 +96,34 @@ async function captureViewport() {
   });
 }
 
-function cropToBlob(source: HTMLCanvasElement, region: Region) {
+// The public gateway rejects request bodies over ~1 MB, so screenshots are
+// sent as WebP (JPEG where unsupported), downscaled until they fit.
+const MAX_SCREENSHOT_BYTES = 700 * 1024;
+
+function encode(canvas: HTMLCanvasElement, type: string, quality: number) {
+  return new Promise<Blob>((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not encode screenshot.'))), type, quality));
+}
+
+async function cropToBlob(source: HTMLCanvasElement, region: Region) {
   const scale = source.width / document.documentElement.clientWidth;
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(region.width * scale));
-  canvas.height = Math.max(1, Math.round(region.height * scale));
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('Canvas is unavailable.');
-  context.drawImage(source, Math.round(region.x * scale), Math.round(region.y * scale), canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-  return new Promise<Blob>((resolve, reject) => canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not encode screenshot.'))), 'image/png'));
+  const sx = Math.round(region.x * scale);
+  const sy = Math.round(region.y * scale);
+  const sw = Math.max(1, Math.round(region.width * scale));
+  const sh = Math.max(1, Math.round(region.height * scale));
+  let factor = 1;
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(sw * factor));
+    canvas.height = Math.max(1, Math.round(sh * factor));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Canvas is unavailable.');
+    context.drawImage(source, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    let blob = await encode(canvas, 'image/webp', 0.85);
+    if (blob.type !== 'image/webp') blob = await encode(canvas, 'image/jpeg', 0.85);
+    if (blob.size <= MAX_SCREENSHOT_BYTES) return blob;
+    factor *= Math.sqrt(MAX_SCREENSHOT_BYTES / blob.size) * 0.9;
+  }
+  throw new Error('Screenshot is too large to send.');
 }
 
 function init() {
@@ -259,11 +278,11 @@ function init() {
           userAgent: navigator.userAgent,
           ...(screenshotFailed ? { screenshotFailed: true } : {}),
         }));
-        if (blob) data.append('images', blob, `screenshot-${Date.now()}.png`);
+        if (blob) data.append('images', blob, `screenshot-${Date.now()}.${blob.type === 'image/webp' ? 'webp' : 'jpg'}`);
         try {
           const response = await fetch('/__feedback/api/entries', { method: 'POST', body: data });
           const result = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(result.error || `Could not send feedback (${response.status}).`);
+          if (!response.ok) throw new Error(result.error || (response.status === 413 ? 'The screenshot is too large to send. Try a smaller area or send without a screenshot.' : `Could not send feedback (${response.status}).`));
           if (name.value.trim()) storage.set(NAME_KEY, name.value.trim());
           close?.();
           toast();

@@ -268,7 +268,7 @@ import Base from '../layouts/Base.astro';
     try {
       const response = await fetch(API, { method: 'POST', body: data });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'Could not add the note.');
+      if (!response.ok) throw new Error(result.error || (response.status === 413 ? 'Too large: the public site accepts about 1 MB per note. Use fewer or smaller images.' : 'Could not add the note.'));
       try { localStorage.setItem('feedback-name', String(data.get('name') || '')); } catch { /* private mode */ }
       form.reset();
       nameInput.value = String(data.get('name') || '');
