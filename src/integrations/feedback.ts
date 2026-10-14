@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { AstroIntegration } from 'astro';
@@ -9,6 +9,7 @@ const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_IMAGES = 10;
 const MAX_BODY_BYTES = 110 * 1024 * 1024;
 const STATUSES = ['New', 'In progress', 'Done'] as const;
+const ENTRY_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type FeedbackStatus = (typeof STATUSES)[number];
 
 interface FeedbackImage {
@@ -154,8 +155,29 @@ async function handleApi(req: IncomingMessage, res: ServerResponse) {
       return send(res, 200, { entries: await listEntries(dir) });
     }
 
-    const statusMatch = path.match(/^\/__feedback\/api\/entries\/([a-f0-9-]+)\/status$/);
+    const deleteMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)$/);
+    if (req.method === 'DELETE' && deleteMatch) {
+      const id = deleteMatch[1];
+      if (!ENTRY_ID.test(id)) return send(res, 400, { error: 'Invalid feedback id.' });
+      const entryFile = resolve(dir, `${id}.json`);
+      const imageDir = resolve(dir, 'images', id);
+      const feedbackRoot = resolve(dir);
+      if (!entryFile.startsWith(`${feedbackRoot}${sep}`) || !imageDir.startsWith(`${feedbackRoot}${sep}`)) return send(res, 400, { error: 'Invalid feedback id.' });
+      let entry: FeedbackEntry;
+      try {
+        entry = JSON.parse(await readFile(entryFile, 'utf8')) as FeedbackEntry;
+      } catch {
+        return send(res, 404, { error: 'Feedback entry not found.' });
+      }
+      await rm(entryFile);
+      await rm(imageDir, { recursive: true, force: true });
+      await regenerateIndex(dir);
+      return send(res, 200, { deleted: entry.id });
+    }
+
+    const statusMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/status$/);
     if (req.method === 'PATCH' && statusMatch) {
+      if (!ENTRY_ID.test(statusMatch[1])) return send(res, 400, { error: 'Invalid feedback id.' });
       const payload = JSON.parse((await readRequest(req)).toString('utf8')) as { status?: string };
       if (!STATUSES.includes(payload.status as FeedbackStatus)) return send(res, 400, { error: 'Invalid status.' });
       const file = join(dir, `${statusMatch[1]}.json`);

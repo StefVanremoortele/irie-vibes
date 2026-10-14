@@ -73,6 +73,8 @@ import Base from '../layouts/Base.astro';
   .entry__message { margin: 12px 0 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .entry__toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .entry__toolbar select { width: auto; padding: 7px 10px; font-size: 14px; }
+  .entry__delete { margin-left: auto; border: 1px solid var(--outline); border-radius: var(--radius-sm); padding: 7px 10px; background: transparent; color: var(--on-surface-variant); cursor: pointer; font: inherit; }
+  .entry__delete:hover { border-color: var(--error); color: var(--error); }
   .entry__images { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px; }
   .entry__images a { aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); background: var(--surface-container-high); }
   .entry__images img { width: 100%; height: 100%; object-fit: cover; transition: transform .15s ease; }
@@ -123,8 +125,17 @@ import Base from '../layouts/Base.astro';
     const { entries } = await response.json();
     const selected = filter.value;
     const visible = selected === 'All' ? entries : entries.filter((entry) => entry.status === selected);
-    entriesElement.innerHTML = visible.length ? visible.map((entry) => `<article class="entry"><div class="entry__meta"><span class="entry__author">${escapeHtml(entry.name)}</span><time datetime="${entry.createdAt}">${formatDate(entry.createdAt)}</time></div>${entry.page ? `<p class="entry__page"><a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a></p>` : ''}<p class="entry__message">${escapeHtml(entry.message)}</p>${entry.images.length ? `<div class="entry__images">${entry.images.map((image) => `<a href="${image.url}" target="_blank" rel="noreferrer"><img src="${image.url}" alt="${escapeHtml(image.name)}" loading="lazy"></a>`).join('')}</div>` : ''}<div class="entry__toolbar"><label>Status <select data-entry-id="${entry.id}">${['New', 'In progress', 'Done'].map((status) => `<option ${status === entry.status ? 'selected' : ''}>${status}</option>`).join('')}</select></label></div></article>`).join('') : '<p class="empty">No feedback matches this filter.</p>';
+    entriesElement.innerHTML = visible.length ? visible.map((entry) => `<article class="entry"><div class="entry__meta"><span class="entry__author">${escapeHtml(entry.name)}</span><time datetime="${entry.createdAt}">${formatDate(entry.createdAt)}</time></div>${entry.page ? `<p class="entry__page"><a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a></p>` : ''}<p class="entry__message">${escapeHtml(entry.message)}</p>${entry.images.length ? `<div class="entry__images">${entry.images.map((image) => `<a href="${image.url}" target="_blank" rel="noreferrer"><img src="${image.url}" alt="${escapeHtml(image.name)}" loading="lazy"></a>`).join('')}</div>` : ''}<div class="entry__toolbar"><label>Status <select data-entry-id="${entry.id}">${['New', 'In progress', 'Done'].map((status) => `<option ${status === entry.status ? 'selected' : ''}>${status}</option>`).join('')}</select></label><button class="entry__delete" type="button" data-delete-entry-id="${entry.id}" data-delete-message="${escapeHtml(entry.message)}">Delete</button></div></article>`).join('') : '<p class="empty">No feedback matches this filter.</p>';
     entriesElement.querySelectorAll('select[data-entry-id]').forEach((select) => select.addEventListener('change', async () => { await fetch(`/__feedback/api/entries/${select.dataset.entryId}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: select.value }) }); loadEntries(); }));
+    entriesElement.querySelectorAll('button[data-delete-entry-id]').forEach((button) => button.addEventListener('click', async () => {
+      const message = button.dataset.deleteMessage || '';
+      if (!confirm(`Delete this feedback?\n\n“${message.slice(0, 160)}${message.length > 160 ? '…' : ''}”`)) return;
+      button.disabled = true;
+      const response = await fetch(`/__feedback/api/entries/${button.dataset.deleteEntryId}`, { method: 'DELETE' });
+      if (!response.ok) { button.disabled = false; return; }
+      button.closest('.entry').remove();
+      if (!entriesElement.querySelector('.entry')) entriesElement.innerHTML = '<p class="empty">No feedback matches this filter.</p>';
+    }));
   }
   filter.addEventListener('change', loadEntries);
   form.addEventListener('submit', async (event) => {
