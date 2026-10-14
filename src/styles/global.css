@@ -54,6 +54,25 @@ button {
   outline-offset: 2px;
 }
 
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 10000;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  background: var(--secondary);
+  color: var(--surface);
+  font-weight: 700;
+  transform: translateY(-140%);
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline-color: #fff;
+}
+
 /* App shell --------------------------------------------------------------- */
 .app {
   min-height: 100vh;
