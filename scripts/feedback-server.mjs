@@ -3,9 +3,10 @@
 //
 // Entries are stored outside this (public) repository, in FEEDBACK_DIR: one
 // JSON file per entry in entries/, screenshots in images/<id>/, and a
-// regenerated index.md for quick reading. That folder is a clone of the
-// private GitHub repo irie-vibes-feedback, which the Sveltia admin at
-// /admin/feedback/ edits (status). With FEEDBACK_GIT_SYNC=1 (production) new
+// regenerated index.md for quick reading. Developer notes for testers are in
+// notes/*.json. That folder is a clone of the private GitHub repo
+// irie-vibes-feedback, which the Sveltia admin at /admin/feedback/ edits
+// (feedback status, developer notes). With FEEDBACK_GIT_SYNC=1 (production) new
 // and deleted entries are committed and pushed, and CMS edits are pulled
 // before the list is served.
 //
@@ -146,6 +147,23 @@ async function listEntries(dir) {
     }
   }
   return entries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+// Developer notes (written in the CMS), newest first.
+async function listNotes(dir) {
+  const notesDir = join(dir, 'notes');
+  if (!existsSync(notesDir)) return [];
+  const notes = [];
+  for (const file of await readdir(notesDir, { withFileTypes: true })) {
+    if (!file.isFile() || !file.name.endsWith('.json')) continue;
+    try {
+      const note = JSON.parse(await readFile(join(notesDir, file.name), 'utf8'));
+      if (note && typeof note.message === 'string') notes.push(note);
+    } catch {
+      // Ignore an incomplete note file.
+    }
+  }
+  return notes.sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
 }
 
 // ---- Git sync with the private feedback repo (production only) -------------
@@ -291,6 +309,11 @@ async function createEntry(req, dir) {
 
 async function handleApi(req, res, path) {
   const dir = feedbackDir();
+  if (path === '/__feedback/api/notes') {
+    if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+    await pullIfStale(dir);
+    return send(res, 200, { notes: await listNotes(dir) });
+  }
   if (path === '/__feedback/api/entries') {
     if (req.method === 'GET') {
       await pullIfStale(dir);

@@ -1,13 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import { devNotes } from '../data/devNotes';
-
-const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-// Escape, then turn URLs into links (notes are plain text from the CMS).
-const linkify = (text: string) =>
-  text
-    .replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!)
-    .replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
 ---
 
 <Base title="Feedback inbox" description="Website feedback inbox" noIndex hideFooter>
@@ -23,7 +15,7 @@ const linkify = (text: string) =>
         <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
         <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
         <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
-        <a class="tab tab--notes" href="#notes" data-filter="Notes">Developer notes <span>{devNotes.length || ''}</span></a>
+        <a class="tab tab--notes" href="#notes" data-filter="Notes">Developer notes <span data-count="Notes"></span></a>
       </nav>
     </header>
 
@@ -46,20 +38,7 @@ const linkify = (text: string) =>
     </div>
 
     <div id="notes-view" class="view" hidden>
-      <div id="notes" class="entries">
-        {devNotes.length ? devNotes.map((note) => (
-          <article class="dev-note" data-date={note.date}>
-            <h2 class="dev-note__title">{note.title}</h2>
-            <div class="fb-item__meta">
-              <strong>{note.author}</strong>
-              <time datetime={note.date}>{formatDate(note.date)}</time>
-              {note.page && <a href={note.page}>{note.page}</a>}
-              <span class="fb-item__badge fb-item__badge--new" hidden>New</span>
-            </div>
-            <p class="dev-note__message" set:html={linkify(note.message)} />
-          </article>
-        )) : <p class="empty">No notes from the developer yet.</p>}
-      </div>
+      <div id="notes" class="entries" aria-live="polite"><p class="empty">Loading notes…</p></div>
     </div>
   </section>
 
@@ -180,6 +159,7 @@ const linkify = (text: string) =>
     renderNotes();
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
       const status = count.dataset.count!;
+      if (status === 'Notes') { count.textContent = notesLoaded && notes.length ? String(notes.length) : ''; return; }
       const n = status === 'All' ? entries.length : entries.filter((entry) => entry.status === status).length;
       count.textContent = loaded && n ? String(n) : '';
     });
@@ -268,30 +248,56 @@ const linkify = (text: string) =>
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
 
 
-  // ---- Developer notes (rendered at build time from content/dev-notes.json) ----
+  // ---- Developer notes (written in the feedback CMS, served by the API) ----
+  type Note = { title: string; date: string; author?: string; message: string; page?: string };
+  const notesList = document.querySelector<HTMLElement>('#notes')!;
+  let notes: Note[] = [];
+  let notesLoaded = false;
   // Notes newer than this browser's last visit to the tab get a "New" badge.
   const SEEN_KEY = 'feedback-notes-seen';
   const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } };
   let seenBefore = readSeen();
-  const noteDates = [...document.querySelectorAll<HTMLElement>('.dev-note')].map((note) => note.dataset.date || '');
-  const latestNote = noteDates.reduce((latest, date) => (Date.parse(date) > Date.parse(latest || '0') ? date : latest), '');
+  const time = (iso: string) => Date.parse(iso) || 0;
+  const linkify = (text: string) => escapeHtml(text).replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
+  const safeHref = (href: string) => (/^(\/|https?:\/\/)/.test(href) ? escapeHtml(href) : '');
+
   function renderNotes() {
-    const seen = Date.parse(seenBefore || '0');
-    const unseen = noteDates.filter((date) => Date.parse(date) > seen).length;
-    document.querySelectorAll<HTMLElement>('.dev-note').forEach((note) => {
-      note.querySelector<HTMLElement>('.fb-item__badge--new')!.hidden = Date.parse(note.dataset.date || '') <= seen;
-    });
-    document.querySelector<HTMLElement>('.tab--notes')!.classList.toggle('has-unseen', unseen > 0);
-    if (filter() === 'Notes' && latestNote) {
-      try { localStorage.setItem(SEEN_KEY, latestNote); } catch { /* private mode */ }
+    const seen = time(seenBefore);
+    document.querySelector<HTMLElement>('.tab--notes')!.classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
+    if (!notesLoaded) return;
+    if (filter() === 'Notes' && notes[0]) {
+      try { localStorage.setItem(SEEN_KEY, notes[0].date); } catch { /* private mode */ }
+    }
+    notesList.innerHTML = notes.length ? notes.map((note) => `<article class="dev-note">
+        <h2 class="dev-note__title">${escapeHtml(note.title || '')}</h2>
+        <div class="fb-item__meta">
+          <strong>${escapeHtml(note.author || 'Developer')}</strong>
+          <time datetime="${escapeHtml(note.date)}">${new Date(note.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+          ${note.page && safeHref(note.page) ? `<a href="${safeHref(note.page)}">${escapeHtml(note.page)}</a>` : ''}
+          ${time(note.date) > seen ? '<span class="fb-item__badge fb-item__badge--new">New</span>' : ''}
+        </div>
+        <p class="dev-note__message">${linkify(note.message)}</p>
+      </article>`).join('') : '<p class="empty">No notes from the developer yet.</p>';
+  }
+
+  async function loadNotes() {
+    try {
+      const response = await fetch('/__feedback/api/notes', { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      notes = (await response.json()).notes;
+      notesLoaded = true;
+      render();
+    } catch {
+      if (!notesLoaded) notesList.innerHTML = '<p class="empty">Notes are unavailable.</p>';
     }
   }
 
   window.addEventListener('hashchange', () => { seenBefore = readSeen(); render(); });
-  window.addEventListener('focus', () => void load());
-  setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 30000);
+  window.addEventListener('focus', () => { void load(); void loadNotes(); });
+  setInterval(() => { if (document.visibilityState === 'visible') { void load(); void loadNotes(); } }, 30000);
   render();
   void load();
+  void loadNotes();
 
   // ---- Manual note form ----
   const form = document.querySelector<HTMLFormElement>('#feedback-form')!;

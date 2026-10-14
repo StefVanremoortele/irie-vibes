@@ -351,27 +351,3 @@ collections:
                     minimize_collapsed: true
                     required: false
                     field: { name: item, label: "Item", widget: string }
-
-  # ---- Feedback --------------------------------------------------------
-  - name: feedback
-    label: "Feedback"
-    files:
-      - name: devNotes
-        label: "Developer notes"
-        file: "content/dev-notes.json"
-        icon: campaign
-        description: "Messages for testers, shown on the Developer notes tab of /feedback (newest first)."
-        fields:
-          - name: notes
-            label: "Notes"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            add_to_top: true
-            summary: "{{fields.date | date('YYYY-MM-DD')}} — {{fields.title}}"
-            fields:
-              - { name: title, label: "Title", widget: string }
-              - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}" }
-              - { name: author, label: "Author", widget: string, default: "Developer" }
-              - { name: message, label: "Message", widget: text, hint: "Plain text; line breaks and links are kept." }
-              - { name: page, label: "Related page", widget: string, required: false, hint: "Optional path to test, e.g. /tickets" }

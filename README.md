@@ -121,13 +121,15 @@ it.
 Sign in there with a GitHub token that can access that private repo.
 
 The *Developer notes* tab shows messages from the developer to testers. They
-are written in the CMS (*Feedback → Developer notes*, `content/dev-notes.json`)
-and published with the site; each browser marks notes it hasn't seen as *New*.
+are written in the feedback admin (*Developer notes*, `notes/` in the private
+repo) and appear within about 30 seconds; each browser marks notes it hasn't
+seen as *New*.
 
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside
 this public repository in `~/sources/repos/stef/irie-vibes-feedback/`, a clone
-of the private feedback repo (`entries/<id>.json`, `images/<id>/`, and an
+of the private feedback repo (`entries/<id>.json`, `images/<id>/`,
+`notes/*.json`, and an
 untracked generated `index.md`); set `FEEDBACK_DIR` to use another folder. With
 `FEEDBACK_GIT_SYNC=1` (set in production) the server commits and pushes every
 new or deleted item and pulls status edits from the CMS before serving the
@@ -166,7 +168,6 @@ irie-vibes/
 │   ├── tickets.json          #   ticket + camping price tables
 │   ├── sponsors.json         #   main + regular sponsor lists
 │   ├── about.json            #   about-page accordions
-│   ├── dev-notes.json        #   developer notes for testers (/feedback)
 │   ├── regulations.json      #   regulations sections
 │   ├── acts/*.json           #   one file per line-up act
 │   └── pages/*.json          #   When / Drinks / Kids / Volunteer copy
