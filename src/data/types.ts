@@ -47,8 +47,6 @@ export interface Act {
   order?: number;
   /** Optional detail-page body copy; absent means no description is shown. */
   description?: string;
-  /** Optional external artist link. */
-  website?: string;
   /** Optional artist artwork (public asset path or remote URL). */
   image?: string;
 }
