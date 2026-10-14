@@ -33,8 +33,8 @@ The build outputs a fully static site in `dist/` that can be hosted anywhere
 
 ## Local feedback tool
 
-When running `npm run dev`, a floating **Feedback** button is available on every
-site page (except `/admin`). Draw a region, add a comment, and submit it; the
+When running `npm run dev`, press **Shift+F** on any page (except `/admin`) to
+draw a region, add a comment, and submit it; the
 page URL, viewport/scroll coordinates, and captured PNG are stored with the
 entry. The hidden `/feedback` page is available for the shared inbox. This is
 dev-only and is not included in `npm run build`. Feedback is stored outside this repository in

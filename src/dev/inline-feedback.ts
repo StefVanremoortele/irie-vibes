@@ -1,16 +1,8 @@
 // This module is injected by the feedback integration only while running astro dev.
 const feedbackNameKey = 'feedback-name';
 if (!location.pathname.startsWith('/admin') && !location.pathname.startsWith('/feedback')) {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.textContent = 'Feedback';
-  button.setAttribute('aria-label', 'Select an area to send feedback');
-  button.className = 'inline-feedback-button';
-
   const style = document.createElement('style');
   style.textContent = `
-    .inline-feedback-button { position: fixed; z-index: 2147483640; right: 18px; bottom: 18px; border: 1px solid #fabc4d; border-radius: 999px; padding: 10px 16px; background: #101510; color: #fabc4d; box-shadow: 0 5px 20px #0008; font: 600 14px/1.2 system-ui,sans-serif; cursor: pointer; }
-    .inline-feedback-button:hover { background: #fabc4d; color: #101510; }
     .inline-feedback-overlay { position: fixed; inset: 0; z-index: 2147483638; cursor: crosshair; background: #0005; }
     .inline-feedback-selection { position: fixed; border: 2px solid #fabc4d; background: #fabc4d22; box-shadow: 0 0 0 9999px #0005; pointer-events: none; }
     .inline-feedback-popover { position: fixed; z-index: 2147483639; display: grid; gap: 10px; width: min(340px, calc(100vw - 24px)); padding: 14px; border: 1px solid #fabc4d; border-radius: 12px; background: #182018; color: #fff; box-shadow: 0 10px 35px #000b; font: 14px/1.35 system-ui,sans-serif; }
@@ -26,7 +18,6 @@ if (!location.pathname.startsWith('/admin') && !location.pathname.startsWith('/f
     .inline-feedback-toast { position: fixed; z-index: 2147483641; left: 50%; bottom: 20px; transform: translateX(-50%); padding: 11px 15px; border-radius: 8px; background: #182018; color: #fff; box-shadow: 0 5px 20px #0009; font: 14px system-ui,sans-serif; }
   `;
   document.head.append(style);
-  document.body.append(button);
 
   const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
   const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
@@ -37,7 +28,6 @@ if (!location.pathname.startsWith('/admin') && !location.pathname.startsWith('/f
     overlay?.remove();
     overlay = undefined;
     selection = undefined;
-    button.hidden = false;
   }
 
   async function captureRegion(region: { x: number; y: number; width: number; height: number }) {
@@ -107,7 +97,6 @@ if (!location.pathname.startsWith('/admin') && !location.pathname.startsWith('/f
 
   function startSelection() {
     if (overlay) return;
-    button.hidden = true;
     overlay = document.createElement('div'); overlay.className = 'inline-feedback-overlay';
     selection = document.createElement('div'); selection.className = 'inline-feedback-selection'; overlay.append(selection); document.body.append(overlay);
     let startX = 0; let startY = 0; let active = false;
@@ -124,12 +113,21 @@ if (!location.pathname.startsWith('/admin') && !location.pathname.startsWith('/f
       const rect = selection?.getBoundingClientRect();
       if (!rect || rect.width < 8 || rect.height < 8) { removeSelection(); return; }
       const region = { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
-      button.hidden = true; if (overlay) overlay.style.visibility = 'hidden';
+      if (overlay) overlay.style.visibility = 'hidden';
       let image: Blob | undefined; let captureFailed = false;
       try { await wait(80); image = await captureRegion(region); } catch (error) { captureFailed = true; console.warn('[feedback] screenshot capture failed', error); }
       removeSelection(); openPopover(region, image, captureFailed);
     });
     document.addEventListener('keydown', function cancelOnEscape(event) { if (event.key === 'Escape') { document.removeEventListener('keydown', cancelOnEscape); removeSelection(); } });
   }
-  button.addEventListener('click', startSelection);
+  document.addEventListener('keydown', (event) => {
+    const target = event.target as HTMLElement | null;
+    const isEditing = target?.matches('input, textarea, select, [contenteditable="true"]');
+    if (event.key.toLowerCase() === 'f' && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey && !isEditing) {
+      event.preventDefault();
+      if (overlay) removeSelection(); else startSelection();
+    } else if (event.key === 'Escape' && overlay) {
+      removeSelection();
+    }
+  });
 }
