@@ -45,13 +45,6 @@
       "text": "The festival is fully organised by about twenty unpaid members and brought to life by some 250 volunteers during the festival. The warm family vibe creates an open and safe atmosphere where people discover their talents, take initiative and embrace responsibility."
     }
   ],
-  "sections": [
-    { "key": "greenforward", "label": "VZW Greenforward", "visible": true },
-    { "key": "initiatives", "label": "Socio-environmental initiatives & partnerships", "visible": true },
-    { "key": "editions", "label": "Previous editions", "visible": true },
-    { "key": "shop", "label": "Irie shop", "visible": true },
-    { "key": "band", "label": "The Irie Vibes band", "visible": true }
-  ],
   "initiatives": [
     {
       "type": "h",
@@ -146,29 +139,61 @@
   "shop": [
     {
       "name": "Festival t-shirt",
-      "description": "100% organic cotton, screen-printed edition artwork on front and back lineup."
+      "description": "100% organic cotton, screen-printed edition artwork on front and back lineup.",
+      "image": "/assets/pasted-image-1791987978958.png"
     },
     {
       "name": "Hoodie",
-      "description": "Premium heavy fleece hoodie with kangaroo pocket and embroidered chest badge."
+      "description": "Premium heavy fleece hoodie with kangaroo pocket and embroidered chest badge.",
+      "image": ""
     },
     {
       "name": "Snapback cap",
-      "description": "Adjustable snapback cap with detailed Rasta tri-color Irie Vibes badge."
+      "description": "Adjustable snapback cap with detailed Rasta tri-color Irie Vibes badge.",
+      "image": ""
     },
     {
       "name": "Lanyard & pin",
-      "description": "Woven festival lanyard complete with official metal enamel souvenir pin."
+      "description": "Woven festival lanyard complete with official metal enamel souvenir pin.",
+      "image": ""
     }
   ],
   "band": "Soon to come here.",
   "editionMinYear": 2002,
   "editionMaxYear": 2025,
   "defaultEditionText": "Throwback text for this edition is on its way.",
+  "sections": [
+    {
+      "key": "greenforward",
+      "label": "VZW Greenforward",
+      "visible": true
+    },
+    {
+      "key": "initiatives",
+      "label": "Socio-environmental initiatives & partnerships",
+      "visible": true
+    },
+    {
+      "key": "editions",
+      "label": "Previous editions",
+      "visible": true
+    },
+    {
+      "key": "shop",
+      "label": "Irie shop",
+      "visible": true
+    },
+    {
+      "key": "band",
+      "label": "The Irie Vibes band",
+      "visible": true
+    }
+  ],
   "editions": [
     {
       "year": 2002,
       "poster": "/assets/poster2002.jpg",
+      "video": "",
       "paragraphs": [
         "Het begon allemaal in 2002...",
         "Eigenlijk organiseerden we met enkelen al technofeesten onder de naam Dionysos. Filip (Verhaeghe) was toen verantwoordelijk voor de chill-out en die werd opgeluisterd door de tweeling Bram en Pieter Horré en Gorik Casier (aka jayokay, medewerkers van het vroegere DK in Roeselare). Het idee om dan een reggaefestival op poten te zetten, is gekomen onder vrienden aan de toog in café Delirium in Handzame (Kortemark). Eigenaar Dominiek Hemeryck organiseerde al een festival (Delirium Blues) en de handen werden in elkaar geslagen.",
