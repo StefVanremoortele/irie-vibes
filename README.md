@@ -113,6 +113,10 @@ form for notes without a screenshot. It refreshes every 30 seconds. The inbox
 is not linked from the site and has no login, so anyone with the URL can read
 and manage it.
 
+The *Developer notes* tab shows messages from the developer to testers. They
+are written in the CMS (*Feedback → Developer notes*, `content/dev-notes.json`)
+and published with the site; each browser marks notes it hasn't seen as *New*.
+
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside
 this repository in `~/sources/repos/stef/irie-vibes-feedback/` (one JSON file
@@ -152,6 +156,7 @@ irie-vibes/
 │   ├── tickets.json          #   ticket + camping price tables
 │   ├── sponsors.json         #   main + regular sponsor lists
 │   ├── about.json            #   about-page accordions
+│   ├── dev-notes.json        #   developer notes for testers (/feedback)
 │   ├── regulations.json      #   regulations sections
 │   ├── acts/*.json           #   one file per line-up act
 │   └── pages/*.json          #   When / Drinks / Kids / Volunteer copy

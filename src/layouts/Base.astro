@@ -8,12 +8,15 @@ interface Props {
   title?: string;
   description?: string;
   noIndex?: boolean;
+  /** Leave out the sponsors/socials footer (e.g. the /feedback inbox). */
+  hideFooter?: boolean;
 }
 
 const {
   title,
   description = 'Irie Vibes Roots Festival — live Roots Reggae and Dub soundsystem culture in Kortemark, Belgium. 22, 23 & 24 July 2027.',
   noIndex = false,
+  hideFooter = false,
 } = Astro.props;
 
 const pageTitle = title ? `${title} — ${site.name}` : site.name;
@@ -49,7 +52,7 @@ const path = Astro.url.pathname;
       <main id="main" class="main" tabindex="-1">
         <slot />
       </main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
     <script>
       function initExternalEmbeds() {
