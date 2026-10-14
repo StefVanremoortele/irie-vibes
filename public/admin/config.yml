@@ -249,7 +249,6 @@ collections:
           - { label: "Chilling Lion (camping)", value: "chill" }
       - { name: time, label: "Time", widget: string, hint: "e.g. 18:00 - 19:00" }
       - { name: order, label: "Order within stage", widget: number, value_type: int, default: 1 }
-      - { name: website, label: "Artist website", widget: string, required: false }
       - { name: image, label: "Artist image", widget: image, required: false }
       - name: description
         label: "Description (detail page)"

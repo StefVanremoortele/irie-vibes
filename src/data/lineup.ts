@@ -35,7 +35,6 @@ const acts: Act[] = Object.entries(actModules).map(([path, raw]) => {
       : typeof d.description === 'string' && d.description.trim()
         ? d.description
         : undefined,
-    website: d.website,
     image: d.image,
   };
 });

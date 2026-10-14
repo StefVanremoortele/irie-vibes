@@ -37,17 +37,6 @@ const poster = act.image ?? pageImages.actPoster;
         </div>
         <div class="actpage__aside">
           <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
-          {
-            act.website ? (
-              <a class="actpage__link" href={act.website} target="_blank" rel="noopener noreferrer">
-                Official website
-              </a>
-            ) : (
-              <span class="actpage__link actpage__link--disabled" aria-disabled="true">
-                Official website
-              </span>
-            )
-          }
         </div>
       </div>
     </div>
@@ -139,26 +128,5 @@ const poster = act.image ?? pageImages.actPoster;
     border-radius: var(--radius-lg);
     display: block;
     border: 1px solid var(--border-hairline);
-  }
-  .actpage__link {
-    align-self: flex-start;
-    background: var(--card);
-    border: 1px solid var(--border-hairline);
-    border-radius: var(--radius);
-    padding: 12px 20px;
-    font-family: var(--font-display);
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    color: #ffffff;
-    text-transform: uppercase;
-  }
-  .actpage__link:hover {
-    border-color: rgba(250, 188, 77, 0.5);
-    color: var(--secondary);
-  }
-  .actpage__link--disabled {
-    color: var(--muted);
-    cursor: not-allowed;
-    opacity: 0.8;
   }
 </style>
