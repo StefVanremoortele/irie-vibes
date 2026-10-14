@@ -4,7 +4,7 @@ import Hero from '../components/Hero.astro';
 import PriceTable from '../components/PriceTable.astro';
 import { site } from '../data/site';
 import { heroImages } from '../data/pages';
-import { passes, passesNote, campingParking, ticketNotes } from '../data/tickets';
+import { passes, passesNote, campingParking, ticketNotes, useCustomHtml, customHtml } from '../data/tickets';
 ---
 
 <Base title="Tickets">
@@ -17,14 +17,16 @@ import { passes, passesNote, campingParking, ticketNotes } from '../data/tickets
         <a href={site.ticketUrl} target="_blank" rel="noopener noreferrer">eventsquare</a>.
       </p>
 
-      <PriceTable rows={passes} />
-      <p class="prices__note">{passesNote}</p>
-
-      <PriceTable rows={campingParking} />
-
-      <div class="copy copy--center">
-        {ticketNotes.map((note) => <p>{note}</p>)}
-      </div>
+      {
+        useCustomHtml ? <div class="copy custom-html" set:html={customHtml} /> : (
+          <>
+            <PriceTable rows={passes} />
+            <p class="prices__note">{passesNote}</p>
+            <PriceTable rows={campingParking} />
+            <div class="copy copy--center">{ticketNotes.map((note) => <p>{note}</p>)}</div>
+          </>
+        )
+      }
     </div>
   </div>
 </Base>

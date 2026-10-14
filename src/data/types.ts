@@ -45,8 +45,8 @@ export interface Act {
   day: string;
   /** Sort order within its day + stage (1-based). */
   order?: number;
-  /** Detail-page paragraphs. Falls back to a shared default when empty. */
-  description?: string[];
+  /** Optional detail-page body copy; absent means no description is shown. */
+  description?: string;
   /** Optional external artist link. */
   website?: string;
   /** Optional artist artwork (public asset path or remote URL). */
@@ -116,10 +116,12 @@ export interface Edition {
   year: number;
   paragraphs: string[];
   poster?: string;
+  video?: string;
 }
 
 /** A merchandise item in the festival shop preview. */
 export interface ShopItem {
   name: string;
   description: string;
+  image?: string;
 }

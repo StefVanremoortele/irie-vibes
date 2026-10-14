@@ -17,13 +17,11 @@ static site is rebuilt from those files. No content lives in the templates.
 | ------------- | ------- | ---------------- |
 | Settings → Site settings | `content/site.json` | dates, countdown, ticket/volunteer links, home intro, toggles, nav, socials, chrome images |
 | Settings → Hero images | `content/media.json` | hero image per page + shared images |
-| Settings → Line-up settings | `content/lineup.json` | stages, days, default act description |
-| Settings → Tickets & fees | `content/tickets.json` | passes, camping/parking fees, notes |
+| Settings → Line-up settings | `content/lineup.json` | stages and days |
 | Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
 | Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions, band |
-| Settings → Regulations | `content/regulations.json` | festival & camping regulations |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Content pages | `content/pages/*.json` | When, Drinks, Kids, Volunteer copy |
+| Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
 
 ## Editing locally (no account needed)
 
@@ -71,11 +69,15 @@ seed — `content/` is now the source of truth and should be edited via the CMS
 
 ## Notes / next steps
 
-- **Prose fields** (page blocks, regulations, about) are currently plain
+- **Prose fields** (page blocks, regulations, about, and act descriptions) are currently plain
   text/HTML lists. They're fully editable, but switching them to a rich-text
   (markdown) widget would be an easy follow-up for an even nicer editing
   experience.
 - The **English regulations** still hold the Dutch text (from the source) and
-  await a translation — now editable in *Settings → Regulations*.
+  await a translation — now editable in *Content pages → Regulations*.
+
+- Tickets and Line-up each have an opt-in custom HTML field. It is off by
+  default; when enabled, the trusted administrator's HTML replaces the normal
+  CMS-managed content inside the existing page shell.
 - Act names are placeholders; real artists can be added/edited in *Line-up —
   acts* as they're announced.

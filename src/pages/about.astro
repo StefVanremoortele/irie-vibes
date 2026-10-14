@@ -9,11 +9,15 @@ import {
   EDITION_MIN_YEAR,
   EDITION_MAX_YEAR,
   defaultEditionText,
+  editions,
+  aboutSections,
   shop,
   band,
 } from '../data/about';
 
 const edition2002 = getEdition(2002);
+const sectionConfig = (key: string) => aboutSections.find((section) => section.key === key);
+const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
 ---
 
 <Base title="All about Irie Vibes">
@@ -23,7 +27,7 @@ const edition2002 = getEdition(2002);
       <h1 class="title">All about Irie Vibes</h1>
 
       <div class="accs">
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('greenforward')?.order ?? 0}`} hidden={sectionHidden('greenforward')}>
           <summary class="acc__head">
             <span class="acc__title">VZW Greenforward</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -37,7 +41,7 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('initiatives')?.order ?? 1}`} hidden={sectionHidden('initiatives')}>
           <summary class="acc__head">
             <span class="acc__title">Socio-environmental initiatives &amp; partnerships</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -51,7 +55,7 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('editions')?.order ?? 2}`} hidden={sectionHidden('editions')}>
           <summary class="acc__head">
             <span class="acc__title">Previous editions</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -69,13 +73,16 @@ const edition2002 = getEdition(2002);
                 <div class="years__paras" data-year-paras>
                   {edition2002.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
                 </div>
-                <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+                <div class="years__media">
+                  <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+                  <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden></iframe>
+                </div>
               </div>
             </div>
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('shop')?.order ?? 3}`} hidden={sectionHidden('shop')}>
           <summary class="acc__head">
             <span class="acc__title">Irie shop</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -86,6 +93,7 @@ const edition2002 = getEdition(2002);
               {
                 shop.items.map((item) => (
                   <div class="shop__item">
+                    {item.image && <img class="shop__image" src={item.image} alt={item.name} />}
                     <div class="shop__name">{item.name}</div>
                     <div class="shop__desc">{item.description}</div>
                   </div>
@@ -95,7 +103,7 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('band')?.order ?? 4}`} hidden={sectionHidden('band')}>
           <summary class="acc__head">
             <span class="acc__title">The Irie Vibes band</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -123,6 +131,9 @@ const edition2002 = getEdition(2002);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     overflow: hidden;
+  }
+  .acc[hidden] {
+    display: none;
   }
   .acc__head {
     list-style: none;
@@ -229,12 +240,32 @@ const edition2002 = getEdition(2002);
     display: block;
     border: 1px solid var(--border-hairline);
   }
+  .years__media {
+    display: grid;
+    gap: 16px;
+  }
+  .years__video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--radius-lg);
+  }
   .years__poster[hidden] {
     display: none;
   }
+  .years__video[hidden] {
+    display: none;
+  }
+  .shop__image {
+    width: min(100%, 220px);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+  }
 </style>
 
-<script define:vars={{ editions2002: edition2002.paragraphs, poster2002: edition2002.poster, defaultEditionText }}>
+<script define:vars={{ editionsData: editions, defaultEditionText }}>
   function initYears() {
     const root = document.querySelector('[data-years]');
     if (!root) return;
@@ -243,11 +274,13 @@ const edition2002 = getEdition(2002);
     const valueEl = root.querySelector('[data-year-value]');
     const parasEl = root.querySelector('[data-year-paras]');
     const posterEl = root.querySelector('[data-year-poster]');
+    const videoEl = root.querySelector('[data-year-video]');
     let year = 2002;
 
     const render = () => {
       valueEl.textContent = String(year);
-      const paras = year === 2002 ? editions2002 : [defaultEditionText];
+      const edition = editionsData.find((item) => item.year === year);
+      const paras = edition?.paragraphs ?? [defaultEditionText];
       parasEl.replaceChildren(
         ...paras.map((text) => {
           const p = document.createElement('p');
@@ -256,11 +289,20 @@ const edition2002 = getEdition(2002);
           return p;
         }),
       );
-      if (year === 2002) {
-        posterEl.src = poster2002;
+      if (edition?.poster) {
+        posterEl.src = edition.poster;
         posterEl.hidden = false;
       } else {
         posterEl.hidden = true;
+      }
+      if (edition?.video) {
+        const url = new URL(edition.video);
+        const videoId = url.searchParams.get('v') || url.pathname.split('/').pop();
+        videoEl.src = videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : '';
+        videoEl.hidden = !videoId;
+      } else {
+        videoEl.removeAttribute('src');
+        videoEl.hidden = true;
       }
     };
 

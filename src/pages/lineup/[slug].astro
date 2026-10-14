@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
 import { heroImages, pageImages } from '../../data/pages';
-import { allActs, stageByKey, defaultActDescription } from '../../data/lineup';
+import { allActs, stageByKey } from '../../data/lineup';
 import type { Act } from '../../data/types';
 
 export function getStaticPaths() {
@@ -14,7 +14,7 @@ interface Props {
 }
 const { act } = Astro.props;
 const stage = stageByKey[act.stage];
-const paragraphs = act.description ?? defaultActDescription;
+const description = act.description?.trim();
 const poster = act.image ?? pageImages.actPoster;
 ---
 
@@ -33,11 +33,7 @@ const poster = act.image ?? pageImages.actPoster;
 
       <div class="actpage__grid">
         <div class="actpage__body">
-          {
-            paragraphs.map((p, i) => (
-              <p class={i === 0 ? 'actpage__lead' : 'actpage__para'}>{p}</p>
-            ))
-          }
+          {description && <p class="actpage__lead">{description}</p>}
         </div>
         <div class="actpage__aside">
           <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
@@ -95,6 +91,19 @@ const poster = act.image ?? pageImages.actPoster;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 32px;
     align-items: start;
+  }
+  .actpage__body {
+    min-width: 0;
+  }
+  .actpage__body:empty {
+    display: none;
+  }
+  .actpage__grid:has(.actpage__body:empty) {
+    display: flex;
+    justify-content: center;
+  }
+  .actpage__grid:has(.actpage__body:empty) .actpage__aside {
+    width: min(100%, 420px);
   }
   .actpage__lead {
     color: #ffffff;

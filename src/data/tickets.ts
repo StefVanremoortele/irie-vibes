@@ -10,3 +10,5 @@ export const campingParking: PriceRow[] = data.campingParking;
 
 /** General ticket notes. */
 export const ticketNotes: string[] = data.ticketNotes;
+export const useCustomHtml: boolean = data.useCustomHtml ?? false;
+export const customHtml: string = data.customHtml ?? '';

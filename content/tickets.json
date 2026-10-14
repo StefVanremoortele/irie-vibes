@@ -35,5 +35,7 @@
   "ticketNotes": [
     "Free entrance for children up to 14 years old.",
     "Pets are not allowed on the festival area, campings and parkings."
-  ]
+  ],
+  "useCustomHtml": false,
+  "customHtml": ""
 }

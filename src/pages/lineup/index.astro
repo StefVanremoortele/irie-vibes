@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
 import { heroImages } from '../../data/pages';
-import { stages, days, actsForStage } from '../../data/lineup';
+import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../data/lineup';
 ---
 
 <Base title="Line up">
@@ -11,6 +11,7 @@ import { stages, days, actsForStage } from '../../data/lineup';
     <div class="section section--lineup">
       <h1 class="title">Line up</h1>
 
+      {useCustomHtml ? <div class="copy custom-html" set:html={customHtml} /> : <>
       <div class="stagebar iv-desk">
         {
           stages.map((stage) => (
@@ -49,6 +50,7 @@ import { stages, days, actsForStage } from '../../data/lineup';
           </section>
         ))
       }
+      </>}
     </div>
   </div>
 </Base>
