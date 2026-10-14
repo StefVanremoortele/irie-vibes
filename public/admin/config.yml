@@ -2,14 +2,15 @@
 # Collections map 1:1 to the JSON files in content/. Editors change content
 # here; the static site is rebuilt from those same files.
 #
+# Saving commits to `main`, which is production: the self-hosted production
+# server rebuilds and publishes within ~30s. See CMS.md and README.md.
+#
 # Local editing (no cloud needed):
 #   Terminal 1:  npm run dev
-#   Terminal 2:  npm run cms:proxy
-#   Open:        http://localhost:4320/admin/  (choose "Work with Local Repository")
+#   Terminal 2:  npm run cms:proxy  (only for non-Chromium browsers)
+#   Open:        http://localhost:4320/admin/index.html  (choose "Work with Local Repository")
 #
-# Production auth: set the `backend.repo` below to your GitHub repo, deploy the
-# site, and connect an OAuth relay (see CMS-CONVERSION.md). Paths here assume
-# the git repository root is this `site/` folder.
+# Paths here are relative to the repository root.
 
 backend:
   name: github

@@ -8,8 +8,13 @@ non-technical editors. It's already wired up:
 - Configuration: `public/admin/config.yml`.
 - Content: `content/*.json` — the single source of truth the site builds from.
 
-Editors change content in the admin → it's saved to `content/*.json` → the
-static site is rebuilt from those files. No content lives in the templates.
+Editors change content in the admin → it's committed to `content/*.json` on
+`main` → the production server pulls and rebuilds the static site from those
+files within about 30 seconds. No content lives in the templates.
+
+> **Saving in the admin publishes.** The CMS commits straight to `main`, and
+> `main` is production (see [README → Branches and deployment](README.md#branches-and-deployment)).
+> There is no separate draft or review step.
 
 ## How content maps to the admin
 
@@ -34,7 +39,7 @@ npm run dev
 
 Then open **http://localhost:4320/admin/index.html** (use `/admin/index.html`
 locally — Astro's dev server doesn't do directory-index; production hosts serve
-`/admin/` fine). Click **"Work with Local Repository"** and select this `site/`
+`/admin/` fine). Click **"Work with Local Repository"** and select this repository's
 folder when prompted. Edits are written straight to `content/*.json` and the dev
 server hot-reloads.
 
@@ -42,23 +47,26 @@ server hot-reloads.
 > terminal (starts the Decap-compatible local backend that `local_backend: true`
 > in `config.yml` enables), then use the admin as above.
 
-## Going live (GitHub-backed editing)
+## Editing online (GitHub-backed)
 
-1. Put this `site/` folder in a **GitHub repository** and push it.
-2. In `public/admin/config.yml`, set `backend.repo` to your `owner/repo` (and
-   the correct `branch`).
-3. Deploy the static build (`npm run build` → `dist/`) to Netlify, Vercel or
-   Cloudflare Pages. Enable automatic deploys on push so CMS edits go live.
-4. Wire up **GitHub OAuth** so editors can sign in at `https://yoursite/admin/`:
-   - Create a GitHub OAuth App.
-   - Deploy the small [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth)
-     Cloudflare Worker (or use another OAuth relay) and point it at that App.
-   - Editors then click **"Sign In with GitHub"**; saving commits to the repo,
-     which triggers a rebuild + redeploy.
+The admin is configured for the GitHub repository
+`StefVanremoortele/irie-vibes` on branch `main` (`backend` in
+`public/admin/config.yml`). Open `/admin/` on the public site and sign in:
 
-Editors who have write access to the repo can also use **"Sign In Using Access
-Token"** with a GitHub personal access token — handy for a quick start before
-the OAuth relay is set up.
+- **"Sign In Using Access Token"**: any editor with write access to the repo
+  can use a GitHub personal access token.
+- **"Sign In with GitHub"** (OAuth) needs a GitHub OAuth App plus an OAuth
+  relay such as the [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth)
+  Cloudflare Worker, referenced from `config.yml`.
+
+Every save is a commit on `main`. The self-hosted production server picks it
+up, rebuilds, and publishes it (see
+[README → Branches and deployment](README.md#branches-and-deployment)). A
+running dev server on `main` also pulls these commits automatically.
+
+If production ever moves to a static host (Netlify, Vercel, Cloudflare Pages),
+deploy `npm run build` → `dist/` with automatic deploys on push to `main`; the
+CMS workflow stays the same.
 
 ## Regenerating content from the original export
 
