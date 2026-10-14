@@ -7,17 +7,8 @@
 
 type Region = { x: number; y: number; width: number; height: number };
 
-const NAME_KEY = 'feedback-name';
+const PSEUDONYM = 'Jah a the Creator';
 const UI_ATTR = 'data-feedback-ui';
-
-const storage = {
-  get(key: string) {
-    try { return localStorage.getItem(key) || ''; } catch { return ''; }
-  },
-  set(key: string, value: string) {
-    try { localStorage.setItem(key, value); } catch { /* private mode */ }
-  },
-};
 
 const css = `
   [${UI_ATTR}] { box-sizing: border-box; font: 14px/1.4 var(--font-body, system-ui, sans-serif); color: var(--on-surface, #dfe4db); }
@@ -48,7 +39,6 @@ const css = `
   .fb-field textarea { min-height: 96px; resize: vertical; }
   .fb-as { margin: 0; color: var(--muted, #9aa596); font-size: 13px; }
   .fb-as strong { color: var(--on-surface, #dfe4db); }
-  .fb-as button { padding: 0; border: 0; background: none; color: var(--secondary, #fabc4d); font: inherit; text-decoration: underline; cursor: pointer; }
   .fb-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .fb-actions small { color: var(--muted, #9aa596); }
   .fb-submit { padding: 9px 16px; border: 0; border-radius: 8px; background: var(--secondary, #fabc4d); color: var(--surface, #101510); font: inherit; font-weight: 700; cursor: pointer; }
@@ -228,14 +218,7 @@ function init() {
 
       const closeButton = el('button', { type: 'button', className: 'fb-close', textContent: '×', title: 'Close (Esc)' });
       closeButton.setAttribute('aria-label', 'Close');
-      const savedName = storage.get(NAME_KEY);
-      const name = el('input', { maxLength: 120, placeholder: 'So we know who to ask', autocomplete: 'name', value: savedName });
-      const nameField = el('label', { className: 'fb-field' }, 'Your name', name);
-      const changeName = el('button', { type: 'button', textContent: 'change' });
-      const sendingAs = el('p', { className: 'fb-as' }, 'Sending as ', el('strong', { textContent: savedName }), ' · ', changeName);
-      nameField.hidden = Boolean(savedName);
-      sendingAs.hidden = !savedName;
-      changeName.addEventListener('click', () => { sendingAs.hidden = true; nameField.hidden = false; name.focus(); name.select(); });
+      const sendingAs = el('p', { className: 'fb-as' }, 'Sent anonymously as ', el('strong', { textContent: PSEUDONYM }));
       const comment = el('textarea', { required: true, maxLength: 10000, placeholder: 'What should change, or what is wrong here?' });
       const status = el('p', { className: 'fb-status', role: 'alert' });
       const submit = el('button', { type: 'submit', className: 'fb-submit', textContent: 'Send feedback' });
@@ -243,7 +226,7 @@ function init() {
         el('div', { className: 'fb-panel__head' }, el('h2', { className: 'fb-panel__title', textContent: 'Feedback' }), closeButton),
         ...(selected ? [shot] : []),
         el('label', { className: 'fb-field' }, 'Comment', comment),
-        nameField, sendingAs, status,
+        sendingAs, status,
         el('div', { className: 'fb-actions' }, el('small', { textContent: '⌘/Ctrl + Enter to send' }), submit));
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-label', 'Send feedback');
@@ -265,7 +248,6 @@ function init() {
         submit.textContent = 'Sending…';
         status.textContent = '';
         const data = new FormData();
-        data.set('name', name.value.trim());
         data.set('page', location.pathname + location.search);
         data.set('message', message);
         let blob: Blob | undefined;
@@ -283,7 +265,6 @@ function init() {
           const response = await fetch('/__feedback/api/entries', { method: 'POST', body: data });
           const result = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(result.error || (response.status === 413 ? 'The screenshot is too large to send. Try a smaller area or send without a screenshot.' : `Could not send feedback (${response.status}).`));
-          if (name.value.trim()) storage.set(NAME_KEY, name.value.trim());
           close?.();
           toast();
         } catch (error) {
