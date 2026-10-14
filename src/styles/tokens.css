@@ -66,7 +66,10 @@
   --shadow-header: 0 10px 30px rgba(0, 0, 0, 0.65);
 
   /* Layout ----------------------------------------------------------------- */
-  --header-h: clamp(76px, 11vw, 150px);
+  /* The header shows the 512x80 (6.4:1) banner full-bleed. Height tracks the
+     banner's aspect ratio (100vw / 6.4 = 15.625vw) so it spans the full width
+     with no vertical crop, capped so it can't get huge on ultrawide screens. */
+  --header-h: min(15.625vw, 300px);
   --max-narrow: 820px;
   --max-mid: 880px;
   --max-wide: 960px;
