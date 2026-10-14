@@ -37,14 +37,17 @@ const poster = act.image ?? pageImages.actPoster;
         </div>
         <div class="actpage__aside">
           <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
-          <a
-            class="actpage__link"
-            href={act.website ?? '#'}
-            target={act.website ? '_blank' : undefined}
-            rel={act.website ? 'noopener noreferrer' : undefined}
-          >
-            Official website
-          </a>
+          {
+            act.website ? (
+              <a class="actpage__link" href={act.website} target="_blank" rel="noopener noreferrer">
+                Official website
+              </a>
+            ) : (
+              <span class="actpage__link actpage__link--disabled" aria-disabled="true">
+                Official website
+              </span>
+            )
+          }
         </div>
       </div>
     </div>
@@ -152,5 +155,10 @@ const poster = act.image ?? pageImages.actPoster;
   .actpage__link:hover {
     border-color: rgba(250, 188, 77, 0.5);
     color: var(--secondary);
+  }
+  .actpage__link--disabled {
+    color: var(--muted);
+    cursor: not-allowed;
+    opacity: 0.8;
   }
 </style>
