@@ -9,11 +9,16 @@ import {
   EDITION_MIN_YEAR,
   EDITION_MAX_YEAR,
   defaultEditionText,
+  editions,
+  aboutSections,
   shop,
   band,
 } from '../data/about';
 
 const edition2002 = getEdition(2002);
+const editionOptions = editions.length > 0 ? editions : [edition2002];
+const sectionConfig = (key: string) => aboutSections.find((section) => section.key === key);
+const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
 ---
 
 <Base title="All about Irie Vibes">
@@ -22,8 +27,8 @@ const edition2002 = getEdition(2002);
     <div class="section section--mid">
       <h1 class="title">All about Irie Vibes</h1>
 
-      <div class="accs">
-        <details name="about" class="acc">
+      <div class="accs accordions">
+        <details name="about" class="acc" style={`order:${sectionConfig('greenforward')?.order ?? 0}`} hidden={sectionHidden('greenforward')}>
           <summary class="acc__head">
             <span class="acc__title">VZW Greenforward</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -37,7 +42,7 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('initiatives')?.order ?? 1}`} hidden={sectionHidden('initiatives')}>
           <summary class="acc__head">
             <span class="acc__title">Socio-environmental initiatives &amp; partnerships</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -51,17 +56,21 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('editions')?.order ?? 2}`} hidden={sectionHidden('editions')}>
           <summary class="acc__head">
             <span class="acc__title">Previous editions</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
-            <div class="years" data-years data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
+            <div class="years" data-years data-archive data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
+              <p class="years__hint">Browse available editions. Use the five-year controls to move through the archive.</p>
               <div class="years__nav">
                 <button type="button" class="years__btn years__btn--step" data-year-step="-5">-5y</button>
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
-                <span class="years__value" data-year-value>{edition2002.year}</span>
+                <label class="years__select-label" for="edition-year">Edition</label>
+                <select id="edition-year" class="years__select" data-year>
+                  {editionOptions.map((edition) => <option value={edition.year}>{edition.year}</option>)}
+                </select>
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
                 <button type="button" class="years__btn years__btn--step" data-year-step="5">+5y</button>
               </div>
@@ -69,13 +78,16 @@ const edition2002 = getEdition(2002);
                 <div class="years__paras" data-year-paras>
                   {edition2002.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
                 </div>
-                <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+                <div class="years__media">
+                  <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+                  <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden></iframe>
+                </div>
               </div>
             </div>
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('shop')?.order ?? 3}`} hidden={sectionHidden('shop')}>
           <summary class="acc__head">
             <span class="acc__title">Irie shop</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -86,6 +98,7 @@ const edition2002 = getEdition(2002);
               {
                 shop.items.map((item) => (
                   <div class="shop__item">
+                    {item.image && <img class="shop__image" src={item.image} alt={item.name} />}
                     <div class="shop__name">{item.name}</div>
                     <div class="shop__desc">{item.description}</div>
                   </div>
@@ -95,7 +108,7 @@ const edition2002 = getEdition(2002);
           </div>
         </details>
 
-        <details name="about" class="acc">
+        <details name="about" class="acc" style={`order:${sectionConfig('band')?.order ?? 4}`} hidden={sectionHidden('band')}>
           <summary class="acc__head">
             <span class="acc__title">The Irie Vibes band</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
@@ -123,6 +136,10 @@ const edition2002 = getEdition(2002);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     overflow: hidden;
+    scroll-margin-top: var(--header-h);
+  }
+  .acc[hidden] {
+    display: none;
   }
   .acc__head {
     list-style: none;
@@ -193,6 +210,13 @@ const edition2002 = getEdition(2002);
     flex-wrap: wrap;
     margin: 6px 0 22px;
   }
+  .years__hint {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 0 16px;
+  }
   .years__btn {
     background: var(--surface-container-high);
     border: 1px solid var(--border-strong);
@@ -209,6 +233,20 @@ const edition2002 = getEdition(2002);
   }
   .years__btn:hover {
     border-color: var(--secondary);
+  }
+  .years__select-label {
+    color: var(--secondary);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .years__select {
+    min-height: 38px;
+    padding: 7px 30px 7px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    font: inherit;
   }
   .years__value {
     font-family: var(--font-display);
@@ -229,25 +267,74 @@ const edition2002 = getEdition(2002);
     display: block;
     border: 1px solid var(--border-hairline);
   }
+  .years__media {
+    display: grid;
+    gap: 16px;
+  }
+  .years__video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--radius-lg);
+  }
   .years__poster[hidden] {
     display: none;
   }
+  .years__video[hidden] {
+    display: none;
+  }
+  .shop__image {
+    width: min(100%, 220px);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+  }
 </style>
 
-<script define:vars={{ editions2002: edition2002.paragraphs, poster2002: edition2002.poster, defaultEditionText }}>
+<script>
+  function initAboutAccordions() {
+    const panels = [...document.querySelectorAll<HTMLDetailsElement>('.accordions details')];
+    if (!panels.length) return;
+    panels.forEach((panel) => {
+      panel.addEventListener('toggle', () => {
+        if (!panel.open) return;
+        panels.forEach((other) => {
+          if (other !== panel) other.open = false;
+        });
+        requestAnimationFrame(() => {
+          if (!panel.open) return;
+          const summary = panel.querySelector<HTMLElement>('summary');
+          summary?.focus({ preventScroll: true });
+          panel.scrollIntoView({ block: 'start', behavior: 'instant' });
+        });
+      });
+    });
+  }
+
+  initAboutAccordions();
+</script>
+
+<script define:vars={{ editionsData: editionOptions, defaultEditionText }}>
   function initYears() {
     const root = document.querySelector('[data-years]');
     if (!root) return;
-    const min = Number(root.dataset.min);
-    const max = Number(root.dataset.max);
-    const valueEl = root.querySelector('[data-year-value]');
+    /** @type {HTMLSelectElement | null} */
+    const selectEl = root.querySelector('[data-year]');
     const parasEl = root.querySelector('[data-year-paras]');
     const posterEl = root.querySelector('[data-year-poster]');
-    let year = 2002;
+    const videoEl = root.querySelector('[data-year-video]');
+    if (!selectEl || !parasEl || !posterEl || !videoEl) return;
+    let index = 0;
 
     const render = () => {
-      valueEl.textContent = String(year);
-      const paras = year === 2002 ? editions2002 : [defaultEditionText];
+      const edition = editionsData[index];
+      selectEl.value = String(edition?.year ?? '');
+      root.querySelectorAll('[data-year-step]').forEach((button) => {
+        const step = Number(button.dataset.yearStep);
+        button.toggleAttribute('disabled', (index === 0 && step < 0) || (index === editionsData.length - 1 && step > 0));
+      });
+      const paras = edition?.paragraphs ?? [defaultEditionText];
       parasEl.replaceChildren(
         ...paras.map((text) => {
           const p = document.createElement('p');
@@ -256,20 +343,33 @@ const edition2002 = getEdition(2002);
           return p;
         }),
       );
-      if (year === 2002) {
-        posterEl.src = poster2002;
+      if (edition?.poster) {
+        posterEl.src = edition.poster;
         posterEl.hidden = false;
       } else {
         posterEl.hidden = true;
+      }
+      if (edition?.video) {
+        const url = new URL(edition.video);
+        const videoId = url.searchParams.get('v') || url.pathname.split('/').pop();
+        videoEl.src = videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : '';
+        videoEl.hidden = !videoId;
+      } else {
+        videoEl.removeAttribute('src');
+        videoEl.hidden = true;
       }
     };
 
     root.querySelectorAll('[data-year-step]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const step = Number(btn.dataset.yearStep);
-        year = Math.min(max, Math.max(min, year + step));
+        index = Math.min(editionsData.length - 1, Math.max(0, index + (step < 0 ? -1 : 1) * Math.min(Math.abs(step), 1)));
         render();
       });
+    });
+    selectEl.addEventListener('change', () => {
+      index = Math.max(0, editionsData.findIndex((item) => String(item.year) === selectEl.value));
+        render();
     });
 
     render();

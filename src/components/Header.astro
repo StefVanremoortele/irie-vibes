@@ -10,32 +10,37 @@ function isActive(href: string): boolean {
   if (href === '/') return path === '/' || path === '';
   return path === href || path.startsWith(href + '/');
 }
+
+function canonicalHref(href: string): string {
+  if (href.startsWith('/') && href !== '/' && !href.endsWith('/')) return `${href}/`;
+  return href;
+}
 ---
 
-<header class="hdr">
+<header class="hdr site-header">
   <div class="hdr__inner">
     <div class="hdr__bannerwrap">
       <img class="hdr__banner" src={site.assets.headerBanner} alt={site.name} />
     </div>
     <div class="hdr__bar">
       <div class="hdr__menu" data-menu>
-        <button type="button" class="burger" aria-label="Open menu" aria-expanded="false" data-menu-toggle>
+        <button type="button" class="burger" aria-label="Open navigation" aria-expanded="false" aria-controls="menu" data-menu-toggle>
           <span class="burger__bar burger__bar--r"></span>
           <span class="burger__bar burger__bar--y"></span>
           <span class="burger__bar burger__bar--g"></span>
         </button>
-        <nav class="drawer" data-menu-drawer hidden>
+        <nav id="menu" class="drawer" aria-label="Main navigation" data-menu-drawer hidden>
           <ul class="drawer__list">
             {
               nav.map((n) => (
                 <li>
-                  {isActive(n.href) ? (
-                    <span class="drawer__item drawer__item--active">{n.label}</span>
-                  ) : (
-                    <a class="drawer__item" href={n.href}>
-                      {n.label}
-                    </a>
-                  )}
+                  <a
+                    class:list={{ 'drawer__item': true, 'drawer__item--active': isActive(n.href) }}
+                    href={canonicalHref(n.href)}
+                    aria-current={isActive(n.href) ? 'page' : undefined}
+                  >
+                    {n.label}
+                  </a>
                 </li>
               ))
             }
@@ -80,7 +85,10 @@ function isActive(href: string): boolean {
   .hdr__banner {
     width: 100%;
     height: 100%;
+    /* Header box matches the banner's 6.4:1 aspect ratio (see --header-h), so
+       cover fills it full-width with no crop. */
     object-fit: cover;
+    object-position: center;
     display: block;
   }
   .hdr__bar {
@@ -151,6 +159,8 @@ function isActive(href: string): boolean {
     box-shadow: var(--shadow-modal);
     padding: 12px 8px;
     z-index: 60;
+    max-height: calc(100dvh - var(--header-h) - 24px);
+    overflow: auto;
   }
   .drawer[hidden] {
     display: none;
@@ -179,8 +189,17 @@ function isActive(href: string): boolean {
     background: var(--surface-container-high);
   }
   .drawer__item--active {
-    color: #e0e0e0;
-    background: rgba(38, 43, 38, 0.6);
+    color: var(--surface);
+    background: var(--secondary);
+    font-weight: 700;
+  }
+  .drawer__item--active:hover {
+    color: var(--surface);
+    background: var(--secondary-hover);
+  }
+  .drawer__item:focus-visible {
+    outline-offset: -3px;
+    outline-color: #fff;
   }
 
   /* Ticket button ----------------------------------------------------------- */
@@ -236,19 +255,28 @@ function isActive(href: string): boolean {
     const overlay = document.querySelector<HTMLElement>('[data-menu-overlay]');
     if (!root || !toggle || !drawer || !overlay) return;
 
-    const setOpen = (open: boolean) => {
+    const setOpen = (open: boolean, restoreFocus = false) => {
       drawer.hidden = !open;
       overlay.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+      if (open) drawer.querySelector<HTMLAnchorElement>('a')?.focus();
+      if (!open && restoreFocus) toggle.focus();
     };
 
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
       setOpen(drawer.hidden);
     });
-    overlay.addEventListener('click', () => setOpen(false));
+    overlay.addEventListener('click', () => setOpen(false, true));
+    document.addEventListener('click', (e) => {
+      const target = e.target as Element | null;
+      if (!drawer.hidden && target && !root.contains(target) && !target.closest('[data-menu-overlay]')) {
+        setOpen(false, true);
+      }
+    });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && !drawer.hidden) setOpen(false, true);
     });
     // Close when a drawer link is clicked (navigation happens anyway).
     drawer.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));

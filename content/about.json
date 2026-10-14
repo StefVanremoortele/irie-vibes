@@ -45,6 +45,13 @@
       "text": "The festival is fully organised by about twenty unpaid members and brought to life by some 250 volunteers during the festival. The warm family vibe creates an open and safe atmosphere where people discover their talents, take initiative and embrace responsibility."
     }
   ],
+  "sections": [
+    { "key": "greenforward", "label": "VZW Greenforward", "visible": true },
+    { "key": "initiatives", "label": "Socio-environmental initiatives & partnerships", "visible": true },
+    { "key": "editions", "label": "Previous editions", "visible": true },
+    { "key": "shop", "label": "Irie shop", "visible": true },
+    { "key": "band", "label": "The Irie Vibes band", "visible": true }
+  ],
   "initiatives": [
     {
       "type": "h",

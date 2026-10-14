@@ -36,9 +36,6 @@
       "order": 2
     }
   ],
-  "defaultActDescription": [
-    "Kickstarting the festival weekend at the legendary Lions Den stage, this act sets the tone with heavy roots vibrations and spiritual dub energy.",
-    "Known for their deep organic basslines, authentic Jamaican vintage rhythm sections, and uplifting conscious messages, this performance marks an unmissable moment at Irie Vibes Roots Festival.",
-    "Prepare your mind and body for an hour of pure spiritual elevation and sonic meditation under the open skies of Kortemark."
-  ]
+  "useCustomHtml": false,
+  "customHtml": ""
 }

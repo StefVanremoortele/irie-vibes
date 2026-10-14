@@ -14,8 +14,8 @@ export const stageByKey: Record<StageKey, Stage> = Object.fromEntries(
   stages.map((s) => [s.key, s]),
 ) as Record<StageKey, Stage>;
 
-/** Shared placeholder copy shown on an act detail page until real bios are added. */
-export const defaultActDescription: string[] = config.defaultActDescription;
+export const useCustomHtml: boolean = config.useCustomHtml ?? false;
+export const customHtml: string = config.customHtml ?? '';
 
 // Build the act list from the individual files; slug comes from the filename.
 const acts: Act[] = Object.entries(actModules).map(([path, raw]) => {
@@ -28,7 +28,13 @@ const acts: Act[] = Object.entries(actModules).map(([path, raw]) => {
     stage: d.stage as StageKey,
     day: d.day!,
     order: d.order,
-    description: d.description,
+    // Accept the former list shape while content is migrated, without losing
+    // any existing per-act paragraphs. New CMS edits use one text field.
+    description: Array.isArray(d.description)
+      ? d.description.filter((p): p is string => typeof p === 'string').join('\n\n') || undefined
+      : typeof d.description === 'string' && d.description.trim()
+        ? d.description
+        : undefined,
     website: d.website,
     image: d.image,
   };

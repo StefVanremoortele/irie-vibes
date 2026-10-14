@@ -14,6 +14,11 @@ const initial = {
   minutes: pad(Math.floor((diff % 3600000) / 60000)),
   seconds: pad(Math.floor((diff % 60000) / 1000)),
 };
+const alternative = new Date(date).toLocaleString('en-GB', {
+  dateStyle: 'long',
+  timeStyle: 'short',
+  timeZone: 'Europe/Brussels',
+});
 const units: [keyof typeof initial, string][] = [
   ['days', 'Days'],
   ['hours', 'Hours'],
@@ -35,6 +40,7 @@ const units: [keyof typeof initial, string][] = [
   }
 </div>
 <p class="countdown__caption">Till the gates open</p>
+<p class="countdown__alternative">Gates open <time datetime={date}>{alternative}</time> (Europe/Brussels).</p>
 
 <style>
   .countdown {
@@ -74,6 +80,13 @@ const units: [keyof typeof initial, string][] = [
     text-transform: uppercase;
     margin: 0 0 28px;
     text-align: center;
+  }
+  .countdown__alternative {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
   }
 </style>
 

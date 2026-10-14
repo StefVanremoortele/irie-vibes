@@ -39,12 +39,35 @@ const path = Astro.url.pathname;
     />
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <div class="app">
       <Header path={path} />
-      <main class="main">
+      <main id="main" class="main" tabindex="-1">
         <slot />
       </main>
       <Footer />
     </div>
+    <script>
+      function initExternalEmbeds() {
+        document.querySelectorAll<HTMLButtonElement>('[data-load-embed]').forEach((button) => {
+          if (button.dataset.initialized) return;
+          button.dataset.initialized = 'true';
+          button.addEventListener('click', () => {
+            const box = button.closest<HTMLElement>('[data-embed]');
+            if (!box) return;
+            const youtubeId = box.dataset.youtube;
+            const mapQuery = box.dataset.map;
+            if (youtubeId) {
+              box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}" title="Festival aftermovie" loading="lazy" allowfullscreen></iframe>`;
+            } else if (mapQuery) {
+              const encoded = encodeURIComponent(mapQuery);
+              box.innerHTML = `<iframe src="https://www.google.com/maps?q=${encoded}&output=embed" title="Festival location map" loading="lazy"></iframe><a class="embed__directions" href="https://www.google.com/maps/search/?api=1&query=${encoded}">Open directions in Google Maps</a>`;
+            }
+          });
+        });
+      }
+
+      initExternalEmbeds();
+    </script>
   </body>
 </html>

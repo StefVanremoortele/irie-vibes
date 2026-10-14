@@ -4,7 +4,6 @@ import Hero from '../components/Hero.astro';
 import { site } from '../data/site';
 import { heroImages, pageImages } from '../data/pages';
 
-const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.location.query)}&t=m&z=15&output=embed`;
 ---
 
 <Base title="Where">
@@ -33,12 +32,10 @@ const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.locatio
       </div>
 
       <div class="where__grid">
-        <div class="where__tile">
-          <iframe
-            src={mapSrc}
-            title={`Route to ${site.location.label}`}
-            loading="lazy"
-          ></iframe>
+        <div class="where__tile where__embed" data-embed data-map={site.location.query}>
+          <button type="button" class="embed__button" data-load-embed>Load Google Maps</button>
+          <p>Loading this map connects to Google.</p>
+          <a class="embed__directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.location.query)}`}>Open directions in Google Maps</a>
         </div>
         <div class="where__tile">
           <img src={pageImages.circulatieplan} alt="Irie Vibes circulation plan" loading="lazy" />
@@ -74,5 +71,43 @@ const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(site.locatio
     border: 0;
     object-fit: cover;
     display: block;
+  }
+  .where__embed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .where__embed iframe {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .where__embed p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0;
+  }
+  .embed__button {
+    background: var(--card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    color: var(--on-surface-strong);
+    font-family: var(--font-display);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .embed__button:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+  }
+  .embed__directions {
+    font-size: 13px;
+    text-decoration: underline;
   }
 </style>

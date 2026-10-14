@@ -39,6 +39,7 @@ collections:
           - name: location
             label: "Location"
             widget: object
+            collapsed: true
             fields:
               - { name: label, label: "Address label", widget: string }
               - { name: query, label: "Map search query", widget: string }
@@ -51,12 +52,14 @@ collections:
           - name: aftermovie
             label: "Aftermovie"
             widget: object
+            collapsed: true
             fields:
               - { name: title, label: "Title", widget: string }
               - { name: embedUrl, label: "YouTube embed URL", widget: string }
           - name: assets
             label: "Chrome images"
             widget: object
+            collapsed: true
             fields:
               - { name: headerBanner, label: "Header banner", widget: image }
               - { name: footerBg, label: "Footer background", widget: image }
@@ -64,12 +67,14 @@ collections:
           - name: nav
             label: "Navigation"
             widget: list
+            collapsed: true
             fields:
               - { name: label, label: "Label", widget: string }
               - { name: href, label: "Link", widget: string }
           - name: socials
             label: "Social links"
             widget: list
+            collapsed: true
             fields:
               - { name: label, label: "Label", widget: string }
               - { name: href, label: "URL", widget: string }
@@ -83,6 +88,7 @@ collections:
           - name: heroes
             label: "Page heroes"
             widget: object
+            collapsed: true
             fields:
               - { name: home, label: "Home", widget: image }
               - { name: tickets, label: "Tickets", widget: image }
@@ -94,6 +100,7 @@ collections:
           - name: images
             label: "Shared images"
             widget: object
+            collapsed: true
             fields:
               - { name: circulatieplan, label: "Circulation plan", widget: image }
               - { name: actPoster, label: "Default act poster", widget: image }
@@ -106,6 +113,7 @@ collections:
           - name: stages
             label: "Stages"
             widget: list
+            collapsed: true
             fields:
               - { name: key, label: "Key (inner/den/chill)", widget: string }
               - { name: name, label: "Name", widget: string }
@@ -114,38 +122,13 @@ collections:
           - name: days
             label: "Days"
             widget: list
+            collapsed: true
             fields:
               - { name: name, label: "Name", widget: string }
               - { name: sub, label: "Sub-label", widget: string, required: false }
               - { name: order, label: "Order", widget: number, value_type: int }
-          - name: defaultActDescription
-            label: "Default act description"
-            widget: list
-            field: { name: paragraph, label: "Paragraph", widget: text }
-
-      - name: tickets
-        label: "Tickets & fees"
-        file: "content/tickets.json"
-        icon: local_activity
-        fields:
-          - name: passes
-            label: "Passes"
-            widget: list
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - { name: passesNote, label: "Passes note", widget: string }
-          - name: campingParking
-            label: "Camping & parking fees"
-            widget: list
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - name: ticketNotes
-            label: "Notes"
-            widget: list
-            field: { name: note, label: "Note", widget: string }
-
+          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed line-up grid." }
+          - { name: customHtml, label: "Custom HTML", widget: text, required: false }
       - name: sponsors
         label: "Sponsors"
         file: "content/sponsors.json"
@@ -154,6 +137,7 @@ collections:
           - name: main
             label: "Main partners"
             widget: list
+            collapsed: true
             summary: "{{fields.alt}}{{fields.label}}"
             fields:
               - { name: image, label: "Logo", widget: image, required: false }
@@ -163,6 +147,7 @@ collections:
           - name: regular
             label: "Regular sponsors"
             widget: list
+            collapsed: true
             summary: "{{fields.alt}}{{fields.label}}"
             fields:
               - { name: image, label: "Logo", widget: image, required: false }
@@ -178,6 +163,7 @@ collections:
           - name: greenforward
             label: "VZW Greenforward"
             widget: list
+            collapsed: true
             summary: "{{fields.text}}"
             fields:
               - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
@@ -185,6 +171,7 @@ collections:
           - name: initiatives
             label: "Initiatives & partnerships"
             widget: list
+            collapsed: true
             summary: "{{fields.text}}"
             fields:
               - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
@@ -193,47 +180,39 @@ collections:
           - name: shop
             label: "Shop items"
             widget: list
+            collapsed: true
             summary: "{{fields.name}}"
             fields:
               - { name: name, label: "Name", widget: string }
               - { name: description, label: "Description", widget: text }
+              - { name: image, label: "Product image", widget: image, required: false }
           - { name: band, label: "Band text", widget: string }
           - { name: editionMinYear, label: "Earliest edition year", widget: number, value_type: int }
           - { name: editionMaxYear, label: "Latest edition year", widget: number, value_type: int }
           - { name: defaultEditionText, label: "Default edition text", widget: string }
+          - name: sections
+            label: "About categories (drag to reorder; toggle visibility)"
+            widget: list
+            collapsed: true
+            summary: "{{fields.label}}"
+            fields:
+              - { name: key, label: "Key", widget: string, hint: "Keep the existing key unless adding a new template-backed category." }
+              - { name: label, label: "Label", widget: string }
+              - { name: visible, label: "Visible", widget: boolean, default: true }
           - name: editions
             label: "Editions (throwbacks)"
             widget: list
+            collapsed: true
             summary: "{{fields.year}}"
             fields:
               - { name: year, label: "Year", widget: number, value_type: int }
               - { name: poster, label: "Poster", widget: image, required: false }
+              - { name: video, label: "YouTube video URL", widget: string, required: false }
               - name: paragraphs
                 label: "Paragraphs"
                 widget: list
+                collapsed: true
                 field: { name: paragraph, label: "Paragraph", widget: text }
-
-      - name: regulations
-        label: "Regulations"
-        file: "content/regulations.json"
-        icon: gavel
-        fields:
-          - name: sections
-            label: "Sections"
-            widget: list
-            summary: "{{fields.title}}"
-            fields:
-              - { name: title, label: "Title", widget: string }
-              - name: items
-                label: "Items"
-                widget: list
-                fields:
-                  - { name: p, label: "Paragraph", widget: text, required: false }
-                  - name: ul
-                    label: "Bullet list"
-                    widget: list
-                    required: false
-                    field: { name: item, label: "Item", widget: string }
 
   # ---- Line-up acts (one file per act) ---------------------------------
   - name: acts
@@ -262,30 +241,94 @@ collections:
       - { name: image, label: "Artist image", widget: image, required: false }
       - name: description
         label: "Description (detail page)"
-        widget: list
+        widget: text
         required: false
-        field: { name: paragraph, label: "Paragraph", widget: text }
+        hint: "Optional act bio or detail-page copy."
 
-  # ---- Simple content pages --------------------------------------------
+
+  # ---- Content pages (files-based so bespoke and singleton pages share one
+  #      editor section) --------------------------------------------------
   - name: pages
     label: "Content pages"
-    label_singular: "Page"
-    folder: "content/pages"
-    extension: json
-    format: json
-    identifier_field: title
     create: false
     icon: description
-    summary: "{{fields.title}}"
-    fields:
-      - { name: slug, label: "Slug", widget: hidden }
-      - { name: title, label: "Title", widget: string }
-      - { name: hero, label: "Hero image", widget: image }
-      - { name: heroSize, label: "Hero size", widget: select, options: ["sm", "md", "lg"], default: "md" }
-      - name: blocks
-        label: "Content blocks"
-        widget: list
-        summary: "{{fields.html}}"
+    files:
+      - name: when
+        label: "When"
+        file: "content/pages/when.json"
+        fields: &contentPageFields
+          - { name: slug, label: "Slug", widget: hidden }
+          - { name: title, label: "Title", widget: string }
+          - { name: hero, label: "Hero image", widget: image }
+          - { name: heroSize, label: "Hero size", widget: select, options: ["sm", "md", "lg"], default: "md" }
+          - name: blocks
+            label: "Content blocks"
+            widget: list
+            collapsed: true
+            summary: "{{fields.html}}"
+            fields:
+              - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
+              - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+      - name: drinks
+        label: "Drinks"
+        file: "content/pages/drinks.json"
+        fields: *contentPageFields
+      - name: kids
+        label: "Kids"
+        file: "content/pages/kids.json"
+        fields: *contentPageFields
+      - name: volunteer
+        label: "Volunteer"
+        file: "content/pages/volunteer.json"
+        fields: *contentPageFields
+      - name: tickets
+        label: "Tickets & fees"
+        file: "content/tickets.json"
+        icon: local_activity
         fields:
-          - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
-          - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+          - name: passes
+            label: "Passes"
+            widget: list
+            collapsed: true
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - { name: passesNote, label: "Passes note", widget: string }
+          - name: campingParking
+            label: "Camping & parking fees"
+            widget: list
+            collapsed: true
+            fields:
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - name: ticketNotes
+            label: "Notes"
+            widget: list
+            collapsed: true
+            field: { name: note, label: "Note", widget: string }
+          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed ticket tables and notes." }
+          - { name: customHtml, label: "Custom HTML", widget: text, required: false }
+      - name: regulations
+        label: "Regulations"
+        file: "content/regulations.json"
+        icon: gavel
+        fields:
+          - name: sections
+            label: "Sections"
+            widget: list
+            collapsed: true
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: "Title", widget: string }
+              - name: items
+                label: "Items"
+                widget: list
+                collapsed: true
+                fields:
+                  - { name: p, label: "Paragraph", widget: text, required: false }
+                  - name: ul
+                    label: "Bullet list"
+                    widget: list
+                    collapsed: true
+                    required: false
+                    field: { name: item, label: "Item", widget: string }
