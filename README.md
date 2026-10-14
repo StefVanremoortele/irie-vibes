@@ -25,7 +25,8 @@ npm run production  # self-updating production server (see below)
 ## Branches and deployment
 
 **`main` is production.** Every commit on `main`, including every save in the
-CMS, goes live automatically within about 30 seconds.
+CMS, goes live automatically within seconds: GitHub sends a push webhook to
+the production server, which pulls and rebuilds immediately.
 
 - Do development on feature branches (`git switch -c feat/…`) and merge to
   `main` only when the change is ready to go live.
@@ -38,20 +39,31 @@ CMS, goes live automatically within about 30 seconds.
 `npm run production` (`scripts/production.mjs`) runs in a dedicated clone that
 nobody edits, a sibling `production/` folder next to the development checkout:
 
-1. Builds the site and serves `dist/` with `astro preview`.
-2. Every 30 seconds, fetches the upstream branch and fast-forwards when it has
-   new commits (it never merges or rebases; a diverged clone only logs a
-   warning). Runs `npm ci` when `package-lock.json` changed.
-3. Builds into `.release-next/` and swaps it into `dist/` only if the build
-   succeeds. A failed build keeps the previous release online.
+1. Builds the site and serves `dist/` with `astro preview` on an internal port.
+   A small front server on the public port proxies to it.
+2. **Deploy webhook:** the front server answers `POST /__deploy`. A GitHub
+   webhook on the repo (push events, JSON, signed with a shared secret) calls
+   it on every push. Requests with an invalid `X-Hub-Signature-256` are
+   rejected; pushes to other branches are ignored.
+3. On a push to the tracked branch it fetches and fast-forwards (it never
+   merges or rebases; a diverged clone only logs a warning), runs `npm ci` when
+   `package-lock.json` changed, builds into `.release-next/`, and swaps it into
+   `dist/` only if the build succeeds. A failed build keeps the previous
+   release online. Pushes that arrive mid-build queue one follow-up deploy, and
+   visitors are held briefly (not errored) while the release swaps.
+4. A periodic check (every 5 minutes) catches pushes whose webhook was missed,
+   e.g. while the host was offline.
 
-Environment overrides: `PORT` (default `4321`), `HOST` (`0.0.0.0`),
-`PRODUCTION_SYNC_INTERVAL` (seconds, `30`). Changes to
-`scripts/production.mjs` itself need a restart of the service.
+Environment: `PORT` (default `4321`), `HOST` (`0.0.0.0`), `PREVIEW_PORT`
+(internal, `4331`), `PRODUCTION_SYNC_INTERVAL` (seconds, `300`), and
+`DEPLOY_WEBHOOK_SECRET` (the GitHub webhook secret; without it the webhook is
+disabled and only the periodic check runs). Changes to `scripts/production.mjs`
+itself need a restart of the service.
 
 On the host it runs as the systemd user service `irie-vibes-production`
 (defined in `~/.config/systemd/user/irie-vibes-production.service`, not in this
-repo):
+repo). The webhook secret lives outside the repo in
+`~/.config/irie-vibes/production.env` (loaded via `EnvironmentFile=`):
 
 ```bash
 journalctl --user -u irie-vibes-production -f   # follow pulls, builds, releases
@@ -63,7 +75,10 @@ To set it up on a new host: clone the repo into the production folder, run
 `npm ci`, and create a user service whose `WorkingDirectory` is that clone and
 whose `ExecStart` is `node scripts/production.mjs` (with `Restart=always` and
 `PATH` including Node and git). Git must be able to fetch without prompts
-(SSH key without passphrase or a credential helper).
+(SSH key without passphrase or a credential helper). Then add a repo webhook
+in GitHub (*Settings → Webhooks*): payload URL `https://<public host>/__deploy`,
+content type `application/json`, the same secret as `DEPLOY_WEBHOOK_SECRET`,
+and only the *push* event.
 
 ## Editing content
 

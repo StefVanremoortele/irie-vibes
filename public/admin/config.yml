@@ -3,7 +3,7 @@
 # here; the static site is rebuilt from those same files.
 #
 # Saving commits to `main`, which is production: the self-hosted production
-# server rebuilds and publishes within ~30s. See CMS.md and README.md.
+# server rebuilds and publishes within seconds (GitHub webhook). See CMS.md and README.md.
 #
 # Local editing (no cloud needed):
 #   Terminal 1:  npm run dev

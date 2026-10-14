@@ -10,7 +10,7 @@ non-technical editors. It's already wired up:
 
 Editors change content in the admin → it's committed to `content/*.json` on
 `main` → the production server pulls and rebuilds the static site from those
-files within about 30 seconds. No content lives in the templates.
+files within seconds (triggered by a GitHub webhook). No content lives in the templates.
 
 > **Saving in the admin publishes.** The CMS commits straight to `main`, and
 > `main` is production (see [README → Branches and deployment](README.md#branches-and-deployment)).
@@ -59,8 +59,9 @@ The admin is configured for the GitHub repository
   relay such as the [`sveltia-cms-auth`](https://github.com/sveltia/sveltia-cms-auth)
   Cloudflare Worker, referenced from `config.yml`.
 
-Every save is a commit on `main`. The self-hosted production server picks it
-up, rebuilds, and publishes it (see
+Every save is a commit on `main`. GitHub notifies the self-hosted production
+server through a webhook, which pulls, rebuilds, and publishes it within
+seconds (see
 [README → Branches and deployment](README.md#branches-and-deployment)). A
 running dev server on `main` also pulls these commits automatically.
 
