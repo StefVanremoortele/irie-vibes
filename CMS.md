@@ -32,7 +32,7 @@ browsers — Chrome/Edge), so you can edit with zero cloud setup:
 npm run dev
 ```
 
-Then open **http://localhost:4321/admin/index.html** (use `/admin/index.html`
+Then open **http://localhost:4320/admin/index.html** (use `/admin/index.html`
 locally — Astro's dev server doesn't do directory-index; production hosts serve
 `/admin/` fine). Click **"Work with Local Repository"** and select this `site/`
 folder when prompted. Edits are written straight to `content/*.json` and the dev

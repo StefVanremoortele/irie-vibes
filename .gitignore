@@ -1,5 +1,7 @@
 # build output
 dist/
+.release-next/
+.release-prev/
 .astro/
 
 # dependencies

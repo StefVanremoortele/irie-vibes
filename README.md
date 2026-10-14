@@ -16,16 +16,29 @@ content and presentation are fully separated.
 
 ```bash
 npm install
-npm run dev      # local dev server at http://localhost:4321
+npm run dev      # local dev server at http://localhost:4320
 npm run build    # static build into dist/
 npm run preview  # serve the built site locally
 ```
 
+## Self-hosted production preview
+
+`npm run production` serves the static build with `astro preview` (port
+`4321`), polls the upstream branch every 30 seconds, fast-forwards new commits
+(e.g. CMS edits), rebuilds, and swaps the new release in only if the build
+succeeds. Run it in a dedicated clone that nobody edits (e.g. a sibling
+`production/` folder). Override with `PORT`, `HOST`, and
+`PRODUCTION_SYNC_INTERVAL`.
+
 ## Editing content
 
 Content is managed with Sveltia CMS. Locally, run `npm run dev` and open
-`http://localhost:4321/admin/index.html` (Chrome/Edge) → "Work with Local
-Repository". Full instructions, the collection map, and production/GitHub setup
+`http://localhost:4320/admin/index.html` (Chrome/Edge) → "Work with Local
+Repository". While `npm run dev` is running, commits made through the
+GitHub-backed admin are fetched and fast-forwarded into the local checkout every
+30 seconds, so the dev server hot-reloads them automatically (set
+`CONTENT_SYNC_INTERVAL` to change the seconds, or `0` to disable; diverged
+branches are left alone with a warning). Full instructions, the collection map, and production/GitHub setup
 are in [`CMS.md`](./CMS.md).
 
 The build outputs a fully static site in `dist/` that can be hosted anywhere

@@ -5,7 +5,7 @@
 # Local editing (no cloud needed):
 #   Terminal 1:  npm run dev
 #   Terminal 2:  npm run cms:proxy
-#   Open:        http://localhost:4321/admin/  (choose "Work with Local Repository")
+#   Open:        http://localhost:4320/admin/  (choose "Work with Local Repository")
 #
 # Production auth: set the `backend.repo` below to your GitHub repo, deploy the
 # site, and connect an OAuth relay (see CMS-CONVERSION.md). Paths here assume
