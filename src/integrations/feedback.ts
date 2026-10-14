@@ -25,6 +25,15 @@ interface FeedbackEntry {
   status: FeedbackStatus;
   createdAt: string;
   images: FeedbackImage[];
+  metadata?: FeedbackMetadata;
+}
+
+interface FeedbackMetadata {
+  viewport: { width: number; height: number };
+  region: { x: number; y: number; width: number; height: number };
+  scroll: { x: number; y: number };
+  userAgent: string;
+  screenshotFailed?: boolean;
 }
 
 interface MultipartPart {
@@ -169,6 +178,18 @@ async function handleApi(req: IncomingMessage, res: ServerResponse) {
       const name = fields.name?.trim().slice(0, 120) || 'Anonymous';
       const page = fields.page?.trim().slice(0, 500) || '';
       const message = fields.message?.trim().slice(0, 10000) || '';
+      let metadata: FeedbackMetadata | undefined;
+      if (fields.metadata) {
+        try {
+          const parsed = JSON.parse(fields.metadata) as FeedbackMetadata;
+          if (parsed && parsed.viewport && parsed.region && parsed.scroll && typeof parsed.userAgent === 'string') metadata = parsed;
+        } catch {
+          return send(res, 400, { error: 'Invalid feedback metadata.' });
+        }
+      }
+      const storedMessage = metadata?.screenshotFailed
+        ? `${message}\n\n[Screenshot capture failed; coordinates recorded.]`.slice(0, 10000)
+        : message;
       if (!message) return send(res, 400, { error: 'Message is required.' });
       if (images.length > MAX_IMAGES) return send(res, 400, { error: `You can attach up to ${MAX_IMAGES} images.` });
       if (images.some((image) => !image.type.startsWith('image/'))) return send(res, 400, { error: 'Only image files are allowed.' });
@@ -183,7 +204,7 @@ async function handleApi(req: IncomingMessage, res: ServerResponse) {
         await writeFile(join(imageDir, filename), image.data);
         storedImages.push({ name: filename, type: image.type, url: `/__feedback/images/${id}/${encodeURIComponent(filename)}` });
       }
-      const entry: FeedbackEntry = { id, name, page, message, status: 'New', createdAt: new Date().toISOString(), images: storedImages };
+      const entry: FeedbackEntry = { id, name, page, message: storedMessage, status: 'New', createdAt: new Date().toISOString(), images: storedImages, ...(metadata ? { metadata } : {}) };
       await mkdir(dir, { recursive: true });
       await writeFile(join(dir, `${id}.json`), `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
       await regenerateIndex(dir);
@@ -234,9 +255,10 @@ export default function feedbackIntegration(): AstroIntegration {
   return {
     name: 'irie-vibes-dev-feedback',
     hooks: {
-      'astro:config:setup': ({ command, injectRoute }) => {
+      'astro:config:setup': ({ command, injectRoute, injectScript }) => {
         if (command !== 'dev') return;
         injectRoute({ pattern: '/feedback', entrypoint: new URL('../dev/feedback.astro', import.meta.url).pathname });
+        injectScript('page', `import '/src/dev/inline-feedback.ts';`);
       },
       'astro:server:setup': ({ server }) => middleware(server),
     },
