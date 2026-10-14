@@ -59,8 +59,8 @@ nobody edits, a sibling `production/` folder next to the development checkout:
 Environment: `PORT` (default `4321`), `HOST` (`0.0.0.0`), `PREVIEW_PORT`
 (internal, `4331`), `PRODUCTION_SYNC_INTERVAL` (seconds, `300`),
 `DEPLOY_WEBHOOK_SECRET` (the GitHub webhook secret; without it the webhook is
-disabled and only the periodic check runs), and `FEEDBACK_DIR` (see
-[Feedback tool](#feedback-tool)). Changes to `scripts/production.mjs` and
+disabled and only the periodic check runs), and `FEEDBACK_DIR` /
+`FEEDBACK_GIT_SYNC` (see [Feedback tool](#feedback-tool)). Changes to `scripts/production.mjs` and
 `scripts/feedback-server.mjs` need a restart of the service.
 
 On the host it runs as the systemd user service `irie-vibes-production`
@@ -110,10 +110,15 @@ anonymous: there is no name field, and every post is stored and shown under the
 pseudonym *Jah a the Creator*.
 
 `/feedback` is the inbox: status tabs (*New*, *In progress*, *Done*, *All*)
-with counts, one-click status changes, delete, a screenshot lightbox, and a
-form for notes without a screenshot. It refreshes every 30 seconds. The inbox
+with counts, screenshots with a lightbox, a subtle *Delete* link per item, and
+a form for notes without a screenshot. It refreshes every 30 seconds. The inbox
 is not linked from the site and has no login, so anyone with the URL can read
-and manage it.
+it.
+
+**Statuses are managed in Sveltia** at `/admin/feedback/` (in dev:
+`/admin/feedback/index.html`), a second admin page for the private repo
+[`irie-vibes-feedback`](https://github.com/StefVanremoortele/irie-vibes-feedback).
+Sign in there with a GitHub token that can access that private repo.
 
 The *Developer notes* tab shows messages from the developer to testers. They
 are written in the CMS (*Feedback → Developer notes*, `content/dev-notes.json`)
@@ -121,9 +126,12 @@ and published with the site; each browser marks notes it hasn't seen as *New*.
 
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside
-this repository in `~/sources/repos/stef/irie-vibes-feedback/` (one JSON file
-per entry, `images/`, and a generated `index.md`); set `FEEDBACK_DIR` to use
-another private folder. Do not commit feedback data.
+this public repository in `~/sources/repos/stef/irie-vibes-feedback/`, a clone
+of the private feedback repo (`entries/<id>.json`, `images/<id>/`, and an
+untracked generated `index.md`); set `FEEDBACK_DIR` to use another folder. With
+`FEEDBACK_GIT_SYNC=1` (set in production) the server commits and pushes every
+new or deleted item and pulls status edits from the CMS before serving the
+list (at most every 15 seconds). Never commit feedback data to this repo.
 
 ## What's on the site
 

@@ -1,0 +1,84 @@
+# Sveltia CMS configuration for website feedback (the /feedback inbox).
+#
+# Feedback lives in the PRIVATE repo StefVanremoortele/irie-vibes-feedback,
+# not in this public site repo. The production server commits every new
+# entry there (FEEDBACK_GIT_SYNC=1) and pulls edits made here, so a status
+# change shows up on /feedback within about 30 seconds. Sign in with a GitHub
+# token that has access to that private repo.
+#
+# Only the status is meant to be edited; the other fields are read-only.
+
+backend:
+  name: github
+  repo: StefVanremoortele/irie-vibes-feedback
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: feedback
+    label: "Feedback"
+    label_singular: "Feedback item"
+    folder: "entries"
+    extension: json
+    format: json
+    create: false
+    delete: true
+    identifier_field: id
+    summary: "{{status}} · {{message | truncate(80)}}"
+    sortable_fields: [createdAt, status, page]
+    view_filters:
+      - { label: "New", field: status, pattern: "^New$" }
+      - { label: "In progress", field: status, pattern: "^In progress$" }
+      - { label: "Done", field: status, pattern: "^Done$" }
+    view_groups:
+      - { label: "Status", field: status }
+    fields:
+      - { name: status, label: "Status", widget: select, options: ["New", "In progress", "Done"], default: "New" }
+      - { name: message, label: "Message", widget: text, readonly: true }
+      - { name: page, label: "Page", widget: string, readonly: true, required: false }
+      - { name: createdAt, label: "Sent", widget: datetime, readonly: true }
+      - { name: screenshot, label: "Screenshot", widget: image, readonly: true, required: false }
+      - { name: id, label: "ID", widget: string, readonly: true }
+      - { name: name, label: "Name", widget: string, readonly: true }
+      - name: images
+        label: "Images"
+        widget: list
+        readonly: true
+        required: false
+        collapsed: true
+        fields:
+          - { name: name, label: "File", widget: string }
+          - { name: type, label: "Type", widget: string }
+          - { name: url, label: "URL", widget: string }
+      - name: metadata
+        label: "Browser details"
+        widget: object
+        readonly: true
+        required: false
+        collapsed: true
+        fields:
+          - { name: userAgent, label: "Browser", widget: string }
+          - name: viewport
+            label: "Viewport"
+            widget: object
+            fields:
+              - { name: width, label: "Width", widget: number }
+              - { name: height, label: "Height", widget: number }
+          - name: scroll
+            label: "Scroll position"
+            widget: object
+            fields:
+              - { name: x, label: "X", widget: number, value_type: float }
+              - { name: y, label: "Y", widget: number, value_type: float }
+          - name: region
+            label: "Selected region"
+            widget: object
+            required: false
+            fields:
+              - { name: x, label: "X", widget: number, value_type: float }
+              - { name: y, label: "Y", widget: number, value_type: float }
+              - { name: width, label: "Width", widget: number, value_type: float }
+              - { name: height, label: "Height", widget: number, value_type: float }
+          - { name: screenshotFailed, label: "Screenshot failed", widget: boolean, required: false }

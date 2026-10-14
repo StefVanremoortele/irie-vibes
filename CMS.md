@@ -29,6 +29,10 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
 | Feedback → Developer notes | `content/dev-notes.json` | messages for testers, shown on the *Developer notes* tab of `/feedback` |
 
+Feedback items themselves (their status: New / In progress / Done) are managed
+in a separate admin, `/admin/feedback/`, which edits the private repo
+`StefVanremoortele/irie-vibes-feedback`; see the README's *Feedback tool*.
+
 ## Editing locally (no account needed)
 
 Sveltia's local mode uses the browser's **File System Access API** (Chromium
