@@ -10,6 +10,8 @@
 # Production auth: set the `backend.repo` below to your GitHub repo, deploy the
 # site, and connect an OAuth relay (see CMS-CONVERSION.md). Paths here assume
 # the git repository root is this `site/` folder.
+# List sections use both `collapsed` (items) and `minimize_collapsed` (the whole
+# section); both are UI-only Sveltia options and preserve the flat JSON shape.
 
 backend:
   name: github
