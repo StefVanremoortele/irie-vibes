@@ -1,21 +1,30 @@
 // Feedback storage and HTTP API, shared by the Astro dev server
 // (src/integrations/feedback.ts) and the production server (production.mjs).
 //
-// Entries are stored outside the repository as one JSON file per entry plus
-// an images/<id>/ folder, with a regenerated index.md for quick reading.
+// Entries are stored outside this (public) repository, in FEEDBACK_DIR: one
+// JSON file per entry in entries/, screenshots in images/<id>/, and a
+// regenerated index.md for quick reading. That folder is a clone of the
+// private GitHub repo irie-vibes-feedback, which the Sveltia admin at
+// /admin/feedback/ edits (status). With FEEDBACK_GIT_SYNC=1 (production) new
+// and deleted entries are committed and pushed, and CMS edits are pulled
+// before the list is served.
 //
-// Env: FEEDBACK_DIR (default ~/sources/repos/stef/irie-vibes-feedback).
+// Env: FEEDBACK_DIR (default ~/sources/repos/stef/irie-vibes-feedback),
+//      FEEDBACK_GIT_SYNC (1 to commit/push/pull FEEDBACK_DIR).
+import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
+import { promisify } from 'node:util';
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_IMAGES = 10;
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
-const STATUSES = ['New', 'In progress', 'Done'];
 const ENTRY_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 // All feedback is anonymous: every entry is stored and shown under this name.
 export const PSEUDONYM = 'Jah a the Creator';
+const PULL_INTERVAL_MS = 15 * 1000;
 const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif' };
 
 class HttpError extends Error {
@@ -97,19 +106,98 @@ function disposition(headers) {
   };
 }
 
+const entriesDir = (dir) => join(dir, 'entries');
+
+// Entries used to live in the folder root; move them into entries/ once.
+let layoutReady;
+function ensureLayout(dir) {
+  layoutReady ??= (async () => {
+    await mkdir(entriesDir(dir), { recursive: true });
+    for (const file of await readdir(dir, { withFileTypes: true })) {
+      if (file.isFile() && ENTRY_ID.test(file.name.replace(/\.json$/, '')) && file.name.endsWith('.json')) {
+        const entry = JSON.parse(await readFile(join(dir, file.name), 'utf8'));
+        await writeEntry(dir, withScreenshot(entry));
+        await rm(join(dir, file.name));
+      }
+    }
+  })();
+  return layoutReady;
+}
+
+// `screenshot` is the first image as a repo path, for the CMS preview.
+function withScreenshot(entry) {
+  const first = entry.images?.[0];
+  return first ? { ...entry, screenshot: `/images/${entry.id}/${first.name}` } : entry;
+}
+
+function writeEntry(dir, entry) {
+  return writeFile(join(entriesDir(dir), `${entry.id}.json`), `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
+}
+
 async function listEntries(dir) {
-  await mkdir(dir, { recursive: true });
-  const names = await readdir(dir, { withFileTypes: true });
+  await ensureLayout(dir);
   const entries = [];
-  for (const file of names) {
+  for (const file of await readdir(entriesDir(dir), { withFileTypes: true })) {
     if (!file.isFile() || !file.name.endsWith('.json')) continue;
     try {
-      entries.push(JSON.parse(await readFile(join(dir, file.name), 'utf8')));
+      entries.push(JSON.parse(await readFile(join(entriesDir(dir), file.name), 'utf8')));
     } catch {
       // Ignore an incomplete or manually removed entry file.
     }
   }
   return entries.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+// ---- Git sync with the private feedback repo (production only) -------------
+
+const run = promisify(execFile);
+const gitEnv = { ...process.env, GIT_TERMINAL_PROMPT: '0', GIT_SSH_COMMAND: process.env.GIT_SSH_COMMAND || 'ssh -o BatchMode=yes' };
+let gitQueue = Promise.resolve();
+let lastPull = 0;
+
+function gitSyncEnabled(dir) {
+  return process.env.FEEDBACK_GIT_SYNC === '1' && existsSync(join(dir, '.git'));
+}
+
+const git = (dir, ...args) => run('git', args, { cwd: dir, env: gitEnv });
+
+// Git operations run one at a time; a failure is logged and the local files
+// keep being served (the next sync retries).
+function queueGit(dir, task) {
+  const next = gitQueue.then(() => task(dir)).catch((error) => {
+    console.error(`[feedback] git sync failed: ${error.stderr?.trim() || error.message}`);
+  });
+  gitQueue = next;
+  return next;
+}
+
+async function pull(dir) {
+  try {
+    await git(dir, 'pull', '--quiet', '--rebase', '--autostash');
+  } catch (error) {
+    await git(dir, 'rebase', '--abort').catch(() => {});
+    throw error;
+  }
+  lastPull = Date.now();
+  await regenerateIndex(dir);
+}
+
+async function commitAndPush(dir, message) {
+  await git(dir, 'add', '-A');
+  const { stdout } = await git(dir, 'status', '--porcelain');
+  if (stdout.trim()) await git(dir, 'commit', '--quiet', '-m', message);
+  await pull(dir);
+  await git(dir, 'push', '--quiet');
+}
+
+function publish(dir, message) {
+  if (gitSyncEnabled(dir)) void queueGit(dir, (cwd) => commitAndPush(cwd, message));
+}
+
+async function pullIfStale(dir) {
+  if (!gitSyncEnabled(dir) || Date.now() - lastPull < PULL_INTERVAL_MS) return;
+  lastPull = Date.now();
+  await queueGit(dir, pull);
 }
 
 async function regenerateIndex(dir) {
@@ -131,7 +219,7 @@ async function regenerateIndex(dir) {
 
 function entryFile(dir, id) {
   if (!ENTRY_ID.test(id)) throw new HttpError(400, 'Invalid feedback id.');
-  return join(dir, `${id}.json`);
+  return join(entriesDir(dir), `${id}.json`);
 }
 
 async function readEntry(file) {
@@ -184,7 +272,7 @@ async function createEntry(req, dir) {
     await writeFile(join(dir, 'images', id, filename), image.data);
     storedImages.push({ name: filename, type: image.type, url: `/__feedback/images/${id}/${encodeURIComponent(filename)}` });
   }
-  const entry = {
+  const entry = withScreenshot({
     id,
     name: PSEUDONYM,
     page: fields.page?.trim().slice(0, 500) || '',
@@ -193,36 +281,23 @@ async function createEntry(req, dir) {
     createdAt: new Date().toISOString(),
     images: storedImages,
     ...(metadata ? { metadata } : {}),
-  };
-  await mkdir(dir, { recursive: true });
-  await writeFile(join(dir, `${id}.json`), `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
+  });
+  await ensureLayout(dir);
+  await writeEntry(dir, entry);
   await regenerateIndex(dir);
+  publish(dir, `New feedback: ${message.split('\n')[0].slice(0, 60)}`);
   return entry;
 }
 
 async function handleApi(req, res, path) {
   const dir = feedbackDir();
   if (path === '/__feedback/api/entries') {
-    if (req.method === 'GET') return send(res, 200, { entries: await listEntries(dir) });
+    if (req.method === 'GET') {
+      await pullIfStale(dir);
+      return send(res, 200, { entries: await listEntries(dir) });
+    }
     if (req.method === 'POST') return send(res, 201, { entry: await createEntry(req, dir) });
     throw new HttpError(405, 'Method not allowed.');
-  }
-
-  const statusMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/status$/);
-  if (statusMatch && req.method === 'PATCH') {
-    const file = entryFile(dir, statusMatch[1]);
-    let payload;
-    try {
-      payload = JSON.parse((await readRequest(req)).toString('utf8'));
-    } catch {
-      throw new HttpError(400, 'Invalid JSON.');
-    }
-    if (!STATUSES.includes(payload?.status)) throw new HttpError(400, 'Invalid status.');
-    const entry = await readEntry(file);
-    entry.status = payload.status;
-    await writeFile(file, `${JSON.stringify(entry, null, 2)}\n`, 'utf8');
-    await regenerateIndex(dir);
-    return send(res, 200, { entry });
   }
 
   const deleteMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)$/);
@@ -232,6 +307,7 @@ async function handleApi(req, res, path) {
     await rm(file);
     await rm(join(dir, 'images', entry.id), { recursive: true, force: true });
     await regenerateIndex(dir);
+    publish(dir, `Delete feedback: ${entry.message.split('\n')[0].slice(0, 60)}`);
     return send(res, 200, { deleted: entry.id });
   }
 

@@ -16,7 +16,7 @@ const linkify = (text: string) =>
     <header class="inbox__head">
       <div>
         <h1 class="title">Feedback</h1>
-        <p class="inbox__lead">Use the <strong>Feedback</strong> button (or Shift+F) on any page to send a comment with a screenshot.</p>
+        <p class="inbox__lead">Use the <strong>Feedback</strong> button (or Shift+F) on any page to send a comment with a screenshot. Statuses are managed in the <a href="/admin/feedback/index.html">admin panel</a>.</p>
       </div>
       <nav class="tabs" aria-label="Filter by status">
         <a class="tab" href="#new" data-filter="New">New <span data-count="New"></span></a>
@@ -74,6 +74,7 @@ const linkify = (text: string) =>
   .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
   .inbox__head .title { margin: 0 0 6px; text-align: left; }
   .inbox__lead { margin: 0; color: var(--on-surface-variant); }
+  .inbox__lead a { color: var(--secondary); }
   .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
   .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-full); color: var(--on-surface-variant); font-weight: 600; font-size: 14px; text-decoration: none; }
   .tab:hover { border-color: var(--outline); color: var(--on-surface-strong); }
@@ -112,8 +113,9 @@ const linkify = (text: string) =>
   :global(.fb-btn:disabled) { opacity: .5; cursor: progress; }
   :global(.fb-btn--primary) { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
   :global(.fb-btn--primary:hover) { background: var(--secondary-hover); color: var(--surface); }
-  :global(.fb-btn--danger) { margin-left: auto; color: var(--muted); }
-  :global(.fb-btn--danger:hover) { border-color: var(--stage-inner); color: var(--stage-inner); }
+  :global(.fb-item__actions) { justify-content: flex-end; }
+  :global(.fb-item__delete) { padding: 2px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; opacity: .55; cursor: pointer; transition: opacity .15s, color .15s; }
+  :global(.fb-item__delete:hover), :global(.fb-item__delete:focus-visible) { opacity: 1; color: var(--stage-inner); text-decoration: underline; }
   .note { width: 100%; max-width: var(--max-wide); padding: 0; }
   .note summary { padding: 14px 18px; color: var(--on-surface-variant); font-weight: 600; cursor: pointer; }
   .note__form { display: grid; gap: 14px; padding: 0 18px 18px; }
@@ -153,11 +155,6 @@ const linkify = (text: string) =>
   // Feedback is anonymous; older entries may still carry a name, never shown.
   const PSEUDONYM = 'Jah a the Creator';
   const FILTERS: Record<string, string> = { '#new': 'New', '#in-progress': 'In progress', '#done': 'Done', '#all': 'All' };
-  const ACTIONS: Record<string, [string, string][]> = {
-    New: [['Start', 'In progress'], ['Done', 'Done']],
-    'In progress': [['Done', 'Done'], ['Back to new', 'New']],
-    Done: [['Reopen', 'New']],
-  };
 
   const list = document.querySelector<HTMLElement>('#entries')!;
   const lightbox = document.querySelector<HTMLDialogElement>('#lightbox')!;
@@ -209,8 +206,7 @@ const linkify = (text: string) =>
           <p class="fb-item__message">${escapeHtml(entry.message)}</p>
           ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
           <div class="fb-item__actions">
-            ${(ACTIONS[entry.status] || ACTIONS.New).map(([label, status], index) => `<button class="fb-btn ${index === 0 ? 'fb-btn--primary' : ''}" type="button" data-status="${status}">${label}</button>`).join('')}
-            <button class="fb-btn fb-btn--danger" type="button" data-delete>Delete</button>
+            <button class="fb-item__delete" type="button" data-delete>Delete</button>
           </div>
         </div>
       </article>`;
@@ -257,17 +253,7 @@ const linkify = (text: string) =>
     const id = button.closest<HTMLElement>('[data-id]')?.dataset.id;
     const entry = entries.find((item) => item.id === id);
     if (!id || !entry) return;
-    const setStatus = (status: string) => { const current = entries.find((item) => item.id === id); if (current) current.status = status; };
-    if (button.dataset.status) {
-      const previous = entry.status;
-      const status = button.dataset.status;
-      await mutate(
-        () => fetch(`${API}/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) }),
-        () => setStatus(status),
-        () => setStatus(previous),
-        'Could not update the status.',
-      );
-    } else if ('delete' in button.dataset) {
+    if ('delete' in button.dataset) {
       const preview = entry.message.length > 160 ? `${entry.message.slice(0, 160)}…` : entry.message;
       if (!confirm(`Delete this feedback?\n\n“${preview}”`)) return;
       const removed = entry;
