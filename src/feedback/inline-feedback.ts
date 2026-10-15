@@ -6,6 +6,7 @@
 // mode opens, so it is usually ready by the time the user finishes drawing.
 
 type Region = { x: number; y: number; width: number; height: number };
+type Embed = { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string; rect: Region };
 
 const PSEUDONYM = 'Jah a the Creator';
 const UI_ATTR = 'data-feedback-ui';
@@ -64,11 +65,75 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, props: Record<string,
 
 const loadScreenshotLib = () => import('modern-screenshot');
 
+const YOUTUBE_EMBED = /^https?:\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/([\w-]+)/;
+
+function youtubeId(src: string) {
+  return YOUTUBE_EMBED.exec(src)?.[1];
+}
+
+// Embeds visible in the viewport, sent with the feedback so the inbox shows
+// what was on screen even where the screenshot can't.
+function visibleEmbeds(): Embed[] {
+  return [...document.querySelectorAll('iframe')].flatMap((frame) => {
+    const src = frame.src;
+    if (!frame.getAttribute('src') || !/^https?:/.test(src)) return [];
+    const { x, y, width, height } = frame.getBoundingClientRect();
+    if (!width || !height || x + width <= 0 || y + height <= 0 || x >= innerWidth || y >= innerHeight) return [];
+    const id = youtubeId(src);
+    const kind = id ? 'youtube' : /google\.[^/]+\/maps/.test(src) ? 'map' : 'iframe';
+    return [{
+      kind,
+      url: id ? `https://www.youtube.com/watch?v=${id}` : src,
+      ...(frame.title ? { title: frame.title } : {}),
+      rect: { x, y, width, height },
+    }];
+  });
+}
+
+// Cross-origin iframes (YouTube, Google Maps) can't be rendered into the
+// screenshot and come out blank. Each cloned iframe is swapped for a box of
+// the same size: the video's thumbnail for YouTube, a labelled panel
+// otherwise. The library inlines the thumbnail after this runs.
+function replaceEmbeds(clone: Node, sources: HTMLIFrameElement[]) {
+  if (!(clone instanceof Element)) return;
+  clone.querySelectorAll('iframe').forEach((cloned, index) => {
+    const source = sources[index];
+    if (!source || source.getAttribute('src') !== cloned.getAttribute('src')) return;
+    const display = getComputedStyle(source).display;
+    if (display === 'none') return;
+    const box = document.createElement('div');
+    for (const name of ['class', 'style']) {
+      const value = cloned.getAttribute(name);
+      if (value !== null) box.setAttribute(name, value);
+    }
+    Object.assign(box.style, {
+      display: display === 'inline' ? 'inline-block' : display,
+      boxSizing: 'border-box',
+      width: `${source.offsetWidth}px`,
+      height: `${source.offsetHeight}px`,
+      position: ['absolute', 'fixed', 'sticky'].includes(box.style.position) ? box.style.position : 'relative',
+      overflow: 'hidden',
+      background: '#000',
+    });
+    const id = youtubeId(source.src);
+    if (id) box.style.background = `#000 url("https://i.ytimg.com/vi/${id}/hqdefault.jpg") center / cover no-repeat`;
+    const label = document.createElement('span');
+    label.textContent = id ? '▶ YouTube video' : `Embedded ${/google\.[^/]+\/maps/.test(source.src) ? 'map' : 'content'}`;
+    Object.assign(label.style, {
+      position: 'absolute', left: '8px', bottom: '8px', padding: '3px 8px', borderRadius: '6px',
+      background: '#000c', color: '#fff', font: '600 12px/1.3 system-ui, sans-serif',
+    });
+    box.append(label);
+    cloned.replaceWith(box);
+  });
+}
+
 // Renders the visible viewport only: the body is shifted up by the scroll
 // offset so fixed elements (header) and the visible content line up as on
 // screen. The feedback UI and the Astro dev toolbar are left out.
 async function captureViewport() {
   const { domToCanvas } = await loadScreenshotLib();
+  const frames = [...document.body.querySelectorAll('iframe')];
   return domToCanvas(document.body, {
     width: document.documentElement.clientWidth,
     height: innerHeight,
@@ -82,6 +147,7 @@ async function captureViewport() {
       && node.localName !== 'astro-dev-toolbar'
       && !(node instanceof HTMLImageElement && (!node.complete || !node.naturalWidth))
     ),
+    onCloneNode: (clone) => replaceEmbeds(clone, frames),
     timeout: 1000,
   });
 }
@@ -141,6 +207,7 @@ function init() {
 
   function open() {
     if (close) return;
+    const embeds = visibleEmbeds();
     const capture = captureViewport();
     capture.catch((error) => console.warn('[feedback] screenshot capture failed', error));
     const root = el('div');
@@ -258,6 +325,7 @@ function init() {
           ...(selected ? { region: selected } : {}),
           scroll: { x: scrollX, y: scrollY },
           userAgent: navigator.userAgent,
+          ...(embeds.length ? { embeds } : {}),
           ...(screenshotFailed ? { screenshotFailed: true } : {}),
         }));
         if (blob) data.append('images', blob, `screenshot-${Date.now()}.${blob.type === 'image/webp' ? 'webp' : 'jpg'}`);

@@ -105,7 +105,10 @@ server and production: click the **Feedback** button (bottom left) or press
 **Shift+F**, drag over the area in question (or click for the whole screen,
 or skip the screenshot), and type a comment. The screenshot of the visible
 screen renders in the background while they draw, and is stored with the page
-URL, viewport size, scroll position, selected region and browser. Feedback is
+URL, viewport size, scroll position, selected region and browser. Embedded
+iframes (YouTube, maps) can't be rendered into the screenshot: YouTube videos
+show as their thumbnail, other embeds as a labelled box, and the embeds on
+screen are stored with the entry and linked in the inbox. Feedback is
 anonymous: there is no name field, and every post is stored and shown under the
 pseudonym *Jah a the Creator*.
 

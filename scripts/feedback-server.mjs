@@ -262,6 +262,17 @@ async function readEntry(file) {
   }
 }
 
+// Embeds (YouTube videos, maps) that were on screen; the screenshot can't show them.
+function parseEmbed(embed) {
+  if (!embed || !['youtube', 'map', 'iframe'].includes(embed.kind) || typeof embed.url !== 'string' || !/^https?:\/\//.test(embed.url)) return [];
+  return [{
+    kind: embed.kind,
+    url: embed.url.slice(0, 500),
+    ...(typeof embed.title === 'string' && embed.title ? { title: embed.title.slice(0, 200) } : {}),
+    ...(embed.rect ? { rect: embed.rect } : {}),
+  }];
+}
+
 function parseMetadata(raw) {
   if (!raw) return undefined;
   let parsed;
@@ -276,6 +287,7 @@ function parseMetadata(raw) {
     ...(parsed.region ? { region: parsed.region } : {}),
     scroll: parsed.scroll,
     userAgent: parsed.userAgent.slice(0, 500),
+    ...(Array.isArray(parsed.embeds) && parsed.embeds.length ? { embeds: parsed.embeds.slice(0, 10).flatMap(parseEmbed) } : {}),
     ...(parsed.screenshotFailed ? { screenshotFailed: true } : {}),
   };
 }

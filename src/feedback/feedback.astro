@@ -128,11 +128,16 @@ import Base from '../layouts/Base.astro';
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     images: { name: string; url: string }[];
-    metadata?: { viewport?: { width: number; height: number }; screenshotFailed?: boolean };
+    metadata?: {
+      viewport?: { width: number; height: number };
+      embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
+      screenshotFailed?: boolean;
+    };
   };
   const API = '/__feedback/api/entries';
   // Feedback is anonymous; older entries may still carry a name, never shown.
   const PSEUDONYM = 'Jah a the Creator';
+  const EMBED_LABELS: Record<string, string> = { youtube: '▶ YouTube video', map: 'map', iframe: 'embed' };
   const FILTERS: Record<string, string> = { '#new': 'New', '#in-progress': 'In progress', '#done': 'Done', '#all': 'All' };
 
   const list = document.querySelector<HTMLElement>('#entries')!;
@@ -181,6 +186,7 @@ import Base from '../layouts/Base.astro';
             ${entry.page ? `<a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a>` : ''}
             ${viewport ? `<span>${viewport.width}×${viewport.height}</span>` : ''}
             ${current === 'All' ? `<span class="fb-item__badge">${entry.status}</span>` : ''}
+            ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'embed'} on screen</a>`).join('')}
             ${entry.metadata?.screenshotFailed ? '<span class="fb-item__badge fb-item__badge--warn">screenshot failed</span>' : ''}
           </div>
           <p class="fb-item__message">${escapeHtml(entry.message)}</p>
