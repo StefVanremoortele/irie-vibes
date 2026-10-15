@@ -126,7 +126,7 @@ repo) and appear within about 30 seconds; each browser marks notes it hasn't
 seen as *New*.
 
 `/changelog` (linked from `/feedback`: "Want to see what has changed?") shows
-the changelog, written in markdown in the feedback admin (*Pages → Changelog*,
+the changelog, written in markdown in the feedback admin (*Changelog*,
 `changelog.json` in the private repo). The server renders it (raw HTML is
 escaped), so edits appear within about 30 seconds without a site rebuild.
 

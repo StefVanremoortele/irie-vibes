@@ -103,12 +103,12 @@ collections:
       - { name: message, label: "Message", widget: text, hint: "Plain text; line breaks and links are kept." }
       - { name: page, label: "Related page", widget: string, required: false, hint: "Optional path to test, e.g. /tickets" }
 
-  - name: pages
-    label: "Pages"
-    files:
-      - name: changelog
-        label: "Changelog"
-        file: "changelog.json"
-        description: "Shown on /changelog (linked from /feedback). Markdown: put the newest changes at the top."
-        fields:
-          - { name: body, label: "Changelog", widget: markdown }
+# One-off pages, listed in the sidebar by their own name (no folder around them).
+singletons:
+  - name: changelog
+    label: "Changelog"
+    file: "changelog.json"
+    icon: history
+    description: "Shown on /changelog (linked from /feedback). Markdown: put the newest changes at the top."
+    fields:
+      - { name: body, label: "Changelog", widget: markdown }
