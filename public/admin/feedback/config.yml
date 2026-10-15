@@ -1,5 +1,5 @@
 # Sveltia CMS configuration for website feedback (the /feedback inbox):
-# feedback items (status) and developer notes for testers.
+# feedback items (status), developer notes for testers, and the /changelog page.
 #
 # Feedback lives in the PRIVATE repo StefVanremoortele/irie-vibes-feedback,
 # not in this public site repo. The production server commits every new
@@ -102,3 +102,13 @@ collections:
       - { name: author, label: "Author", widget: string, default: "Developer" }
       - { name: message, label: "Message", widget: text, hint: "Plain text; line breaks and links are kept." }
       - { name: page, label: "Related page", widget: string, required: false, hint: "Optional path to test, e.g. /tickets" }
+
+  - name: pages
+    label: "Pages"
+    files:
+      - name: changelog
+        label: "Changelog"
+        file: "changelog.json"
+        description: "Shown on /changelog (linked from /feedback). Markdown: put the newest changes at the top."
+        fields:
+          - { name: body, label: "Changelog", widget: markdown }
