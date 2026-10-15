@@ -36,6 +36,6 @@
       "order": 2
     }
   ],
-  "useCustomHtml": false,
-  "customHtml": ""
+  "useCustomHtml": true,
+  "customHtml": "Soon to be announced."
 }
