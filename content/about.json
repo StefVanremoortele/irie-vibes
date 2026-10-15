@@ -166,7 +166,7 @@
     {
       "key": "greenforward",
       "label": "VZW Greenforward",
-      "visible": false
+      "visible": true
     },
     {
       "key": "initiatives",
