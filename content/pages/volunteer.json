@@ -10,7 +10,7 @@
     },
     {
       "type": "p",
-      "html": "<a href=\"mailto:info@irievibes.be\">Click here to volunteer</a>."
+      "html": "Click here to <a href=\"mailto:info@irievibes.be\">volunteer</a>."
     }
   ]
 }
