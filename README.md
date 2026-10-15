@@ -125,11 +125,16 @@ are written in the feedback admin (*Developer notes*, `notes/` in the private
 repo) and appear within about 30 seconds; each browser marks notes it hasn't
 seen as *New*.
 
+`/changelog` (linked from `/feedback`: "Want to see what has changed?") shows
+the changelog, written in markdown in the feedback admin (*Pages → Changelog*,
+`changelog.json` in the private repo). The server renders it (raw HTML is
+escaped), so edits appear within about 30 seconds without a site rebuild.
+
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside
 this public repository in `~/sources/repos/stef/irie-vibes-feedback/`, a clone
 of the private feedback repo (`entries/<id>.json`, `images/<id>/`,
-`notes/*.json`, and an
+`notes/*.json`, `changelog.json`, and an
 untracked generated `index.md`); set `FEEDBACK_DIR` to use another folder. With
 `FEEDBACK_GIT_SYNC=1` (set in production) the server commits and pushes every
 new or deleted item and pulls status edits from the CMS before serving the

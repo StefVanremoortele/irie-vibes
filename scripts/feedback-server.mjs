@@ -6,7 +6,7 @@
 // regenerated index.md for quick reading. Developer notes for testers are in
 // notes/*.json. That folder is a clone of the private GitHub repo
 // irie-vibes-feedback, which the Sveltia admin at /admin/feedback/ edits
-// (feedback status, developer notes). With FEEDBACK_GIT_SYNC=1 (production) new
+// (feedback status, developer notes, the markdown changelog in changelog.json). With FEEDBACK_GIT_SYNC=1 (production) new
 // and deleted entries are committed and pushed, and CMS edits are pulled
 // before the list is served.
 //
@@ -18,6 +18,8 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { promisify } from 'node:util';
+import { micromark } from 'micromark';
+import { gfm, gfmHtml } from 'micromark-extension-gfm';
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_IMAGES = 10;
@@ -166,6 +168,18 @@ async function listNotes(dir) {
   return notes.sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
 }
 
+// The changelog (markdown, written in the CMS) rendered to HTML. Raw HTML in
+// the markdown is escaped, not rendered.
+async function readChangelog(dir) {
+  let body = '';
+  try {
+    body = JSON.parse(await readFile(join(dir, 'changelog.json'), 'utf8')).body || '';
+  } catch {
+    // No changelog yet.
+  }
+  return { html: body.trim() ? micromark(body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }) : '' };
+}
+
 // ---- Git sync with the private feedback repo (production only) -------------
 
 const run = promisify(execFile);
@@ -309,6 +323,11 @@ async function createEntry(req, dir) {
 
 async function handleApi(req, res, path) {
   const dir = feedbackDir();
+  if (path === '/__feedback/api/changelog') {
+    if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+    await pullIfStale(dir);
+    return send(res, 200, await readChangelog(dir));
+  }
   if (path === '/__feedback/api/notes') {
     if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
     await pullIfStale(dir);
