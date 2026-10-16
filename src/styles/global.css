@@ -183,10 +183,6 @@ button {
   justify-content: space-between;
   gap: 16px;
   padding: 12px 4px;
-  border-bottom: 1px solid var(--border-soft);
-}
-.prices__row:last-child {
-  border-bottom: 0;
 }
 .prices__label {
   font-weight: 600;
