@@ -11,9 +11,9 @@ import { passes, passesNote, campingParking, ticketNotes, useCustomHtml, customH
   <div class="tickets">
     {!useCustomHtml && <Hero src={heroImages.tickets} alt="Festival wristbands" size="md" />}
     <div class="section section--narrow">
+      <h1 class="title">Tickets</h1>
       {useCustomHtml ? <div class="copy custom-html" set:html={customHtml} /> : (
         <>
-          <h1 class="title">Tickets</h1>
           <p class="copy copy--center tickets__intro">
             Tickets are available at
             <a href={site.ticketUrl} target="_blank" rel="noopener noreferrer">eventsquare</a>.
