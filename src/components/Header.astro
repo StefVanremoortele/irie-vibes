@@ -102,7 +102,8 @@ function canonicalHref(href: string): string {
   .hdr {
     /* Menu (record) button size; the ticket button is deliberately bigger. */
     --hdr-btn-size: clamp(52px, 7.5vw, 76px);
-    --hdr-ticket-size: clamp(56px, 9.5vw, 96px);
+    /* Capped just under the header height so it never sticks out (phones). */
+    --hdr-ticket-size: min(clamp(84px, 14.25vw, 144px), calc(var(--header-h) - 4px));
     position: fixed;
     top: 0;
     left: 0;
