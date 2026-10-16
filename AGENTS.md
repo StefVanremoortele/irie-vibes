@@ -2,6 +2,8 @@
 
 Keep this file concise and limited to durable project knowledge useful to nearly every session. Prefer pointers to the authoritative docs and commands over duplicated detail.
 
+`AGENTS.md` is the single instruction file for all agents (Codex, Claude, …); `CLAUDE.md` is a symlink to it. Edit `AGENTS.md` and keep the symlink — never replace it with a separate copy.
+
 ## Project notes
 
 - This repository is the canonical Irie Vibes Roots Festival website; see [README.md](README.md) and [CMS.md](CMS.md).
