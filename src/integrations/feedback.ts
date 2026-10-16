@@ -2,7 +2,8 @@ import type { AstroIntegration } from 'astro';
 import { handleFeedbackRequest } from '../../scripts/feedback-server.mjs';
 
 // Feedback tool: the Shift+F / "Feedback" capture script on every page, the
-// /feedback inbox and the /changelog page. The API is served by the dev server
+// /feedback inbox (feedback, changelog and developer notes tabs; /changelog
+// redirects there). The API is served by the dev server
 // here and by scripts/production.mjs in production (both via
 // scripts/feedback-server.mjs).
 export default function feedbackIntegration(): AstroIntegration {

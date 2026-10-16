@@ -1,60 +1,17 @@
 ---
-import Base from '../layouts/Base.astro';
+// The changelog is now a tab on /feedback; keep old /changelog links working.
 ---
 
-<Base title="Changelog" description="What has changed on the website" noIndex hideFooter>
-  <div class="sheet-backdrop" aria-hidden="true"></div>
-  <section class="changelog section section--page">
-    <header class="changelog__head">
-      <h1 class="title">Changelog</h1>
-      <p class="changelog__lead">What has changed on the website. <a href="/feedback">Back to feedback</a></p>
-    </header>
-    <article id="changelog" class="changelog__body" aria-live="polite"><p class="empty">Loading changelog…</p></article>
-  </section>
-</Base>
-
-<style>
-  /* Same presentation as /feedback: an opaque sheet above the dimmed site. */
-  .sheet-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
-  .changelog { position: relative; z-index: 9600; display: grid; gap: 28px; max-width: var(--max-mid); margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
-  .changelog__head .title { margin: 0 0 6px; text-align: left; }
-  .changelog__lead { margin: 0; color: var(--on-surface-variant); }
-  .changelog__lead a { color: var(--secondary); }
-  .empty { margin: 0; padding: 32px 20px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
-  /* Rendered markdown */
-  .changelog__body { color: var(--on-surface); line-height: 1.6; overflow-wrap: anywhere; }
-  .changelog__body :global(> :first-child) { margin-top: 0; }
-  .changelog__body :global(h1), .changelog__body :global(h2) { margin: 1.6em 0 .5em; color: var(--secondary); font: 400 clamp(22px, 3.5vw, 28px)/1.15 var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
-  .changelog__body :global(h3), .changelog__body :global(h4) { margin: 1.3em 0 .4em; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
-  .changelog__body :global(p), .changelog__body :global(ul), .changelog__body :global(ol), .changelog__body :global(blockquote), .changelog__body :global(table) { margin: 0 0 1em; }
-  .changelog__body :global(ul), .changelog__body :global(ol) { padding-left: 1.4em; }
-  .changelog__body :global(li + li) { margin-top: .3em; }
-  .changelog__body :global(a) { color: var(--secondary); }
-  .changelog__body :global(strong) { color: var(--on-surface-strong); }
-  .changelog__body :global(code) { padding: 1px 5px; border-radius: 4px; background: var(--surface-container-high); font-size: .9em; }
-  .changelog__body :global(pre) { padding: 12px 14px; overflow-x: auto; border-radius: var(--radius-sm); background: var(--surface-container-lowest); }
-  .changelog__body :global(pre code) { padding: 0; background: none; }
-  .changelog__body :global(blockquote) { padding-left: 14px; border-left: 3px solid var(--outline-variant); color: var(--on-surface-variant); }
-  .changelog__body :global(hr) { margin: 2em 0; border: 0; border-top: 1px solid var(--border-hairline); }
-  .changelog__body :global(img) { max-width: 100%; border-radius: var(--radius-sm); }
-  .changelog__body :global(table) { width: 100%; border-collapse: collapse; }
-  .changelog__body :global(th), .changelog__body :global(td) { padding: 6px 10px; border: 1px solid var(--border-hairline); text-align: left; }
-  @media (max-width: 640px) { .changelog { margin: 12px 8px 32px; padding-left: 16px; padding-right: 16px; } }
-</style>
-
-<script>
-  // The changelog is markdown written in the feedback CMS, rendered by the
-  // server (scripts/feedback-server.mjs); raw HTML in it is escaped there.
-  const body = document.querySelector<HTMLElement>('#changelog')!;
-  async function load() {
-    try {
-      const response = await fetch('/__feedback/api/changelog', { cache: 'no-store' });
-      if (!response.ok) throw new Error();
-      const { html } = await response.json();
-      body.innerHTML = html || '<p class="empty">Nothing in the changelog yet.</p>';
-    } catch {
-      body.innerHTML = '<p class="empty">The changelog is unavailable right now.</p>';
-    }
-  }
-  void load();
-</script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="0; url=/feedback#changelog" />
+    <title>Changelog</title>
+    <script is:inline>location.replace('/feedback#changelog');</script>
+  </head>
+  <body>
+    <p>The changelog has moved to <a href="/feedback#changelog">/feedback</a>.</p>
+  </body>
+</html>

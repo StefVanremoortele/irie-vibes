@@ -112,8 +112,11 @@ screen are stored with the entry and linked in the inbox. Feedback is
 anonymous: there is no name field, and every post is stored and shown under the
 pseudonym *Jah a the Creator*.
 
-`/feedback` is the inbox: status tabs (*New*, *In progress*, *Done*, *All*)
-with counts, screenshots with a lightbox, a subtle *Delete* link per item, and
+`/feedback` is the inbox, with three tabs: *Feedback*, *Changelog* and
+*Developer notes*. The top right shows when the website last changed: the
+date of the latest commit outside the CMS-owned `content/` and `public/assets/`
+(read at build time), so CMS edits don't count. The *Feedback* tab has status
+filters (*New*, *In progress*, *Done*, *All*) with counts, screenshots with a lightbox, a subtle *Delete* link per item, and
 a form for notes without a screenshot. It refreshes every 30 seconds. The inbox
 is not linked from the site and has no login, so anyone with the URL can read
 it.
@@ -132,8 +135,8 @@ are written in the feedback admin (*Developer notes*, `notes/` in the private
 repo) and appear within about 30 seconds; each browser marks notes it hasn't
 seen as *New*.
 
-`/changelog` (linked from `/feedback`: "Want to see what has changed?") shows
-the changelog, written in markdown in the feedback admin (*Changelog*,
+The *Changelog* tab (old `/changelog` links redirect to it) shows the
+changelog, written in markdown in the feedback admin (*Changelog*,
 `changelog.json` in the private repo). The server renders it (raw HTML is
 escaped), so edits appear within about 30 seconds without a site rebuild.
 

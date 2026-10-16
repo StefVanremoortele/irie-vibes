@@ -1,25 +1,41 @@
 ---
+import { execFileSync } from 'node:child_process';
 import Base from '../layouts/Base.astro';
+
+// When the website (code, not content) last changed: the date of the latest
+// commit that touches anything outside the CMS-owned paths, so content edits
+// and media uploads from the Sveltia admin (also commits on main) don't count.
+// Falls back to the build time outside a git checkout.
+const CMS_PATHS = [':(exclude)content', ':(exclude)public/assets'];
+let lastUpdated = new Date().toISOString();
+try {
+  lastUpdated = execFileSync('git', ['log', '-1', '--format=%cI', '--', '.', ...CMS_PATHS], { encoding: 'utf8' }).trim() || lastUpdated;
+} catch {
+  // Not a git checkout: keep the build time.
+}
 ---
 
 <Base title="Feedback inbox" description="Website feedback inbox" noIndex hideFooter>
   <div class="inbox-backdrop" aria-hidden="true"></div>
   <section class="inbox section section--page">
     <header class="inbox__head">
-      <div>
-        <h1 class="title">Feedback</h1>
-        <p class="inbox__lead">Want to see what has changed? <a href="/changelog">Read the changelog</a>.</p>
-      </div>
-      <nav class="tabs" aria-label="Filter by status">
-        <a class="tab" href="#new" data-filter="New">New <span data-count="New"></span></a>
-        <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
-        <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
-        <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
-        <a class="tab tab--notes" href="#notes" data-filter="Notes">Developer notes <span data-count="Notes"></span></a>
-      </nav>
+      <h1 class="title">Feedback</h1>
+      <p class="inbox__updated">Website last updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></p>
     </header>
 
+    <nav class="views" aria-label="Sections">
+      <a class="views__tab" href="#new" data-view="feedback">Feedback <span data-count="New"></span></a>
+      <a class="views__tab" href="#changelog" data-view="changelog">Changelog</a>
+      <a class="views__tab views__tab--notes" href="#notes" data-view="notes">Developer notes <span data-count="Notes"></span></a>
+    </nav>
+
     <div id="feedback-view" class="view">
+    <nav class="tabs" aria-label="Filter by status">
+      <a class="tab" href="#new" data-filter="New">New <span data-count="New"></span></a>
+      <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
+      <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
+      <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
+    </nav>
     <div id="entries" class="entries" aria-live="polite"><p class="empty">Loading feedback…</p></div>
 
     <details class="note card">
@@ -37,8 +53,12 @@ import Base from '../layouts/Base.astro';
     </details>
     </div>
 
+    <div id="changelog-view" class="view" hidden>
+      <article id="changelog-body" class="changelog__body" aria-live="polite"><p class="empty">Loading changelog…</p></article>
+    </div>
+
     <div id="notes-view" class="view" hidden>
-      <div id="notes" class="entries" aria-live="polite"><p class="empty">Loading notes…</p></div>
+      <div id="notes-list" class="entries" aria-live="polite"><p class="empty">Loading notes…</p></div>
     </div>
   </section>
 
@@ -49,12 +69,20 @@ import Base from '../layouts/Base.astro';
   /* The inbox sits as an opaque sheet above the site, which is dimmed by a
      half-transparent layer over the whole screen (header included). */
   .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
-  .inbox { position: relative; z-index: 9600; display: grid; justify-items: center; gap: 32px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
-  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; }
-  .inbox__head .title { margin: 0 0 6px; text-align: left; }
-  .inbox__lead { margin: 0; color: var(--on-surface-variant); }
-  .inbox__lead a { color: var(--secondary); }
-  .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .inbox { position: relative; z-index: 9600; display: grid; justify-items: center; gap: 24px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
+  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 18px; }
+  .inbox__head .title { margin: 0; text-align: left; }
+  .inbox__updated { margin: 0; color: var(--on-surface-variant); font-size: 14px; }
+  .inbox__updated time { color: var(--on-surface-strong); font-weight: 600; }
+  /* Main sections: an underlined tab bar (the status filters below are pills). */
+  .views { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; gap: 4px 24px; border-bottom: 1px solid var(--border-hairline); }
+  .views__tab { display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 8px 2px 10px; border-bottom: 2px solid transparent; color: var(--on-surface-variant); font-weight: 700; font-size: 16px; text-decoration: none; }
+  .views__tab:hover { color: var(--on-surface-strong); }
+  .views__tab.is-active { border-bottom-color: var(--secondary); color: var(--secondary); }
+  .views__tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
+  .views__tab span:empty { display: none; }
+  .views__tab--notes.has-unseen:not(.is-active) { color: var(--primary); }
+  .tabs { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
   .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-full); color: var(--on-surface-variant); font-weight: 600; font-size: 14px; text-decoration: none; }
   .tab:hover { border-color: var(--outline); color: var(--on-surface-strong); }
   .tab.is-active { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
@@ -62,13 +90,29 @@ import Base from '../layouts/Base.astro';
   .tab span:empty { display: none; }
   .view { width: 100%; max-width: var(--max-wide); display: grid; justify-items: center; gap: 28px; }
   .view[hidden] { display: none; }
-  .tab--notes { border-style: dashed; }
-  .tab--notes.has-unseen:not(.is-active) { border-color: var(--primary); color: var(--primary); }
   :global(.dev-note) { display: grid; gap: 8px; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-left: 3px solid var(--primary); border-radius: var(--radius-lg); }
   :global(.dev-note__title) { margin: 0; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
   :global(.dev-note__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
   :global(.dev-note__message a), :global(.dev-note .fb-item__meta a) { color: var(--secondary); }
   :global(.fb-item__badge.fb-item__badge--new) { background: var(--primary); color: var(--surface); }
+  /* Changelog: markdown rendered by the server (raw HTML escaped there). */
+  .changelog__body { width: 100%; max-width: var(--max-mid); justify-self: start; color: var(--on-surface); line-height: 1.6; overflow-wrap: anywhere; }
+  .changelog__body :global(> :first-child) { margin-top: 0; }
+  .changelog__body :global(h1), .changelog__body :global(h2) { margin: 1.6em 0 .5em; color: var(--secondary); font: 400 clamp(22px, 3.5vw, 28px)/1.15 var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
+  .changelog__body :global(h3), .changelog__body :global(h4) { margin: 1.3em 0 .4em; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
+  .changelog__body :global(p), .changelog__body :global(ul), .changelog__body :global(ol), .changelog__body :global(blockquote), .changelog__body :global(table) { margin: 0 0 1em; }
+  .changelog__body :global(ul), .changelog__body :global(ol) { padding-left: 1.4em; }
+  .changelog__body :global(li + li) { margin-top: .3em; }
+  .changelog__body :global(a) { color: var(--secondary); }
+  .changelog__body :global(strong) { color: var(--on-surface-strong); }
+  .changelog__body :global(code) { padding: 1px 5px; border-radius: 4px; background: var(--surface-container-high); font-size: .9em; }
+  .changelog__body :global(pre) { padding: 12px 14px; overflow-x: auto; border-radius: var(--radius-sm); background: var(--surface-container-lowest); }
+  .changelog__body :global(pre code) { padding: 0; background: none; }
+  .changelog__body :global(blockquote) { padding-left: 14px; border-left: 3px solid var(--outline-variant); color: var(--on-surface-variant); }
+  .changelog__body :global(hr) { margin: 2em 0; border: 0; border-top: 1px solid var(--border-hairline); }
+  .changelog__body :global(img) { max-width: 100%; border-radius: var(--radius-sm); }
+  .changelog__body :global(table) { width: 100%; border-collapse: collapse; }
+  .changelog__body :global(th), .changelog__body :global(td) { padding: 6px 10px; border: 1px solid var(--border-hairline); text-align: left; }
   .entries { width: 100%; max-width: var(--max-wide); display: grid; gap: 12px; }
   .empty { margin: 0; padding: 32px 20px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
   :global(.fb-item) { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 16px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
@@ -126,6 +170,8 @@ import Base from '../layouts/Base.astro';
   .lightbox button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; font-size: 20px; cursor: pointer; }
   @media (max-width: 640px) {
     .inbox { margin: 12px 8px 32px; padding-left: 16px; padding-right: 16px; }
+    .views { gap: 4px 14px; }
+    .views__tab { font-size: 14px; }
     :global(.fb-item) { grid-template-columns: minmax(0, 1fr); }
     :global(.fb-item__shot) { height: 160px; }
   }
@@ -153,7 +199,9 @@ import Base from '../layouts/Base.astro';
   let entries: Entry[] = [];
   let loaded = false;
 
-  const filter = () => (location.hash === '#notes' ? 'Notes' : FILTERS[location.hash] || 'New');
+  // #notes and #changelog open those sections; any other hash is a status filter.
+  const filter = () => (location.hash === '#notes' ? 'Notes' : location.hash === '#changelog' ? 'Changelog' : FILTERS[location.hash] || 'New');
+  const view = (current: string) => (current === 'Notes' ? 'notes' : current === 'Changelog' ? 'changelog' : 'feedback');
   const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!);
   const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
   function ago(iso: string) {
@@ -167,8 +215,10 @@ import Base from '../layouts/Base.astro';
   function render() {
     const current = filter();
     document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.filter === current));
-    document.querySelector<HTMLElement>('#feedback-view')!.hidden = current === 'Notes';
-    document.querySelector<HTMLElement>('#notes-view')!.hidden = current !== 'Notes';
+    document.querySelectorAll<HTMLAnchorElement>('[data-view]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.view === view(current)));
+    document.querySelector<HTMLElement>('#feedback-view')!.hidden = view(current) !== 'feedback';
+    document.querySelector<HTMLElement>('#changelog-view')!.hidden = view(current) !== 'changelog';
+    document.querySelector<HTMLElement>('#notes-view')!.hidden = view(current) !== 'notes';
     renderNotes();
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
       const status = count.dataset.count!;
@@ -285,7 +335,7 @@ import Base from '../layouts/Base.astro';
 
   // ---- Developer notes (written in the feedback CMS, served by the API) ----
   type Note = { title: string; date: string; author?: string; message: string; page?: string };
-  const notesList = document.querySelector<HTMLElement>('#notes')!;
+  const notesList = document.querySelector<HTMLElement>('#notes-list')!;
   let notes: Note[] = [];
   let notesLoaded = false;
   // Notes newer than this browser's last visit to the tab get a "New" badge.
@@ -298,7 +348,7 @@ import Base from '../layouts/Base.astro';
 
   function renderNotes() {
     const seen = time(seenBefore);
-    document.querySelector<HTMLElement>('.tab--notes')!.classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
+    document.querySelector<HTMLElement>('.views__tab--notes')!.classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
     if (!notesLoaded) return;
     if (filter() === 'Notes' && notes[0]) {
       try { localStorage.setItem(SEEN_KEY, notes[0].date); } catch { /* private mode */ }
@@ -327,12 +377,38 @@ import Base from '../layouts/Base.astro';
     }
   }
 
+  // "Website last updated": the build's commit date, shown in the visitor's
+  // locale and time zone, with the relative time ("2 hours ago").
+  const updated = document.querySelector<HTMLTimeElement>('#last-updated')!;
+  function renderUpdated() {
+    const date = new Date(updated.dateTime);
+    updated.textContent = `${date.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} (${ago(updated.dateTime)})`;
+    updated.title = date.toLocaleString();
+  }
+  renderUpdated();
+  setInterval(renderUpdated, 60000);
+
   window.addEventListener('hashchange', () => { seenBefore = readSeen(); render(); });
-  window.addEventListener('focus', () => { void load(); void loadNotes(); });
-  setInterval(() => { if (document.visibilityState === 'visible') { void load(); void loadNotes(); } }, 30000);
+  // ---- Changelog (markdown from the feedback CMS, rendered by the server) ----
+  const changelogBody = document.querySelector<HTMLElement>('#changelog-body')!;
+  let changelogLoaded = false;
+  async function loadChangelog() {
+    try {
+      const response = await fetch('/__feedback/api/changelog', { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      const { html } = await response.json();
+      changelogBody.innerHTML = html || '<p class="empty">Nothing in the changelog yet.</p>';
+      changelogLoaded = true;
+    } catch {
+      if (!changelogLoaded) changelogBody.innerHTML = '<p class="empty">The changelog is unavailable right now.</p>';
+    }
+  }
+
+  const refresh = () => { void load(); void loadNotes(); void loadChangelog(); };
+  window.addEventListener('focus', refresh);
+  setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 30000);
   render();
-  void load();
-  void loadNotes();
+  refresh();
 
   // ---- Manual note form ----
   const form = document.querySelector<HTMLFormElement>('#feedback-form')!;
