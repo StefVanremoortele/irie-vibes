@@ -122,9 +122,10 @@ it.
 `/admin/feedback/index.html`), a second admin page for the private repo
 [`irie-vibes-feedback`](https://github.com/StefVanremoortele/irie-vibes-feedback).
 Sign in there with a GitHub token that can access that private repo.
-The developer can also add *Developer comments* to an item there, each with an
-optional image (stored in `images/comments/` of the private repo); they appear
-under the post on `/feedback` within about 30 seconds.
+The developer can also add *Developer comments* to an item there. Comments are
+markdown; paste a screenshot into the text to add an image (stored in
+`images/comments/` of the private repo). They appear under the post on
+`/feedback` within about 30 seconds.
 
 The *Developer notes* tab shows messages from the developer to testers. They
 are written in the feedback admin (*Developer notes*, `notes/` in the private

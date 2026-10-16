@@ -168,6 +168,21 @@ async function listNotes(dir) {
   return notes.sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
 }
 
+const renderMarkdown = (markdown) => micromark(markdown, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+
+// Developer comments are markdown (written in the CMS). The API adds the
+// rendered HTML; images pasted in the CMS point at /images/…, which is served
+// under /__feedback/images/….
+function withCommentHtml(entry) {
+  if (!Array.isArray(entry.comments)) return entry;
+  return {
+    ...entry,
+    comments: entry.comments.map((comment) => (typeof comment?.message === 'string'
+      ? { ...comment, html: renderMarkdown(comment.message).replace(/(<img src=")\/images\//g, '$1/__feedback/images/') }
+      : comment)),
+  };
+}
+
 // The changelog (markdown, written in the CMS) rendered to HTML. Raw HTML in
 // the markdown is escaped, not rendered.
 async function readChangelog(dir) {
@@ -177,7 +192,7 @@ async function readChangelog(dir) {
   } catch {
     // No changelog yet.
   }
-  return { html: body.trim() ? micromark(body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }) : '' };
+  return { html: body.trim() ? renderMarkdown(body) : '' };
 }
 
 // ---- Git sync with the private feedback repo (production only) -------------
@@ -241,9 +256,7 @@ async function regenerateIndex(dir) {
     if (entry.page) lines.push(`Page: ${entry.page}`);
     lines.push('', entry.message, '');
     for (const comment of entry.comments || []) {
-      lines.push(`> **${comment.author || 'Developer'}** (${comment.date}): ${comment.message}`);
-      if (comment.image) lines.push(`> ![](.${comment.image})`);
-      lines.push('');
+      lines.push(`> **${comment.author || 'Developer'}** (${comment.date}):`, ...comment.message.split('\n').map((line) => `> ${line.replace(/\]\(\/images\//g, '](./images/')}`), '');
     }
     if (entry.images.length) {
       lines.push('Images:');
@@ -353,7 +366,7 @@ async function handleApi(req, res, path) {
   if (path === '/__feedback/api/entries') {
     if (req.method === 'GET') {
       await pullIfStale(dir);
-      return send(res, 200, { entries: await listEntries(dir) });
+      return send(res, 200, { entries: (await listEntries(dir)).map(withCommentHtml) });
     }
     if (req.method === 'POST') return send(res, 201, { entry: await createEntry(req, dir) });
     throw new HttpError(405, 'Method not allowed.');

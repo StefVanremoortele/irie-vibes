@@ -49,8 +49,7 @@ collections:
         fields:
           - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}" }
           - { name: author, label: "Author", widget: string, default: "Developer" }
-          - { name: message, label: "Comment", widget: text, hint: "Plain text; line breaks and links are kept." }
-          - { name: image, label: "Image", widget: image, required: false, media_folder: "/images/comments", public_folder: "/images/comments", hint: "Optional, e.g. a screenshot of the fix." }
+          - { name: message, label: "Comment", widget: markdown, media_folder: "/images/comments", public_folder: "/images/comments", hint: "Markdown. Paste a screenshot straight into the text to add an image." }
       - { name: page, label: "Page", widget: string, readonly: true, required: false }
       - { name: createdAt, label: "Sent", widget: datetime, readonly: true }
       - { name: screenshot, label: "Screenshot", widget: image, readonly: true, required: false }
