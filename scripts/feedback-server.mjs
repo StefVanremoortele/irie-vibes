@@ -240,7 +240,11 @@ async function regenerateIndex(dir) {
     lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
     if (entry.page) lines.push(`Page: ${entry.page}`);
     lines.push('', entry.message, '');
-    for (const comment of entry.comments || []) lines.push(`> **${comment.author || 'Developer'}** (${comment.date}): ${comment.message}`, '');
+    for (const comment of entry.comments || []) {
+      lines.push(`> **${comment.author || 'Developer'}** (${comment.date}): ${comment.message}`);
+      if (comment.image) lines.push(`> ![](.${comment.image})`);
+      lines.push('');
+    }
     if (entry.images.length) {
       lines.push('Images:');
       for (const image of entry.images) lines.push(`- [${image.name}](./images/${entry.id}/${image.name})`);
@@ -369,9 +373,11 @@ async function handleApi(req, res, path) {
   throw new HttpError(404, 'Not found.');
 }
 
+// Entry images live in images/<entry id>/, developer comment images (uploaded
+// in the CMS) in images/comments/.
 async function serveImage(res, path) {
-  const match = path.match(/^\/__feedback\/images\/([a-f0-9-]+)\/([^/]+)$/);
-  if (!match || !ENTRY_ID.test(match[1])) throw new HttpError(404, 'Image not found.');
+  const match = path.match(/^\/__feedback\/images\/([a-z0-9-]+)\/([^/]+)$/i);
+  if (!match || (!ENTRY_ID.test(match[1]) && match[1] !== 'comments')) throw new HttpError(404, 'Image not found.');
   const root = resolve(feedbackDir(), 'images', match[1]);
   const file = resolve(root, decodeURIComponent(match[2]));
   if (!file.startsWith(`${root}${sep}`)) throw new HttpError(400, 'Invalid image path.');

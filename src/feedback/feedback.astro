@@ -87,6 +87,8 @@ import Base from '../layouts/Base.astro';
   :global(.fb-comment) { display: grid; gap: 4px; padding: 10px 12px; background: var(--surface-container-lowest); border-left: 3px solid var(--primary); border-radius: var(--radius-sm); }
   :global(.fb-comment__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
   :global(.fb-comment__message a) { color: var(--secondary); }
+  :global(.fb-comment__image) { justify-self: start; max-width: min(100%, 320px); margin-top: 4px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); background: none; cursor: zoom-in; }
+  :global(.fb-comment__image img) { display: block; max-width: 100%; max-height: 220px; object-fit: contain; }
   :global(.fb-item__actions) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   :global(.fb-item__more) { display: flex; flex-wrap: wrap; gap: 6px; }
   :global(.fb-item__more button) { width: 54px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: 6px; background: none; cursor: zoom-in; }
@@ -132,7 +134,7 @@ import Base from '../layouts/Base.astro';
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     images: { name: string; url: string }[];
-    comments?: { date: string; author?: string; message: string }[];
+    comments?: { date: string; author?: string; message: string; image?: string }[];
     metadata?: {
       viewport?: { width: number; height: number };
       embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
@@ -205,6 +207,13 @@ import Base from '../layouts/Base.astro';
     }).join('');
   }
 
+  // The CMS stores comment images as repo paths (/images/comments/…), which the
+  // API serves under /__feedback/.
+  function commentImage(image?: string) {
+    const src = image?.startsWith('/images/') ? `/__feedback${image}` : image && /^https?:\/\//.test(image) ? image : '';
+    return src ? `<button class="fb-comment__image" type="button" data-zoom="${escapeHtml(src)}" aria-label="Enlarge image"><img src="${escapeHtml(src)}" alt="" loading="lazy"></button>` : '';
+  }
+
   // Developer comments (added in the feedback CMS), oldest first.
   function renderComments(entry: Entry) {
     const comments = (entry.comments || []).filter((comment) => comment && typeof comment.message === 'string' && comment.message.trim());
@@ -215,6 +224,7 @@ import Base from '../layouts/Base.astro';
           ${time(comment.date) ? `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>` : ''}
         </div>
         <p class="fb-comment__message">${linkify(comment.message)}</p>
+        ${commentImage(comment.image)}
       </div>`).join('')}</div>`;
   }
 
