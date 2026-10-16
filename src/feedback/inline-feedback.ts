@@ -5,10 +5,11 @@
 // The screenshot of the visible viewport starts rendering the moment feedback
 // mode opens, so it is usually ready by the time the user finishes drawing.
 
+import { MANIFEST_TEXT, MANIFEST_TITLE, PSEUDONYM } from './manifest';
+
 type Region = { x: number; y: number; width: number; height: number };
 type Embed = { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string; rect: Region };
 
-const PSEUDONYM = 'Jah a the Creator';
 const UI_ATTR = 'data-feedback-ui';
 
 // Own minimal light theme, independent of the site design system (see README
@@ -43,6 +44,11 @@ const css = `
   .fb-field textarea { min-height: 96px; resize: vertical; }
   .fb-as { margin: 0; color: #7a808a; font-size: 13px; }
   .fb-as strong { color: #4a4f57; }
+  .fb-jah { padding: 0; border: 0; background: none; color: #4a4f57; font: inherit; font-weight: 700; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+  .fb-jah:hover, .fb-jah[aria-expanded="true"] { color: #1d2025; text-decoration-style: solid; }
+  .fb-manifest { margin: 0; padding: 10px 12px; border-radius: 6px; background: #1d2025; color: #ffffffd9; font-size: 13px; line-height: 1.5; }
+  .fb-manifest[hidden] { display: none; }
+  .fb-manifest strong { display: block; margin-bottom: 2px; color: #fff; }
   .fb-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .fb-actions small { color: #7a808a; font-size: 12px; }
   .fb-submit { padding: 7px 14px; border: 0; border-radius: 4px; background: #2d6a3a; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -289,7 +295,13 @@ function init() {
 
       const closeButton = el('button', { type: 'button', className: 'fb-close', textContent: '×', title: 'Close (Esc)' });
       closeButton.setAttribute('aria-label', 'Close');
-      const sendingAs = el('p', { className: 'fb-as' }, 'Sent anonymously as ', el('strong', { textContent: PSEUDONYM }));
+      // The shared name: clicking it shows (or hides) the manifest below it.
+      const manifest = el('p', { className: 'fb-manifest', hidden: true, id: 'fb-jah-manifest' }, el('strong', { textContent: MANIFEST_TITLE }), MANIFEST_TEXT);
+      const name = el('button', { type: 'button', className: 'fb-jah', textContent: PSEUDONYM });
+      name.setAttribute('aria-controls', 'fb-jah-manifest');
+      name.setAttribute('aria-expanded', 'false');
+      name.addEventListener('click', () => { manifest.hidden = !manifest.hidden; name.setAttribute('aria-expanded', String(!manifest.hidden)); });
+      const sendingAs = el('p', { className: 'fb-as' }, 'Sent anonymously as ', name);
       const comment = el('textarea', { required: true, maxLength: 10000, placeholder: 'What should change, or what is wrong here?' });
       const status = el('p', { className: 'fb-status', role: 'alert' });
       const submit = el('button', { type: 'submit', className: 'fb-submit', textContent: 'Send feedback' });
@@ -297,7 +309,7 @@ function init() {
         el('div', { className: 'fb-panel__head' }, el('h2', { className: 'fb-panel__title', textContent: 'Feedback' }), closeButton),
         ...(selected ? [shot] : []),
         el('label', { className: 'fb-field' }, 'Comment', comment),
-        sendingAs, status,
+        sendingAs, manifest, status,
         el('div', { className: 'fb-actions' }, el('small', { textContent: '⌘/Ctrl + Enter to send' }), submit));
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-label', 'Send feedback');

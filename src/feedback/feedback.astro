@@ -2,6 +2,7 @@
 import { execFileSync } from 'node:child_process';
 import Base from '../layouts/Base.astro';
 import HomeContent from '../components/HomeContent.astro';
+import { MANIFEST_TEXT, MANIFEST_TITLE } from './manifest';
 
 // When the website (code, not content) last changed: the date of the latest
 // commit that touches anything outside the CMS-owned paths, so content edits
@@ -102,6 +103,7 @@ try {
         <div id="notes-list" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading notes…</p></div>
       </div>
     </section>
+    <div id="jah-manifest" class="fbx-manifest" role="tooltip" hidden><strong>{MANIFEST_TITLE}</strong><p>{MANIFEST_TEXT}</p></div>
   </div>
 
   <dialog id="lightbox" class="fbx fbx-lightbox"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
@@ -320,6 +322,14 @@ try {
   .fbx-change__text { color: var(--ink-700); font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
   .fbx-change__text strong { color: var(--ink-900); font-weight: 600; }
 
+  /* ---- The shared name + its manifest tooltip ------------------------------- */
+  .fbx-jah { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; cursor: pointer; }
+  .fbx-jah:hover, .fbx-jah[aria-expanded="true"] { color: var(--ink-900); text-decoration-style: solid; }
+  .fbx-manifest { position: fixed; z-index: 9700; max-width: min(320px, calc(100vw - 16px)); padding: 12px 14px; border-radius: var(--radius-sm); background: var(--ink-900); color: #fff; box-shadow: var(--shadow-xl); font-size: 13px; line-height: 1.5; animation: fbx-fade var(--dur-fast) var(--ease-smooth); }
+  .fbx-manifest[hidden] { display: none; }
+  .fbx-manifest strong { display: block; margin-bottom: 4px; font-weight: 600; }
+  .fbx-manifest p { margin: 0; color: rgba(255, 255, 255, 0.85); }
+
   /* ---- Lightbox ------------------------------------------------------------ */
   .fbx-lightbox { max-width: 94vw; max-height: 92vh; padding: 0; overflow: auto; border: 0; border-radius: var(--radius-md); background: #fff; box-shadow: var(--shadow-xl); }
   .fbx-lightbox::backdrop { background: rgba(26, 27, 38, 0.75); }
@@ -356,6 +366,8 @@ try {
 </style>
 
 <script>
+  import { PSEUDONYM } from './manifest';
+
   type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
@@ -371,8 +383,7 @@ try {
   type View = 'feedback' | 'changelog' | 'notes';
 
   const API = '/__feedback/api/entries';
-  // Feedback is anonymous; older entries may still carry a name, never shown.
-  const PSEUDONYM = 'Jah a the Creator';
+  // Feedback is anonymous (PSEUDONYM); older entries may still carry a name, never shown.
   const STATUS_KEY: Record<string, Filter> = { New: 'new', 'In progress': 'in_progress', Done: 'done' };
   const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done', all: 'All' };
   // Old links (#new, #in-progress, …) still open the Feedback tab with that filter.
@@ -418,6 +429,7 @@ try {
     }
     return 'now';
   }
+  const nameButton = () => `<button type="button" class="fbx-jah" data-manifest aria-controls="jah-manifest" aria-expanded="false">${PSEUDONYM}</button>`;
   const readStorage = (key: string) => { try { return localStorage.getItem(key) || ''; } catch { return ''; } };
   const writeStorage = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* private mode */ } };
 
@@ -503,7 +515,7 @@ try {
     return `<div class="fbx-thread">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => {
       const tester = comment.author === PSEUDONYM;
       return `<div class="fbx-bubble${tester ? ' fbx-bubble--tester' : ''}${comment.pending ? ' fbx-bubble--pending' : ''}">
-          <div class="fbx-bubble__label">${escapeHtml(comment.author || 'Developer')} · ${comment.pending ? 'sending…' : `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>`}</div>
+          <div class="fbx-bubble__label">${tester ? nameButton() : escapeHtml(comment.author || 'Developer')} · ${comment.pending ? 'sending…' : `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>`}</div>
           <div class="fbx-bubble__body">${comment.html ?? `<p>${linkify(comment.message)}</p>`}</div>
         </div>`;
     }).join('')}</div>`;
@@ -531,7 +543,7 @@ try {
       <button type="button" class="fbx-back" data-back aria-label="Back to the list">${ICON.back}</button>
       <span class="fbx-pill fbx-pill--${status}">${entry.status}</span>
       <span class="fbx-detail__meta">
-        <span>${PSEUDONYM} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
+        <span>${nameButton()} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
         ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('')}
         ${entry.metadata?.screenshotFailed ? '<span class="fbx-pill fbx-pill--danger">Screenshot failed</span>' : ''}
       </span>
@@ -756,11 +768,58 @@ try {
   document.querySelectorAll('[data-close]').forEach((element) => element.addEventListener('click', close));
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || lightbox.open || event.defaultPrevented) return;
+    if (!manifest.hidden) { hideManifest(); return; }
     const field = document.activeElement;
     // Esc in a text field first leaves the field.
     if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) { field.blur(); return; }
     close();
   });
+
+  // ---- The shared name: click pins the manifest tooltip, hover previews it ----------
+  const manifest = $('#jah-manifest');
+  let manifestAnchor: HTMLElement | null = null;
+  let manifestPinned = false;
+  function placeManifest() {
+    if (!manifestAnchor || !document.contains(manifestAnchor)) { hideManifest(); return; }
+    const anchor = manifestAnchor.getBoundingClientRect();
+    const box = manifest.getBoundingClientRect();
+    const below = anchor.bottom + 8;
+    const top = below + box.height > innerHeight - 8 ? Math.max(8, anchor.top - 8 - box.height) : below;
+    const left = Math.min(Math.max(8, anchor.left), innerWidth - box.width - 8);
+    manifest.style.top = `${top}px`;
+    manifest.style.left = `${left}px`;
+  }
+  function showManifest(anchor: HTMLElement, pin: boolean) {
+    manifestAnchor = anchor;
+    manifestPinned = pin;
+    manifest.hidden = false;
+    placeManifest();
+    document.querySelectorAll('[data-manifest]').forEach((button) => button.setAttribute('aria-expanded', String(pin && button === anchor)));
+  }
+  function hideManifest() {
+    manifest.hidden = true;
+    manifestAnchor = null;
+    manifestPinned = false;
+    document.querySelectorAll('[data-manifest]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
+  }
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLElement>('[data-manifest]');
+    if (button) {
+      if (manifestPinned && manifestAnchor === button) hideManifest(); else showManifest(button, true);
+      return;
+    }
+    if (!manifest.hidden && !manifest.contains(event.target as Node)) hideManifest();
+  });
+  root.addEventListener('mouseover', (event) => {
+    const button = (event.target as Element).closest<HTMLElement>('[data-manifest]');
+    if (button && !manifestPinned) showManifest(button, false);
+  });
+  root.addEventListener('mouseout', (event) => {
+    const button = (event.target as Element).closest<HTMLElement>('[data-manifest]');
+    if (button && !manifestPinned && !button.contains(event.relatedTarget as Node)) hideManifest();
+  });
+  window.addEventListener('resize', () => { if (!manifest.hidden) placeManifest(); });
+  document.addEventListener('scroll', () => { if (!manifest.hidden) placeManifest(); }, true);
 
   // ---- Developer notes (CMS) ---------------------------------------------------------
   type Note = { title: string; date: string; author?: string; message: string; page?: string };

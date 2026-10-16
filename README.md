@@ -121,7 +121,9 @@ iframes (YouTube, maps) can't be rendered into the screenshot: YouTube videos
 show as their thumbnail, other embeds as a labelled box, and the embeds on
 screen are stored with the entry and linked in the inbox. Feedback is
 anonymous: there is no name field, and every post is stored and shown under the
-pseudonym *Jah a the Creator*.
+pseudonym *Jah a the Creator*. Clicking the name (on `/feedback` and in the
+capture form) shows the *Jah a the Creator Manifest*; its text lives in
+`src/feedback/manifest.ts`.
 
 `/feedback` is the inbox, with three tabs: *Feedback*, *Changelog* and
 *Developer notes*. The top right shows when the website last changed: the
