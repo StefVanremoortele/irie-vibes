@@ -15,9 +15,15 @@ try {
 }
 ---
 
-<Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex hideFooter>
+<!--
+  Testing page (/feedback): the festival header and footer stay visible behind
+  a dimmed overlay, with a full-height light sheet on top. The sheet is a plain
+  tool UI with its own minimal light theme and deliberately does NOT follow the
+  site design system (tokens.css / global.css styles), see README "Feedback tool".
+-->
+<Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex>
   <div class="inbox-backdrop" aria-hidden="true"></div>
-  <section class="inbox section section--page">
+  <section class="inbox fbk">
     <h1 class="visually-hidden">Testing</h1>
     <header class="inbox__head">
       <nav class="views" aria-label="Sections">
@@ -37,10 +43,10 @@ try {
     </nav>
     <div id="entries" class="entries" aria-live="polite"><p class="empty">Loading feedback…</p></div>
 
-    <details class="note card">
+    <details class="note">
       <summary>Add a note without a screenshot</summary>
       <form id="feedback-form" class="note__form">
-        <label>Comment *<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
+        <label>Comment<textarea name="message" required maxlength="10000" rows="3" placeholder="Describe what you noticed…"></textarea></label>
         <label>Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
         <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
           Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
@@ -61,134 +67,150 @@ try {
     </div>
   </section>
 
-  <dialog id="lightbox" class="lightbox"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
+  <dialog id="lightbox" class="lightbox fbk"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
 </Base>
 
-<style>
-  /* The inbox sits as an opaque sheet above the site, which is dimmed by a
-     half-transparent layer over the whole screen (header included). */
-  .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
-  .inbox { position: relative; z-index: 9600; display: grid; justify-items: center; gap: 24px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
-  .inbox.section { padding-top: 24px; }
+<style is:global>
+  /* Own minimal light theme, independent of the site design system. */
+  .fbk {
+    --bg: #f5f6f4; --paper: #fff; --ink: #1c211b; --ink-2: #485046; --muted: #7b8478; --line: #e2e5e0; --line-2: #cdd2ca;
+    --accent: #2d6a3a; --accent-soft: #e6f0e7; --tester: #b7791f; --tester-soft: #fbf3e4; --danger: #b3261e;
+    color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; letter-spacing: normal; text-transform: none;
+  }
+  .fbk *, .fbk *::before, .fbk *::after { box-sizing: border-box; }
+  .fbk a { color: var(--accent); }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  /* Top row: section tabs on the left, "last updated" on the right, one rule. */
-  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; border-bottom: 1px solid var(--border-hairline); }
-  .inbox__updated { margin: 0; padding: 8px 0; color: var(--on-surface-variant); font-size: 13px; }
-  .inbox__updated time { color: var(--on-surface-strong); font-weight: 600; }
-  /* Main sections: an underlined tab bar (the status filters below are pills). */
-  .views { display: flex; flex-wrap: wrap; gap: 4px 24px; }
-  .views__tab { display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 8px 2px 10px; border-bottom: 2px solid transparent; color: var(--on-surface-variant); font-weight: 700; font-size: 16px; text-decoration: none; }
-  .views__tab:hover { color: var(--on-surface-strong); }
-  .views__tab.is-active { border-bottom-color: var(--secondary); color: var(--secondary); }
-  .views__tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
-  .views__tab span:empty { display: none; }
-  .views__tab--notes.has-unseen:not(.is-active) { color: var(--primary); }
-  /* Status filters: a quiet row of text links; the active one is highlighted. */
-  .tabs { width: 100%; display: flex; flex-wrap: wrap; gap: 2px 18px; margin-bottom: -12px; }
-  .tab { display: inline-flex; align-items: baseline; gap: 5px; color: var(--muted); font-size: 13px; font-weight: 600; text-decoration: none; }
-  .tab:hover { color: var(--on-surface-strong); }
-  .tab.is-active { color: var(--secondary); }
-  .tab span { color: inherit; font-size: 12px; font-weight: 400; opacity: .8; }
-  .tab span:empty { display: none; }
-  .view { width: 100%; max-width: var(--max-wide); display: grid; justify-items: center; gap: 28px; }
+
+  /* The site (header and footer included) is dimmed by a fixed layer; the
+     light sheet above it runs the full height of the screen. */
+  .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: #0008; }
+  .inbox { position: relative; z-index: 9600; width: 100%; max-width: 920px; min-height: 100dvh; margin: 0 auto; padding: 0 16px 32px; background: var(--bg); box-shadow: 0 0 40px #0006; }
+  .inbox__head { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; margin: 0 -16px 10px; padding: 0 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .inbox__updated { margin: 0; padding: 8px 0; color: var(--muted); font-size: 12px; }
+  .inbox__updated time { color: var(--ink-2); font-weight: 600; }
+  .views { display: flex; flex-wrap: wrap; gap: 0 18px; }
+  .views__tab { display: inline-flex; align-items: center; gap: 5px; margin-bottom: -1px; padding: 10px 0 8px; border-bottom: 2px solid transparent; color: var(--ink-2); font-weight: 600; text-decoration: none; }
+  .fbk .views__tab { color: var(--ink-2); }
+  .views__tab:hover { color: var(--ink); }
+  .fbk .views__tab.is-active { border-bottom-color: var(--accent); color: var(--accent); }
+  .views__tab span, .tab span { color: var(--muted); font-size: 12px; font-weight: 400; }
+  .views__tab span:empty, .tab span:empty { display: none; }
+  .views__tab--notes.has-unseen:not(.is-active)::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--tester); }
+
+  .view { display: grid; gap: 8px; }
   .view[hidden] { display: none; }
-  :global(.dev-note) { display: grid; gap: 8px; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-left: 3px solid var(--primary); border-radius: var(--radius-lg); }
-  :global(.dev-note__title) { margin: 0; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
-  :global(.dev-note__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
-  :global(.dev-note__message a), :global(.dev-note .fb-item__meta a) { color: var(--secondary); }
-  :global(.fb-item__badge.fb-item__badge--new) { background: var(--primary); color: var(--surface); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 0 14px; }
+  .fbk .tab { color: var(--muted); font-size: 12px; font-weight: 600; text-decoration: none; }
+  .fbk .tab:hover { color: var(--ink); }
+  .fbk .tab.is-active { color: var(--accent); }
+  .entries { display: grid; gap: 6px; }
+  .empty { margin: 0; padding: 20px; border: 1px dashed var(--line-2); border-radius: 6px; color: var(--muted); text-align: center; }
+
+  /* Feedback item */
+  .fb-item { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 10px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+  .fb-item.is-new { box-shadow: inset 3px 0 0 var(--accent); }
+  .fb-item__shot { display: block; height: 72px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); cursor: zoom-in; }
+  .fb-item__shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .fb-item__shot--none { display: grid; place-items: center; color: var(--muted); font-size: 11px; cursor: default; }
+  .fb-item__body { display: grid; align-content: start; gap: 6px; min-width: 0; }
+  .fb-item__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; color: var(--muted); font-size: 12px; }
+  .fb-item__meta strong { color: var(--ink-2); font-weight: 600; }
+  .fb-item__meta a { overflow-wrap: anywhere; }
+  .fb-item__badge { padding: 0 6px; border-radius: 3px; background: var(--bg); color: var(--ink-2); font-size: 11px; font-weight: 600; }
+  .fb-item__badge--warn { color: var(--danger); }
+  .fb-item__badge--new { background: var(--accent-soft); color: var(--accent); }
+  .fb-item__message { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fb-item__more { display: flex; flex-wrap: wrap; gap: 4px; }
+  .fb-item__more button { width: 48px; height: 34px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; background: none; cursor: zoom-in; }
+  .fb-item__more img { width: 100%; height: 100%; object-fit: cover; }
+  /* Actions sit at the end of the meta line instead of on a row of their own. */
+  .fb-item__body { grid-template-columns: minmax(0, 1fr) auto; }
+  .fb-item__body > * { grid-column: 1 / -1; }
+  .fb-item__body > .fb-item__meta { grid-column: 1; }
+  .fb-item__body > .fb-item__actions { grid-column: 2; grid-row: 1; align-self: start; }
+  .fb-item__actions { display: flex; align-items: center; gap: 12px; }
+  .fb-item__accept, .fb-item__delete, .fb-reply__toggle { padding: 0; border: 0; background: none; font: inherit; font-size: 12px; cursor: pointer; }
+  .fb-item__accept { color: var(--accent); font-weight: 600; }
+  .fb-item__delete { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; color: var(--muted); }
+  .fb-item__delete:hover, .fb-item__delete:focus-visible { background: #b3261e14; color: var(--danger); }
+  .fb-item__accept:hover, .fb-reply__toggle:hover { text-decoration: underline; }
+
+  /* Comments and replies */
+  .fb-comments { display: grid; gap: 4px; }
+  .fb-comment { display: grid; gap: 2px; padding: 6px 10px; background: var(--accent-soft); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; }
+  .fb-comment--tester { background: var(--tester-soft); border-left-color: var(--tester); }
+  .fb-comment__message { overflow-wrap: anywhere; }
+  .fb-comment__message > * { margin: 0 0 6px; }
+  .fb-comment__message > :last-child { margin-bottom: 0; }
+  .fb-comment__message img { display: block; max-width: min(100%, 280px); max-height: 180px; border: 1px solid var(--line); border-radius: 3px; object-fit: contain; cursor: zoom-in; }
+  .fb-reply__toggle { justify-self: start; color: var(--accent); font-weight: 600; }
+  .fb-reply__toggle[hidden] { display: none; }
+  .fb-reply__form { display: grid; gap: 6px; }
+  .fb-reply__form[hidden] { display: none; }
+  .fb-reply__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .fb-reply__status { margin: 0; color: var(--danger); font-size: 12px; }
+
+  /* Buttons and fields */
+  .fb-btn { padding: 4px 10px; border: 1px solid var(--line-2); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .fb-btn:hover { border-color: var(--ink-2); }
+  .fb-btn:disabled { opacity: .5; cursor: progress; }
+  .fb-btn--primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .fb-btn--primary:hover { border-color: var(--accent); filter: brightness(1.1); }
+  .fbk textarea, .fbk input { width: 100%; padding: 6px 8px; border: 1px solid var(--line-2); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; resize: vertical; }
+  .fbk textarea:focus, .fbk input:focus { border-color: var(--accent); outline: 2px solid var(--accent-soft); }
+
+  /* Developer notes */
+  .dev-note { display: grid; gap: 4px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
+  .dev-note__title { margin: 0; font-size: 15px; font-weight: 700; }
+  .dev-note__message { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
   /* Changelog: markdown rendered by the server (raw HTML escaped there). */
-  .changelog__body { width: 100%; max-width: var(--max-mid); justify-self: start; color: var(--on-surface); line-height: 1.6; overflow-wrap: anywhere; }
-  .changelog__body :global(> :first-child) { margin-top: 0; }
-  .changelog__body :global(h1), .changelog__body :global(h2) { margin: 1.6em 0 .5em; color: var(--secondary); font: 400 clamp(22px, 3.5vw, 28px)/1.15 var(--font-display); letter-spacing: .04em; text-transform: uppercase; }
-  .changelog__body :global(h3), .changelog__body :global(h4) { margin: 1.3em 0 .4em; color: var(--on-surface-strong); font-size: 18px; font-weight: 700; }
-  .changelog__body :global(p), .changelog__body :global(ul), .changelog__body :global(ol), .changelog__body :global(blockquote), .changelog__body :global(table) { margin: 0 0 1em; }
-  .changelog__body :global(ul), .changelog__body :global(ol) { padding-left: 1.4em; }
-  .changelog__body :global(li + li) { margin-top: .3em; }
-  .changelog__body :global(a) { color: var(--secondary); }
-  .changelog__body :global(strong) { color: var(--on-surface-strong); }
-  .changelog__body :global(code) { padding: 1px 5px; border-radius: 4px; background: var(--surface-container-high); font-size: .9em; }
-  .changelog__body :global(pre) { padding: 12px 14px; overflow-x: auto; border-radius: var(--radius-sm); background: var(--surface-container-lowest); }
-  .changelog__body :global(pre code) { padding: 0; background: none; }
-  .changelog__body :global(blockquote) { padding-left: 14px; border-left: 3px solid var(--outline-variant); color: var(--on-surface-variant); }
-  .changelog__body :global(hr) { margin: 2em 0; border: 0; border-top: 1px solid var(--border-hairline); }
-  .changelog__body :global(img) { max-width: 100%; border-radius: var(--radius-sm); }
-  .changelog__body :global(table) { width: 100%; border-collapse: collapse; }
-  .changelog__body :global(th), .changelog__body :global(td) { padding: 6px 10px; border: 1px solid var(--border-hairline); text-align: left; }
-  .entries { width: 100%; max-width: var(--max-wide); display: grid; gap: 12px; }
-  .empty { margin: 0; padding: 32px 20px; border: 1px dashed var(--outline-variant); border-radius: var(--radius); color: var(--muted); text-align: center; }
-  :global(.fb-item) { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 18px; padding: 16px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); }
-  :global(.fb-item.is-new) { border-left: 3px solid var(--secondary); }
-  :global(.fb-item__shot) { display: block; height: 120px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); background: var(--surface-container-lowest); cursor: zoom-in; }
-  :global(.fb-item__shot img) { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-  :global(.fb-item__shot--none) { display: grid; place-items: center; color: var(--muted); font-size: 13px; cursor: default; }
-  :global(.fb-item__body) { display: grid; align-content: start; gap: 8px; min-width: 0; }
-  :global(.fb-item__meta) { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 13px; }
-  :global(.fb-item__meta strong) { color: var(--on-surface-strong); }
-  :global(.fb-item__meta a) { color: var(--secondary); overflow-wrap: anywhere; }
-  :global(.fb-item__badge) { padding: 1px 8px; border-radius: var(--radius-full); background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 12px; font-weight: 600; }
-  :global(.fb-item__badge--warn) { color: var(--tertiary); }
-  :global(.fb-item__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
-  :global(.fb-comments) { display: grid; gap: 8px; }
-  :global(.fb-comment) { display: grid; gap: 4px; padding: 10px 12px; background: var(--surface-container-lowest); border-left: 3px solid var(--primary); border-radius: var(--radius-sm); }
-  :global(.fb-comment__message) { color: var(--on-surface); overflow-wrap: anywhere; }
-  :global(.fb-comment__message > *) { margin: 0 0 8px; }
-  :global(.fb-comment__message > :last-child) { margin-bottom: 0; }
-  :global(.fb-comment__message a) { color: var(--secondary); }
-  :global(.fb-comment__message img) { display: block; max-width: min(100%, 320px); max-height: 220px; margin-top: 4px; border: 1px solid var(--border-soft); border-radius: var(--radius-sm); object-fit: contain; cursor: zoom-in; }
-  :global(.fb-item__actions) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  :global(.fb-item__more) { display: flex; flex-wrap: wrap; gap: 6px; }
-  :global(.fb-item__more button) { width: 54px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: 6px; background: none; cursor: zoom-in; }
-  :global(.fb-item__more img) { width: 100%; height: 100%; object-fit: cover; }
-  :global(.fb-btn) { padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: transparent; color: var(--on-surface); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-  :global(.fb-btn:hover) { border-color: var(--outline); color: var(--on-surface-strong); }
-  :global(.fb-btn:disabled) { opacity: .5; cursor: progress; }
-  :global(.fb-btn--primary) { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
-  :global(.fb-btn--primary:hover) { background: var(--secondary-hover); color: var(--surface); }
-  :global(.fb-item__actions) { justify-content: flex-end; align-items: center; gap: 16px; }
-  :global(.fb-item__accept) { padding: 2px 0; border: 0; background: none; color: var(--primary); font: inherit; font-size: 12px; font-weight: 600; opacity: .7; cursor: pointer; transition: opacity .15s; }
-  :global(.fb-item__accept:hover), :global(.fb-item__accept:focus-visible) { opacity: 1; text-decoration: underline; }
-  :global(.fb-comment--tester) { border-left-color: var(--secondary); }
-  :global(.fb-reply__toggle) { justify-self: start; padding: 2px 0; border: 0; background: none; color: var(--secondary); font: inherit; font-size: 13px; font-weight: 600; opacity: .8; cursor: pointer; }
-  :global(.fb-reply__toggle:hover), :global(.fb-reply__toggle:focus-visible) { opacity: 1; text-decoration: underline; }
-  :global(.fb-reply__form) { display: grid; gap: 8px; }
-  :global(.fb-reply__form[hidden]) { display: none; }
-  :global(.fb-reply__form textarea) { width: 100%; padding: 8px 10px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; resize: vertical; }
-  :global(.fb-reply__form textarea:focus) { border-color: var(--secondary); outline: 2px solid rgba(250,188,77,.22); }
-  :global(.fb-reply__actions) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  :global(.fb-reply__status) { margin: 0; color: var(--tertiary); font-size: 13px; }
-  :global(.fb-item__delete) { padding: 2px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; opacity: .55; cursor: pointer; transition: opacity .15s, color .15s; }
-  :global(.fb-item__delete:hover), :global(.fb-item__delete:focus-visible) { opacity: 1; color: var(--stage-inner); text-decoration: underline; }
-  .note { width: 100%; max-width: var(--max-wide); padding: 0; }
-  .note summary { padding: 14px 18px; color: var(--on-surface-variant); font-weight: 600; cursor: pointer; }
-  .note__form { display: grid; gap: 14px; padding: 0 18px 18px; }
-  .note label { display: grid; gap: 6px; color: var(--on-surface-strong); font-weight: 600; }
+  .changelog__body { padding: 4px 2px; line-height: 1.55; overflow-wrap: anywhere; }
+  .changelog__body > :first-child { margin-top: 0; }
+  .changelog__body h1, .changelog__body h2 { margin: 1.4em 0 .4em; font-size: 17px; }
+  .changelog__body h3, .changelog__body h4 { margin: 1.2em 0 .3em; font-size: 15px; }
+  .changelog__body p, .changelog__body ul, .changelog__body ol, .changelog__body blockquote, .changelog__body table, .changelog__body pre { margin: 0 0 .8em; }
+  .changelog__body ul, .changelog__body ol { padding-left: 1.3em; }
+  .changelog__body code { padding: 1px 4px; border-radius: 3px; background: var(--line); font-size: .9em; }
+  .changelog__body pre { padding: 8px 10px; overflow-x: auto; border-radius: 4px; background: var(--paper); border: 1px solid var(--line); }
+  .changelog__body pre code { padding: 0; background: none; }
+  .changelog__body blockquote { padding-left: 10px; border-left: 2px solid var(--line-2); color: var(--ink-2); }
+  .changelog__body hr { margin: 1.5em 0; border: 0; border-top: 1px solid var(--line); }
+  .changelog__body img { max-width: 100%; border-radius: 4px; }
+  .changelog__body table { width: 100%; border-collapse: collapse; }
+  .changelog__body th, .changelog__body td { padding: 4px 8px; border: 1px solid var(--line); text-align: left; }
+
+  /* Manual note form */
+  .note { margin-top: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+  .note summary { padding: 8px 12px; color: var(--ink-2); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .note__form { display: grid; gap: 10px; padding: 0 12px 12px; }
+  .note label { display: grid; gap: 4px; font-size: 13px; font-weight: 600; }
   .note label span { color: var(--muted); font-weight: 400; }
-  .note input, .note textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 400; }
-  .note input:focus, .note textarea:focus { border-color: var(--secondary); outline: 2px solid rgba(250,188,77,.22); }
-  .dropzone { padding: 16px; border: 1px dashed var(--outline); border-radius: var(--radius); color: var(--on-surface-variant); text-align: center; cursor: pointer; }
-  .dropzone.is-over { border-color: var(--secondary); background: rgba(250,188,77,.08); }
-  .dropzone button { padding: 0; border: 0; background: none; color: var(--secondary); text-decoration: underline; font: inherit; cursor: pointer; }
-  .previews { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dropzone { padding: 10px; border: 1px dashed var(--line-2); border-radius: 4px; color: var(--muted); font-size: 13px; text-align: center; cursor: pointer; }
+  .dropzone.is-over { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone button { padding: 0; border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+  .previews { display: flex; flex-wrap: wrap; gap: 6px; }
   .previews:empty { display: none; }
-  :global(.preview) { position: relative; width: 80px; height: 80px; overflow: hidden; border-radius: var(--radius-sm); }
-  :global(.preview img) { width: 100%; height: 100%; object-fit: cover; }
-  :global(.preview button) { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; cursor: pointer; }
-  .note__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-  #form-status { margin: 0; color: var(--primary); }
-  .lightbox { max-width: min(1200px, 94vw); max-height: 92vh; padding: 0; border: 1px solid var(--secondary); border-radius: var(--radius-lg); background: var(--surface-container-lowest); }
-  .lightbox::backdrop { background: rgba(0,0,0,.8); }
+  .preview { position: relative; width: 64px; height: 64px; overflow: hidden; border-radius: 4px; }
+  .preview img { width: 100%; height: 100%; object-fit: cover; }
+  .preview button { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: #000a; color: #fff; font-size: 12px; cursor: pointer; }
+  .note__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  #form-status { margin: 0; color: var(--accent); font-size: 13px; }
+
+  .lightbox { max-width: min(1200px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 6px; background: var(--paper); box-shadow: 0 10px 40px #0005; }
+  .lightbox::backdrop { background: #0009; }
   .lightbox img { display: block; max-width: 100%; max-height: 90vh; }
-  .lightbox form { position: absolute; top: 8px; right: 8px; }
-  .lightbox button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; font-size: 20px; cursor: pointer; }
+  .lightbox form { position: absolute; top: 6px; right: 6px; }
+  .lightbox button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: #000a; color: #fff; font-size: 18px; cursor: pointer; }
+
   @media (max-width: 640px) {
-    .inbox { margin: 12px 8px 32px; padding-left: 16px; padding-right: 16px; }
-    .views { width: 100%; gap: 4px 14px; border-bottom: 1px solid var(--border-hairline); }
-    .inbox__head { border-bottom: 0; }
-    .inbox__updated { padding: 0; }
-    .views__tab { font-size: 14px; }
-    :global(.fb-item) { grid-template-columns: minmax(0, 1fr); }
-    :global(.fb-item__shot) { height: 160px; }
+    .inbox { padding: 0 10px 24px; }
+    .inbox__head { margin: 0 -10px 8px; padding: 0 10px; }
+    .views { gap: 0 14px; }
+    .fb-item { grid-template-columns: 72px minmax(0, 1fr); gap: 10px; padding: 8px; }
+    .fb-item__shot { height: 56px; }
+    .fb-item__body > .fb-item__meta { grid-column: 1 / -1; }
+    .fb-item__body > .fb-item__actions { grid-column: 1 / -1; grid-row: auto; justify-self: end; }
   }
 </style>
 
@@ -268,7 +290,7 @@ try {
           ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
           <div class="fb-item__actions">
             ${entry.status === 'In progress' ? '<button class="fb-item__accept" type="button" data-accept title="The change works: move this to Done">✓ Accept change</button>' : ''}
-            <button class="fb-item__delete" type="button" data-delete>Delete</button>
+            <button class="fb-item__delete" type="button" data-delete aria-label="Delete" title="Delete"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
           </div>
         </div>
       </article>`;

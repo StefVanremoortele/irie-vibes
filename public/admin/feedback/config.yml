@@ -50,7 +50,7 @@ collections:
         fields:
           - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}" }
           - { name: author, label: "Author", widget: string, default: "Developer" }
-          - { name: message, label: "Comment", widget: markdown, media_folder: "/images/comments", public_folder: "/images/comments", hint: "Markdown. Paste a screenshot straight into the text to add an image." }
+          - { name: message, label: "Comment", widget: markdown, hint: "Markdown. Paste a screenshot straight into the text to add an image." }
       - { name: page, label: "Page", widget: string, readonly: true, required: false }
       - { name: createdAt, label: "Sent", widget: datetime, readonly: true }
       - { name: acceptedAt, label: "Accepted by tester", widget: datetime, readonly: true, required: false, hint: "Set when a tester accepts an in-progress change on /feedback (it then moves to Done)." }

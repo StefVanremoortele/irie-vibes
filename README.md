@@ -100,6 +100,13 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 
 ## Feedback tool
 
+> **Design:** the feedback tool is a tester tool, not part of the festival
+> site, so it deliberately does **not** follow the site design system
+> (`tokens.css` / the Roots Vanguard look). The capture UI and the `/feedback`
+> sheet use their own minimal light theme (system font, fixed colours,
+> compact spacing). `/feedback` keeps the festival header and footer visible
+> behind a dimmed overlay, with the light sheet running the full screen height.
+
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press
 **Shift+F**, drag over the area in question (or click for the whole screen,
@@ -127,7 +134,7 @@ it.
 Sign in there with a GitHub token that can access that private repo.
 The developer can also add *Developer comments* to an item there. Comments are
 markdown; paste a screenshot into the text to add an image (stored in
-`images/comments/` of the private repo). They appear under the post on
+`images/` of the private repo). They appear under the post on
 `/feedback` within about 30 seconds.
 Testers can *Reply* to those comments from the inbox (stored in the same
 comments list, under the pseudonym), and *Accept change* on an item that is
