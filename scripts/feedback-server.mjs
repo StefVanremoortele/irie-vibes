@@ -6,7 +6,7 @@
 // regenerated index.md for quick reading. Developer notes for testers are in
 // notes/*.json. That folder is a clone of the private GitHub repo
 // irie-vibes-feedback, which the Sveltia admin at /admin/feedback/ edits
-// (feedback status, developer notes, the markdown changelog in changelog.json). With FEEDBACK_GIT_SYNC=1 (production) new
+// (feedback status, developer notes, changelog posts in changelog/*.json). With FEEDBACK_GIT_SYNC=1 (production) new
 // and deleted entries are committed and pushed, and CMS edits are pulled
 // before the list is served.
 //
@@ -187,18 +187,31 @@ function withCommentHtml(entry) {
 // Markdown for one line (a changelog item): no wrapping paragraph.
 const renderInline = (markdown) => renderMarkdown(markdown).trim().replace(/^<p>([\s\S]*)<\/p>$/, '$1');
 
-// The changelog, written in the CMS as structured entries (date, title,
-// optional status, markdown body, tagged items), newest first; markdown is
-// rendered to HTML with raw HTML escaped. The older single markdown `body` is
-// still returned as `html` so nothing breaks before it is converted.
+// The changelog: one post per file in changelog/ (written in the CMS: date,
+// title, optional status, markdown body, tagged items), newest first; markdown
+// is rendered to HTML with raw HTML escaped. The older changelog.json (a list
+// of `entries`, or a single markdown `body`, returned as `html`) is still read
+// so nothing breaks before it is converted.
 async function readChangelog(dir) {
+  const posts = [];
+  const postsDir = join(dir, 'changelog');
+  if (existsSync(postsDir)) {
+    for (const file of (await readdir(postsDir, { withFileTypes: true })).sort((a, b) => b.name.localeCompare(a.name))) {
+      if (!file.isFile() || !file.name.endsWith('.json')) continue;
+      try {
+        posts.push(JSON.parse(await readFile(join(postsDir, file.name), 'utf8')));
+      } catch {
+        // Ignore an incomplete post file.
+      }
+    }
+  }
   let data = {};
   try {
     data = JSON.parse(await readFile(join(dir, 'changelog.json'), 'utf8')) || {};
   } catch {
-    // No changelog yet.
+    // No legacy changelog.
   }
-  const entries = (Array.isArray(data.entries) ? data.entries : [])
+  const entries = [...posts, ...(Array.isArray(data.entries) ? data.entries : [])]
     .filter((entry) => entry && typeof entry.title === 'string')
     .map((entry) => ({
       date: typeof entry.date === 'string' ? entry.date : '',

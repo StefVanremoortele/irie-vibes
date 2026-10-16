@@ -117,32 +117,31 @@ collections:
       - { name: message, label: "Message", widget: text, hint: "Plain text; line breaks and links are kept." }
       - { name: page, label: "Related page", widget: string, required: false, hint: "Optional path to test, e.g. /tickets" }
 
-# One-off pages, listed in the sidebar by their own name (no folder around them).
-singletons:
   - name: changelog
     label: "Changelog"
-    file: "changelog.json"
+    label_singular: "Changelog post"
+    description: "One post per change, shown on the Changelog tab of /feedback as a timeline (newest date first)."
+    folder: "changelog"
+    extension: json
+    format: json
+    create: true
+    delete: true
     icon: history
-    description: "Shown on the Changelog tab of /feedback as a timeline (newest first)."
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date | date('YYYY-MM-DD')}} — {{title}}"
+    sortable_fields: [date, title]
     fields:
-      - name: entries
-        label: "Entries"
-        label_singular: "Entry"
+      - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DD", time_format: false, default: "{{now}}", hint: "The date shown on the timeline." }
+      - { name: title, label: "Title", widget: string }
+      - { name: status, label: "Status", widget: select, options: ["Action needed"], required: false, hint: "Optional: highlights the post with a pill." }
+      - { name: body, label: "Text", widget: markdown, required: false, hint: "Optional. Use `code` for paths like `/where`." }
+      - name: items
+        label: "Changes"
+        label_singular: "Change"
         widget: list
-        add_to_top: true
-        summary: "{{fields.date}} — {{fields.title}}"
+        required: false
+        summary: "{{fields.tag}} · {{fields.title}}"
         fields:
-          - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DD", time_format: false, default: "{{now}}" }
-          - { name: title, label: "Title", widget: string }
-          - { name: status, label: "Status", widget: select, options: ["Action needed"], required: false, hint: "Optional: highlights the entry with a pill." }
-          - { name: body, label: "Text", widget: markdown, required: false, hint: "Optional. Use `code` for paths like `/where`." }
-          - name: items
-            label: "Changes"
-            label_singular: "Change"
-            widget: list
-            required: false
-            summary: "{{fields.tag}} · {{fields.title}}"
-            fields:
-              - { name: tag, label: "Tag", widget: select, options: ["New", "Fix", "Change", "Infra", "Dev only"], default: "New" }
-              - { name: title, label: "Lead phrase (bold)", widget: string }
-              - { name: body, label: "Rest of the sentence", widget: text, required: false, hint: "Markdown; shown after the bold lead phrase." }
+          - { name: tag, label: "Tag", widget: select, options: ["New", "Fix", "Change", "Infra", "Dev only"], default: "New" }
+          - { name: title, label: "Lead phrase (bold)", widget: string }
+          - { name: body, label: "Rest of the sentence", widget: text, required: false, hint: "Markdown; shown after the bold lead phrase." }
