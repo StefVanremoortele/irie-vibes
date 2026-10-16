@@ -143,7 +143,18 @@ try {
   :global(.fb-btn:disabled) { opacity: .5; cursor: progress; }
   :global(.fb-btn--primary) { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
   :global(.fb-btn--primary:hover) { background: var(--secondary-hover); color: var(--surface); }
-  :global(.fb-item__actions) { justify-content: flex-end; }
+  :global(.fb-item__actions) { justify-content: flex-end; align-items: center; gap: 16px; }
+  :global(.fb-item__accept) { padding: 2px 0; border: 0; background: none; color: var(--primary); font: inherit; font-size: 12px; font-weight: 600; opacity: .7; cursor: pointer; transition: opacity .15s; }
+  :global(.fb-item__accept:hover), :global(.fb-item__accept:focus-visible) { opacity: 1; text-decoration: underline; }
+  :global(.fb-comment--tester) { border-left-color: var(--secondary); }
+  :global(.fb-reply__toggle) { justify-self: start; padding: 2px 0; border: 0; background: none; color: var(--secondary); font: inherit; font-size: 13px; font-weight: 600; opacity: .8; cursor: pointer; }
+  :global(.fb-reply__toggle:hover), :global(.fb-reply__toggle:focus-visible) { opacity: 1; text-decoration: underline; }
+  :global(.fb-reply__form) { display: grid; gap: 8px; }
+  :global(.fb-reply__form[hidden]) { display: none; }
+  :global(.fb-reply__form textarea) { width: 100%; padding: 8px 10px; border: 1px solid var(--outline-variant); border-radius: var(--radius-sm); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; resize: vertical; }
+  :global(.fb-reply__form textarea:focus) { border-color: var(--secondary); outline: 2px solid rgba(250,188,77,.22); }
+  :global(.fb-reply__actions) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  :global(.fb-reply__status) { margin: 0; color: var(--tertiary); font-size: 13px; }
   :global(.fb-item__delete) { padding: 2px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; opacity: .55; cursor: pointer; transition: opacity .15s, color .15s; }
   :global(.fb-item__delete:hover), :global(.fb-item__delete:focus-visible) { opacity: 1; color: var(--stage-inner); text-decoration: underline; }
   .note { width: 100%; max-width: var(--max-wide); padding: 0; }
@@ -249,8 +260,10 @@ try {
           </div>
           <p class="fb-item__message">${escapeHtml(entry.message)}</p>
           ${renderComments(entry)}
+          ${entry.comments?.length ? renderReply(entry) : ''}
           ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
           <div class="fb-item__actions">
+            ${entry.status === 'In progress' ? '<button class="fb-item__accept" type="button" data-accept title="The change works: move this to Done">✓ Accept change</button>' : ''}
             <button class="fb-item__delete" type="button" data-delete>Delete</button>
           </div>
         </div>
@@ -258,12 +271,29 @@ try {
     }).join('');
   }
 
+  // Reply drafts survive the 30-second refresh (which re-renders the list).
+  const drafts = new Map<string, { open: boolean; text: string; status?: string }>();
+  function renderReply(entry: Entry) {
+    const draft = drafts.get(entry.id);
+    return `<div class="fb-reply">
+        <button class="fb-reply__toggle" type="button" data-reply-toggle ${draft?.open ? 'hidden' : ''}>Reply</button>
+        <form class="fb-reply__form" data-reply-form ${draft?.open ? '' : 'hidden'}>
+          <textarea name="message" rows="3" maxlength="5000" required placeholder="Reply to the developer…" aria-label="Reply">${escapeHtml(draft?.text || '')}</textarea>
+          <div class="fb-reply__actions">
+            <button class="fb-btn fb-btn--primary" type="submit">Send reply</button>
+            <button class="fb-btn" type="button" data-reply-cancel>Cancel</button>
+            <p class="fb-reply__status" role="status">${escapeHtml(draft?.status || '')}</p>
+          </div>
+        </form>
+      </div>`;
+  }
+
   // Developer comments (markdown from the feedback CMS, rendered to safe HTML by
   // the API), oldest first.
   function renderComments(entry: Entry) {
     const comments = (entry.comments || []).filter((comment) => comment && typeof comment.message === 'string' && comment.message.trim());
     if (!comments.length) return '';
-    return `<div class="fb-comments">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => `<div class="fb-comment">
+    return `<div class="fb-comments">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => `<div class="fb-comment${comment.author === PSEUDONYM ? ' fb-comment--tester' : ''}">
         <div class="fb-item__meta">
           <strong>${escapeHtml(comment.author || 'Developer')}</strong>
           ${time(comment.date) ? `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>` : ''}
@@ -276,6 +306,14 @@ try {
   // change finished is dropped, so it can't bring back a deleted item or an
   // old status (e.g. the refresh triggered by refocusing after confirm()).
   let revision = 0;
+  let renderPending = false;
+  const typingReply = () => document.activeElement instanceof HTMLTextAreaElement && !!document.activeElement.closest('[data-reply-form]');
+  // Background refreshes wait while a reply is being typed (re-rendering would
+  // drop the focus); the focusout handler applies them afterwards.
+  function renderUnlessTyping() {
+    if (typingReply()) renderPending = true;
+    else render();
+  }
   async function load() {
     const startedAt = revision;
     try {
@@ -285,7 +323,7 @@ try {
       if (startedAt !== revision) return;
       entries = fresh;
       loaded = true;
-      render();
+      renderUnlessTyping();
     } catch {
       if (!loaded) list.innerHTML = '<p class="empty">The feedback service is unavailable.</p>';
     }
@@ -318,6 +356,28 @@ try {
     const id = button.closest<HTMLElement>('[data-id]')?.dataset.id;
     const entry = entries.find((item) => item.id === id);
     if (!id || !entry) return;
+    if ('replyToggle' in button.dataset) {
+      drafts.set(id, { open: true, text: drafts.get(id)?.text || '' });
+      render();
+      list.querySelector<HTMLTextAreaElement>(`[data-id="${id}"] [data-reply-form] textarea`)?.focus();
+      return;
+    }
+    if ('replyCancel' in button.dataset) {
+      drafts.delete(id);
+      render();
+      return;
+    }
+    if ('accept' in button.dataset) {
+      if (!confirm('Accept this change? It moves to Done.')) return;
+      const before = entry.status;
+      await mutate(
+        () => fetch(`${API}/${id}/accept`, { method: 'POST' }),
+        () => { entry.status = 'Done'; },
+        () => { entry.status = before; },
+        'Could not accept this change.',
+      );
+      return;
+    }
     if ('delete' in button.dataset) {
       const preview = entry.message.length > 160 ? `${entry.message.slice(0, 160)}…` : entry.message;
       if (!confirm(`Delete this feedback?\n\n“${preview}”`)) return;
@@ -328,6 +388,41 @@ try {
         () => { if (!entries.some((item) => item.id === id)) entries = [...entries, removed].sort((a, b) => b.createdAt.localeCompare(a.createdAt)); },
         'Could not delete this feedback.',
       );
+    }
+  });
+  list.addEventListener('input', (event) => {
+    const field = event.target as HTMLTextAreaElement;
+    const id = field.closest<HTMLElement>('[data-id]')?.dataset.id;
+    if (id && field.closest('[data-reply-form]')) drafts.set(id, { open: true, text: field.value });
+  });
+  list.addEventListener('focusout', () => {
+    // Apply a refresh that arrived while typing, once focus has really left.
+    setTimeout(() => { if (renderPending && !typingReply()) { renderPending = false; render(); } }, 0);
+  });
+  list.addEventListener('submit', async (event) => {
+    const form = (event.target as Element).closest<HTMLFormElement>('[data-reply-form]');
+    const id = form?.closest<HTMLElement>('[data-id]')?.dataset.id;
+    if (!form || !id) return;
+    event.preventDefault();
+    const text = new FormData(form).get('message')?.toString().trim() || '';
+    if (!text) return;
+    const submit = form.querySelector<HTMLButtonElement>('[type="submit"]')!;
+    submit.disabled = true;
+    form.querySelector('.fb-reply__status')!.textContent = 'Sending…';
+    revision += 1;
+    try {
+      const response = await fetch(`${API}/${id}/replies`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text }) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not send the reply.');
+      drafts.delete(id);
+      entries = entries.map((item) => (item.id === id ? result.entry : item));
+      (document.activeElement as HTMLElement | null)?.blur();
+      render();
+    } catch (error) {
+      drafts.set(id, { open: true, text, status: error instanceof Error ? error.message : 'Could not send the reply.' });
+      render();
+    } finally {
+      revision += 1;
     }
   });
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
@@ -371,7 +466,7 @@ try {
       if (!response.ok) throw new Error();
       notes = (await response.json()).notes;
       notesLoaded = true;
-      render();
+      renderUnlessTyping();
     } catch {
       if (!notesLoaded) notesList.innerHTML = '<p class="empty">Notes are unavailable.</p>';
     }

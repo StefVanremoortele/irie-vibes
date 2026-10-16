@@ -24,6 +24,7 @@ import { gfm, gfmHtml } from 'micromark-extension-gfm';
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_IMAGES = 10;
 const MAX_BODY_BYTES = 25 * 1024 * 1024;
+const MAX_REPLY_LENGTH = 5000;
 const ENTRY_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 // All feedback is anonymous: every entry is stored and shown under this name.
 export const PSEUDONYM = 'Jah a the Creator';
@@ -351,6 +352,49 @@ async function createEntry(req, dir) {
   return entry;
 }
 
+async function readJson(req) {
+  try {
+    return JSON.parse((await readRequest(req)).toString('utf8') || '{}');
+  } catch {
+    throw new HttpError(400, 'Invalid JSON body.');
+  }
+}
+
+// Seconds precision, like the CMS datetime fields.
+const now = () => new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+
+// Tester actions on an existing entry (reply, accept). CMS edits are pulled
+// first and the entry is re-read, so a status or comment edit made in the
+// admin isn't overwritten.
+async function updateEntry(dir, id, change, message) {
+  const file = entryFile(dir, id);
+  if (gitSyncEnabled(dir)) await queueGit(dir, pull);
+  const updated = change(await readEntry(file));
+  await writeEntry(dir, updated);
+  await regenerateIndex(dir);
+  publish(dir, message);
+  return withCommentHtml(updated);
+}
+
+// A tester's reply joins the developer comments, under the pseudonym.
+async function addReply(req, dir, id) {
+  const { message } = await readJson(req);
+  const text = typeof message === 'string' ? message.trim().slice(0, MAX_REPLY_LENGTH) : '';
+  if (!text) throw new HttpError(400, 'Reply is required.');
+  return updateEntry(dir, id, (entry) => ({
+    ...entry,
+    comments: [...(Array.isArray(entry.comments) ? entry.comments : []), { date: now(), author: PSEUDONYM, message: text }],
+  }), `Reply on feedback: ${text.split('\n')[0].slice(0, 60)}`);
+}
+
+// The tester confirms a change that is In progress: it moves to Done.
+async function acceptChange(dir, id) {
+  return updateEntry(dir, id, (entry) => {
+    if (entry.status !== 'In progress') throw new HttpError(409, 'Only changes that are in progress can be accepted.');
+    return { ...entry, status: 'Done', acceptedAt: now() };
+  }, `Accept feedback: ${id}`);
+}
+
 async function handleApi(req, res, path) {
   const dir = feedbackDir();
   if (path === '/__feedback/api/changelog') {
@@ -370,6 +414,13 @@ async function handleApi(req, res, path) {
     }
     if (req.method === 'POST') return send(res, 201, { entry: await createEntry(req, dir) });
     throw new HttpError(405, 'Method not allowed.');
+  }
+
+  const actionMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/(replies|accept)$/);
+  if (actionMatch) {
+    if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
+    const [, id, action] = actionMatch;
+    return send(res, 200, { entry: action === 'replies' ? await addReply(req, dir, id) : await acceptChange(dir, id) });
   }
 
   const deleteMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)$/);

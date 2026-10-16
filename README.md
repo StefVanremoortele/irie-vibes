@@ -129,6 +129,10 @@ The developer can also add *Developer comments* to an item there. Comments are
 markdown; paste a screenshot into the text to add an image (stored in
 `images/comments/` of the private repo). They appear under the post on
 `/feedback` within about 30 seconds.
+Testers can *Reply* to those comments from the inbox (stored in the same
+comments list, under the pseudonym), and *Accept change* on an item that is
+*In progress*, which moves it to *Done* (with `acceptedAt`). The server pulls
+CMS edits before writing, then commits and pushes the change.
 
 The *Developer notes* tab shows messages from the developer to testers. They
 are written in the feedback admin (*Developer notes*, `notes/` in the private
