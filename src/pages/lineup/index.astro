@@ -11,7 +11,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
     <div class="section section--lineup">
       <h1 class="title">Line up</h1>
 
-      {useCustomHtml ? <div class="copy custom-html" set:html={customHtml} /> : <>
+      {useCustomHtml ? <div class="copy copy--center custom-html" set:html={customHtml} /> : <>
       <div class="schedule" aria-label="Festival timetable">
       <div class="stagebar stage-labels iv-desk">
         {
