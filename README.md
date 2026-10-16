@@ -104,7 +104,7 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > site, so it deliberately does **not** follow the site design system
 > (`tokens.css` / the Roots Vanguard look). The capture UI and the `/feedback`
 > sheet use their own minimal light theme (system font, fixed colours,
-> compact spacing). `/feedback` is a full-height dialog over the real homepage
+> compact spacing). `/feedback` is a floating dialog over the real homepage
 > (`src/components/HomeContent.astro`, shown inert behind it); the
 > dialog scrolls on its own.
 
