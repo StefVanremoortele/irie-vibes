@@ -26,7 +26,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
 | Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions, band |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
+| Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Where, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
 
 Feedback items (their status: New / In progress / Done), the developer notes
 shown on `/feedback`, and the `/changelog` page (markdown) are managed in a separate admin, `/admin/feedback/`,

@@ -97,7 +97,6 @@ collections:
               - { name: tickets, label: "Tickets", widget: image }
               - { name: lineup, label: "Line-up", widget: image }
               - { name: act, label: "Act detail", widget: image }
-              - { name: where, label: "Where", widget: image }
               - { name: camping, label: "Camping", widget: image }
               - { name: about, label: "About", widget: image }
           - name: images
@@ -282,6 +281,11 @@ collections:
             fields:
               - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
               - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+      - name: where
+        label: "Where"
+        file: "content/pages/where.json"
+        description: "The Google Maps tile uses the location in Site settings; the circulation plan is under Hero images → Shared images."
+        fields: *contentPageFields
       - name: drinks
         label: "Drinks"
         file: "content/pages/drinks.json"

@@ -2,33 +2,22 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import { site } from '../data/site';
-import { heroImages, pageImages } from '../data/pages';
+import { contentPages, pageImages } from '../data/pages';
 
+const page = contentPages.where;
 ---
 
-<Base title="Where">
+<Base title={page.title}>
   <div class="where">
-    <Hero src={heroImages.where} alt="Route to the festival" size="md" />
+    <Hero src={page.hero} alt="Route to the festival" size={page.heroSize ?? 'md'} />
     <div class="section section--page">
-      <h1 class="title">Where</h1>
+      <h1 class="title">{page.title}</h1>
       <div class="copy copy--center where__copy">
-        <p>
-          The festival entrance is at
-          <strong>{site.location.label}</strong>.
-        </p>
-        <p>
-          <strong>Bicycles</strong> can drive up to the entrance gates and park next to the
-          campingbar at the Chilling Lion stage.
-        </p>
-        <p>
-          If you come by <strong>train</strong> to Kortemark, find the Irie Vibes shuttlebus stop
-          sign just outside the station. The bus drives according to train arrival times, so it will
-          probably be waiting to take you to the festival.
-        </p>
-        <p>
-          When approaching Kortemark by <strong>car</strong>, you should notice direction signs.
-          Follow these to arrive safely.
-        </p>
+        {
+          page.blocks.map((b) =>
+            b.type === 'h' ? <h2 class="where__h" set:html={b.html} /> : <p set:html={b.html} />,
+          )
+        }
       </div>
 
       <div class="where__grid">
@@ -51,6 +40,14 @@ import { heroImages, pageImages } from '../data/pages';
   }
   .where__copy p {
     margin-bottom: 20px;
+  }
+  .where__h {
+    font-family: var(--font-display);
+    font-size: clamp(17px, 2.4vw, 24px);
+    letter-spacing: 0.08em;
+    color: var(--secondary);
+    text-transform: uppercase;
+    margin: 28px 0 12px;
   }
   .where__grid {
     display: grid;

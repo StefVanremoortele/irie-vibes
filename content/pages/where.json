@@ -1,0 +1,24 @@
+{
+  "slug": "where",
+  "title": "Where",
+  "hero": "/assets/hero-where.png",
+  "heroSize": "md",
+  "blocks": [
+    {
+      "type": "p",
+      "html": "The festival entrance is at <strong>Koekelarestraat 16, 8610 Kortemark, Belgium</strong>."
+    },
+    {
+      "type": "p",
+      "html": "<strong>Bicycles</strong> can drive up to the entrance gates and park next to the campingbar at the Chilling Lion stage."
+    },
+    {
+      "type": "p",
+      "html": "If you come by <strong>train</strong> to Kortemark, find the Irie Vibes shuttlebus stop sign just outside the station. The bus drives according to train arrival times, so it will probably be waiting to take you to the festival."
+    },
+    {
+      "type": "p",
+      "html": "When approaching Kortemark by <strong>car</strong>, you should notice direction signs. Follow these to arrive safely."
+    }
+  ]
+}
