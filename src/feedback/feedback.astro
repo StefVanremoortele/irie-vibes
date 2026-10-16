@@ -18,16 +18,15 @@ try {
 <Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex hideFooter>
   <div class="inbox-backdrop" aria-hidden="true"></div>
   <section class="inbox section section--page">
+    <h1 class="visually-hidden">Testing</h1>
     <header class="inbox__head">
-      <h1 class="title">Testing</h1>
+      <nav class="views" aria-label="Sections">
+        <a class="views__tab" href="#new" data-view="feedback">Feedback <span data-count="New"></span></a>
+        <a class="views__tab" href="#changelog" data-view="changelog">Changelog</a>
+        <a class="views__tab views__tab--notes" href="#notes" data-view="notes">Developer notes <span data-count="Notes"></span></a>
+      </nav>
       <p class="inbox__updated">Website last updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></p>
     </header>
-
-    <nav class="views" aria-label="Sections">
-      <a class="views__tab" href="#new" data-view="feedback">Feedback <span data-count="New"></span></a>
-      <a class="views__tab" href="#changelog" data-view="changelog">Changelog</a>
-      <a class="views__tab views__tab--notes" href="#notes" data-view="notes">Developer notes <span data-count="Notes"></span></a>
-    </nav>
 
     <div id="feedback-view" class="view">
     <nav class="tabs" aria-label="Filter by status">
@@ -70,23 +69,26 @@ try {
      half-transparent layer over the whole screen (header included). */
   .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, .5); }
   .inbox { position: relative; z-index: 9600; display: grid; justify-items: center; gap: 24px; margin-top: 24px; margin-bottom: 48px; background: var(--surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xl); box-shadow: var(--shadow-modal); }
-  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 18px; }
-  .inbox__head .title { margin: 0; text-align: left; }
-  .inbox__updated { margin: 0; color: var(--on-surface-variant); font-size: 14px; }
+  .inbox.section { padding-top: 24px; }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* Top row: section tabs on the left, "last updated" on the right, one rule. */
+  .inbox__head { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; border-bottom: 1px solid var(--border-hairline); }
+  .inbox__updated { margin: 0; padding: 8px 0; color: var(--on-surface-variant); font-size: 13px; }
   .inbox__updated time { color: var(--on-surface-strong); font-weight: 600; }
   /* Main sections: an underlined tab bar (the status filters below are pills). */
-  .views { width: 100%; max-width: var(--max-wide); display: flex; flex-wrap: wrap; gap: 4px 24px; border-bottom: 1px solid var(--border-hairline); }
+  .views { display: flex; flex-wrap: wrap; gap: 4px 24px; }
   .views__tab { display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 8px 2px 10px; border-bottom: 2px solid transparent; color: var(--on-surface-variant); font-weight: 700; font-size: 16px; text-decoration: none; }
   .views__tab:hover { color: var(--on-surface-strong); }
   .views__tab.is-active { border-bottom-color: var(--secondary); color: var(--secondary); }
   .views__tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
   .views__tab span:empty { display: none; }
   .views__tab--notes.has-unseen:not(.is-active) { color: var(--primary); }
-  .tabs { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
-  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--outline-variant); border-radius: var(--radius-full); color: var(--on-surface-variant); font-weight: 600; font-size: 14px; text-decoration: none; }
-  .tab:hover { border-color: var(--outline); color: var(--on-surface-strong); }
-  .tab.is-active { border-color: var(--secondary); background: var(--secondary); color: var(--surface); }
-  .tab span { min-width: 20px; padding: 0 6px; border-radius: var(--radius-full); background: rgba(255,255,255,.1); font-size: 12px; text-align: center; }
+  /* Status filters: a quiet row of text links; the active one is highlighted. */
+  .tabs { width: 100%; display: flex; flex-wrap: wrap; gap: 2px 18px; margin-bottom: -12px; }
+  .tab { display: inline-flex; align-items: baseline; gap: 5px; color: var(--muted); font-size: 13px; font-weight: 600; text-decoration: none; }
+  .tab:hover { color: var(--on-surface-strong); }
+  .tab.is-active { color: var(--secondary); }
+  .tab span { color: inherit; font-size: 12px; font-weight: 400; opacity: .8; }
   .tab span:empty { display: none; }
   .view { width: 100%; max-width: var(--max-wide); display: grid; justify-items: center; gap: 28px; }
   .view[hidden] { display: none; }
@@ -181,7 +183,9 @@ try {
   .lightbox button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--surface); color: #fff; font-size: 20px; cursor: pointer; }
   @media (max-width: 640px) {
     .inbox { margin: 12px 8px 32px; padding-left: 16px; padding-right: 16px; }
-    .views { gap: 4px 14px; }
+    .views { width: 100%; gap: 4px 14px; border-bottom: 1px solid var(--border-hairline); }
+    .inbox__head { border-bottom: 0; }
+    .inbox__updated { padding: 0; }
     .views__tab { font-size: 14px; }
     :global(.fb-item) { grid-template-columns: minmax(0, 1fr); }
     :global(.fb-item__shot) { height: 160px; }
