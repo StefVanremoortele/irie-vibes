@@ -377,12 +377,12 @@ try {
     }
   }
 
-  // "Website last updated": the build's commit date, shown in the visitor's
-  // locale and time zone, with the relative time ("2 hours ago").
+  // "Website last updated": the relative time ("2 hours ago"); the exact date is
+  // in the tooltip.
   const updated = document.querySelector<HTMLTimeElement>('#last-updated')!;
   function renderUpdated() {
     const date = new Date(updated.dateTime);
-    updated.textContent = `${date.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} (${ago(updated.dateTime)})`;
+    updated.textContent = ago(updated.dateTime);
     updated.title = date.toLocaleString();
   }
   renderUpdated();
