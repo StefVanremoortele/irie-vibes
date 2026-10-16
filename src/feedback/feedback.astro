@@ -82,9 +82,10 @@ try {
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* The site (header and footer included) is dimmed by a fixed layer; the
-     light sheet above it runs the full height of the screen. */
+     light sheet above it starts at the very top (over the header spacer) and
+     runs at least the full height of the screen. */
   .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: #0008; }
-  .inbox { position: relative; z-index: 9600; width: 100%; max-width: 920px; min-height: 100dvh; margin: 0 auto; padding: 0 16px 32px; background: var(--bg); box-shadow: 0 0 40px #0006; }
+  .inbox { position: relative; z-index: 9600; width: 100%; max-width: 920px; min-height: 100dvh; margin: calc(-1 * var(--header-h)) auto 0; padding: 0 16px 32px; background: var(--bg); box-shadow: 0 0 40px #0006; }
   .inbox__head { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; margin: 0 -16px 10px; padding: 0 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .inbox__updated { margin: 0; padding: 8px 0; color: var(--muted); font-size: 12px; }
   .inbox__updated time { color: var(--ink-2); font-weight: 600; }
