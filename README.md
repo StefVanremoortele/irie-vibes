@@ -104,8 +104,9 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > site, so it deliberately does **not** follow the site design system
 > (`tokens.css` / the Roots Vanguard look). The capture UI and the `/feedback`
 > sheet use their own minimal light theme (system font, fixed colours,
-> compact spacing). `/feedback` keeps the festival header and footer visible
-> behind a dimmed overlay, with the light sheet running the full screen height.
+> compact spacing). `/feedback` is a full-height dialog over the real homepage
+> (`src/components/HomeContent.astro`, shown dimmed and inert behind it); the
+> dialog scrolls on its own.
 
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press

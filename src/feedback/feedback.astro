@@ -1,6 +1,7 @@
 ---
 import { execFileSync } from 'node:child_process';
 import Base from '../layouts/Base.astro';
+import HomeContent from '../components/HomeContent.astro';
 
 // When the website (code, not content) last changed: the date of the latest
 // commit that touches anything outside the CMS-owned paths, so content edits
@@ -16,14 +17,15 @@ try {
 ---
 
 <!--
-  Testing page (/feedback): the festival header and footer stay visible behind
-  a dimmed overlay, with a full-height light sheet on top. The sheet is a plain
+  Testing page (/feedback): the real homepage (header and footer included) is
+  shown dimmed and inert behind a full-height dialog. The sheet is a plain
   tool UI with its own minimal light theme and deliberately does NOT follow the
   site design system (tokens.css / global.css styles), see README "Feedback tool".
 -->
 <Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex>
+  <div class="inbox-behind" inert aria-hidden="true"><HomeContent /></div>
   <div class="inbox-backdrop" aria-hidden="true"></div>
-  <section class="inbox fbk">
+  <section class="inbox fbk" role="dialog" aria-modal="true" aria-label="Testing">
     <h1 class="visually-hidden">Testing</h1>
     <header class="inbox__head">
       <nav class="views" aria-label="Sections">
@@ -81,11 +83,11 @@ try {
   .fbk a { color: var(--accent); }
   .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  /* The site (header and footer included) is dimmed by a fixed layer; the
-     light sheet above it starts at the very top (over the header spacer) and
-     runs at least the full height of the screen. */
+  /* The homepage behind is dimmed by a fixed layer and doesn't scroll; the
+     dialog is fixed, spans the full screen height and scrolls on its own. */
+  html:has(.inbox.fbk) { overflow: hidden; }
   .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: #0008; }
-  .inbox { position: relative; z-index: 9600; width: 100%; max-width: 920px; min-height: 100dvh; margin: calc(-1 * var(--header-h)) auto 0; padding: 0 16px 32px; background: var(--bg); box-shadow: 0 0 40px #0006; }
+  .inbox { position: fixed; top: 0; bottom: 0; left: 50%; z-index: 9600; width: 100%; max-width: 920px; transform: translateX(-50%); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0 16px 32px; background: var(--bg); box-shadow: 0 0 40px #0006; }
   .inbox__head { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; margin: 0 -16px 10px; padding: 0 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .inbox__updated { margin: 0; padding: 8px 0; color: var(--muted); font-size: 12px; }
   .inbox__updated time { color: var(--ink-2); font-weight: 600; }
