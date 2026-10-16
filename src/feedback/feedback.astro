@@ -83,6 +83,10 @@ import Base from '../layouts/Base.astro';
   :global(.fb-item__badge) { padding: 1px 8px; border-radius: var(--radius-full); background: var(--surface-container-high); color: var(--on-surface-variant); font-size: 12px; font-weight: 600; }
   :global(.fb-item__badge--warn) { color: var(--tertiary); }
   :global(.fb-item__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
+  :global(.fb-comments) { display: grid; gap: 8px; }
+  :global(.fb-comment) { display: grid; gap: 4px; padding: 10px 12px; background: var(--surface-container-lowest); border-left: 3px solid var(--primary); border-radius: var(--radius-sm); }
+  :global(.fb-comment__message) { margin: 0; color: var(--on-surface); white-space: pre-wrap; overflow-wrap: anywhere; }
+  :global(.fb-comment__message a) { color: var(--secondary); }
   :global(.fb-item__actions) { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   :global(.fb-item__more) { display: flex; flex-wrap: wrap; gap: 6px; }
   :global(.fb-item__more button) { width: 54px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--border-soft); border-radius: 6px; background: none; cursor: zoom-in; }
@@ -128,6 +132,7 @@ import Base from '../layouts/Base.astro';
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     images: { name: string; url: string }[];
+    comments?: { date: string; author?: string; message: string }[];
     metadata?: {
       viewport?: { width: number; height: number };
       embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
@@ -190,6 +195,7 @@ import Base from '../layouts/Base.astro';
             ${entry.metadata?.screenshotFailed ? '<span class="fb-item__badge fb-item__badge--warn">screenshot failed</span>' : ''}
           </div>
           <p class="fb-item__message">${escapeHtml(entry.message)}</p>
+          ${renderComments(entry)}
           ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
           <div class="fb-item__actions">
             <button class="fb-item__delete" type="button" data-delete>Delete</button>
@@ -197,6 +203,19 @@ import Base from '../layouts/Base.astro';
         </div>
       </article>`;
     }).join('');
+  }
+
+  // Developer comments (added in the feedback CMS), oldest first.
+  function renderComments(entry: Entry) {
+    const comments = (entry.comments || []).filter((comment) => comment && typeof comment.message === 'string' && comment.message.trim());
+    if (!comments.length) return '';
+    return `<div class="fb-comments">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => `<div class="fb-comment">
+        <div class="fb-item__meta">
+          <strong>${escapeHtml(comment.author || 'Developer')}</strong>
+          ${time(comment.date) ? `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>` : ''}
+        </div>
+        <p class="fb-comment__message">${linkify(comment.message)}</p>
+      </div>`).join('')}</div>`;
   }
 
   // Bumped by every status change / delete. A refresh that started before a

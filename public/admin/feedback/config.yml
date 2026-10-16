@@ -7,7 +7,8 @@
 # change shows up on /feedback within about 30 seconds. Sign in with a GitHub
 # token that has access to that private repo.
 #
-# Only the status is meant to be edited; the other fields are read-only.
+# Only the status and developer comments are meant to be edited; the other
+# fields are read-only. Comments are shown under the item on /feedback.
 
 backend:
   name: github
@@ -38,6 +39,17 @@ collections:
     fields:
       - { name: status, label: "Status", widget: select, options: ["New", "In progress", "Done"], default: "New" }
       - { name: message, label: "Message", widget: text, readonly: true }
+      - name: comments
+        label: "Developer comments"
+        label_singular: "Comment"
+        hint: "Shown under this item on /feedback for the testers."
+        widget: list
+        required: false
+        summary: "{{fields.author}}: {{fields.message | truncate(60)}}"
+        fields:
+          - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DDTHH:mm:ssZ", default: "{{now}}" }
+          - { name: author, label: "Author", widget: string, default: "Developer" }
+          - { name: message, label: "Comment", widget: text, hint: "Plain text; line breaks and links are kept." }
       - { name: page, label: "Page", widget: string, readonly: true, required: false }
       - { name: createdAt, label: "Sent", widget: datetime, readonly: true }
       - { name: screenshot, label: "Screenshot", widget: image, readonly: true, required: false }
