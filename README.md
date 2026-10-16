@@ -158,19 +158,20 @@ repo) and appear within about 30 seconds; each browser marks notes it hasn't
 seen as *New*.
 
 The *Changelog* tab (old `/changelog` links redirect to it) shows the
-changelog as a timeline, newest first. It is written in the feedback admin
-(*Changelog*, `changelog.json` in the private repo) as entries: a date, a
-title, an optional *Action needed* status, optional markdown text, and tagged
-changes (*New*, *Fix*, *Change*, *Infra*, *Dev only*: a bold lead phrase plus
-the rest of the sentence). The server renders the markdown (raw HTML is
-escaped), so edits appear within about 30 seconds without a site rebuild. An
-older single-markdown `changelog.json` (`{ "body": … }`) is still shown.
+changelog as a timeline, newest date first. Each change is its own post in
+the feedback admin (*Changelog*, one file per post in `changelog/` of the
+private repo): a date (picked in the admin, shown on the timeline), a title,
+an optional *Action needed* status, optional markdown text, and tagged changes
+(*New*, *Fix*, *Change*, *Infra*, *Dev only*: a bold lead phrase plus the rest
+of the sentence). The server renders the markdown (raw HTML is escaped), so
+edits appear within about 30 seconds without a site rebuild. An older
+`changelog.json` (a list of `entries`, or one markdown `body`) is still shown.
 
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside
 this public repository in `~/sources/repos/stef/irie-vibes-feedback/`, a clone
 of the private feedback repo (`entries/<id>.json`, `images/<id>/`,
-`notes/*.json`, `changelog.json`, and an
+`notes/*.json`, `changelog/*.json`, and an
 untracked generated `index.md`); set `FEEDBACK_DIR` to use another folder. With
 `FEEDBACK_GIT_SYNC=1` (set in production) the server commits and pushes every
 new or deleted item and pulls status edits from the CMS before serving the
