@@ -63,12 +63,10 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           </summary>
           <div class="acc__panel">
             <div class="years" data-years data-archive data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
-              <p class="years__hint">Browse available editions. Use the five-year controls to move through the archive.</p>
               <div class="years__nav">
                 <button type="button" class="years__btn years__btn--step" data-year-step="-5">-5y</button>
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
-                <label class="years__select-label" for="edition-year">Edition</label>
-                <select id="edition-year" class="years__select" data-year>
+                <select id="edition-year" class="years__select" data-year aria-label="Edition year">
                   {editionOptions.map((edition) => <option value={edition.year}>{edition.year}</option>)}
                 </select>
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
@@ -208,14 +206,7 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin: 6px 0 22px;
-  }
-  .years__hint {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.6;
-    text-align: center;
-    margin: 0 0 16px;
+    margin: 18px 0 22px;
   }
   .years__btn {
     background: var(--surface-container-high);
@@ -233,11 +224,6 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
   }
   .years__btn:hover {
     border-color: var(--secondary);
-  }
-  .years__select-label {
-    color: var(--secondary);
-    font-size: 13px;
-    font-weight: 700;
   }
   .years__select {
     min-height: 38px;
