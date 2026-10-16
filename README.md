@@ -105,7 +105,7 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > (`tokens.css` / the Roots Vanguard look). The capture UI and the `/feedback`
 > sheet use their own minimal light theme (system font, fixed colours,
 > compact spacing). `/feedback` is a full-height dialog over the real homepage
-> (`src/components/HomeContent.astro`, shown dimmed and inert behind it); the
+> (`src/components/HomeContent.astro`, shown inert behind it); the
 > dialog scrolls on its own.
 
 Testers can send feedback from any page (except `/admin`), on both the dev
