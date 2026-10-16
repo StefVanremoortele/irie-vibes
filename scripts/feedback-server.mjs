@@ -240,6 +240,7 @@ async function regenerateIndex(dir) {
     lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
     if (entry.page) lines.push(`Page: ${entry.page}`);
     lines.push('', entry.message, '');
+    for (const comment of entry.comments || []) lines.push(`> **${comment.author || 'Developer'}** (${comment.date}): ${comment.message}`, '');
     if (entry.images.length) {
       lines.push('Images:');
       for (const image of entry.images) lines.push(`- [${image.name}](./images/${entry.id}/${image.name})`);
