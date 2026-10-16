@@ -123,6 +123,26 @@ singletons:
     label: "Changelog"
     file: "changelog.json"
     icon: history
-    description: "Shown on the Changelog tab of /feedback. Markdown: put the newest changes at the top."
+    description: "Shown on the Changelog tab of /feedback as a timeline (newest first)."
     fields:
-      - { name: body, label: "Changelog", widget: markdown }
+      - name: entries
+        label: "Entries"
+        label_singular: "Entry"
+        widget: list
+        add_to_top: true
+        summary: "{{fields.date}} — {{fields.title}}"
+        fields:
+          - { name: date, label: "Date", widget: datetime, format: "YYYY-MM-DD", time_format: false, default: "{{now}}" }
+          - { name: title, label: "Title", widget: string }
+          - { name: status, label: "Status", widget: select, options: ["Action needed"], required: false, hint: "Optional: highlights the entry with a pill." }
+          - { name: body, label: "Text", widget: markdown, required: false, hint: "Optional. Use `code` for paths like `/where`." }
+          - name: items
+            label: "Changes"
+            label_singular: "Change"
+            widget: list
+            required: false
+            summary: "{{fields.tag}} · {{fields.title}}"
+            fields:
+              - { name: tag, label: "Tag", widget: select, options: ["New", "Fix", "Change", "Infra", "Dev only"], default: "New" }
+              - { name: title, label: "Lead phrase (bold)", widget: string }
+              - { name: body, label: "Rest of the sentence", widget: text, required: false, hint: "Markdown; shown after the bold lead phrase." }

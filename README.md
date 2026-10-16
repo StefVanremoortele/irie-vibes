@@ -102,11 +102,14 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 
 > **Design:** the feedback tool is a tester tool, not part of the festival
 > site, so it deliberately does **not** follow the site design system
-> (`tokens.css` / the Roots Vanguard look). The capture UI and the `/feedback`
-> sheet use their own minimal light theme (system font, fixed colours,
-> compact spacing). `/feedback` is a floating dialog over the real homepage
-> (`src/components/HomeContent.astro`, shown inert behind it); the
-> dialog scrolls on its own.
+> (`tokens.css` / the Roots Vanguard look). The `/feedback` dialog uses the
+> *Pane* design tokens (Inter Tight / Fraunces / JetBrains Mono, violet
+> accent), defined as CSS variables scoped to its `.fbx` root so they don't
+> leak into the site; the capture UI keeps its own minimal light theme.
+> `/feedback` is a dialog over the real homepage
+> (`src/components/HomeContent.astro`, shown inert behind a dark blurred
+> scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
+> came from.
 
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press
@@ -123,11 +126,16 @@ pseudonym *Jah a the Creator*.
 `/feedback` is the inbox, with three tabs: *Feedback*, *Changelog* and
 *Developer notes*. The top right shows when the website last changed: the
 date of the latest commit outside the CMS-owned `content/` and `public/assets/`
-(read at build time), so CMS edits don't count. The *Feedback* tab has status
-filters (*New*, *In progress*, *Done*, *All*) with counts, screenshots with a lightbox, a subtle *Delete* link per item, and
-a form for notes without a screenshot. It refreshes every 30 seconds. The inbox
-is not linked from the site and has no login, so anyone with the URL can read
-it.
+(read at build time), so CMS edits don't count. The *Feedback* tab is an inbox
+split: a list on the left with status filters (*New*, *In progress*, *Done*,
+*All*; the last choice is remembered per browser; ↑/↓ move the selection) and
+the selected item on the right, with its screenshot (click to enlarge), the
+comment, the conversation and a reply box (Enter sends, Shift+Enter adds a
+line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
+items) and delete sit in its header; *Add a note without a screenshot* is at
+the bottom of the list. Under 900px wide the list and the item are shown one
+at a time. It refreshes every 30 seconds. The inbox is not linked from the
+site and has no login, so anyone with the URL can read it.
 
 **Statuses are managed in Sveltia** at `/admin/feedback/` (in dev:
 `/admin/feedback/index.html`), a second admin page for the private repo
@@ -137,10 +145,10 @@ The developer can also add *Developer comments* to an item there. Comments are
 markdown; paste a screenshot into the text to add an image (stored in
 `images/` of the private repo). They appear under the post on
 `/feedback` within about 30 seconds.
-Testers can *Reply* to those comments from the inbox (stored in the same
-comments list, under the pseudonym), and *Accept change* on an item that is
-*In progress*, which moves it to *Done* (with `acceptedAt`). The server pulls
-CMS edits before writing, then commits and pushes the change.
+Testers can *Reply* from the inbox (stored in the same comments list, under
+the pseudonym), *Mark in progress* a *New* item, and *Accept change* on an
+item that is *In progress*, which moves it to *Done* (with `acceptedAt`). The
+server pulls CMS edits before writing, then commits and pushes the change.
 
 The *Developer notes* tab shows messages from the developer to testers. They
 are written in the feedback admin (*Developer notes*, `notes/` in the private
@@ -148,9 +156,13 @@ repo) and appear within about 30 seconds; each browser marks notes it hasn't
 seen as *New*.
 
 The *Changelog* tab (old `/changelog` links redirect to it) shows the
-changelog, written in markdown in the feedback admin (*Changelog*,
-`changelog.json` in the private repo). The server renders it (raw HTML is
-escaped), so edits appear within about 30 seconds without a site rebuild.
+changelog as a timeline, newest first. It is written in the feedback admin
+(*Changelog*, `changelog.json` in the private repo) as entries: a date, a
+title, an optional *Action needed* status, optional markdown text, and tagged
+changes (*New*, *Fix*, *Change*, *Infra*, *Dev only*: a bold lead phrase plus
+the rest of the sentence). The server renders the markdown (raw HTML is
+escaped), so edits appear within about 30 seconds without a site rebuild. An
+older single-markdown `changelog.json` (`{ "body": … }`) is still shown.
 
 The API lives in `scripts/feedback-server.mjs` and is served by the dev server
 and by the production server under `/__feedback/`. Entries are stored outside

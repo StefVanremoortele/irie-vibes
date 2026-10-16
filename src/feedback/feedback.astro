@@ -17,348 +17,556 @@ try {
 ---
 
 <!--
-  Testing page (/feedback): the real homepage (header and footer included) is
-  shown inert behind a full-height dialog. The sheet is a plain
-  tool UI with its own minimal light theme and deliberately does NOT follow the
-  site design system (tokens.css / global.css styles), see README "Feedback tool".
+  Testing page (/feedback): a dialog over the real homepage (shown inert behind
+  a dark scrim). The dialog is a tester tool with its own design tokens (Pane,
+  scoped to .fbx) and deliberately does NOT follow the festival design system;
+  see README "Feedback tool". Tabs: Feedback (inbox split: list + detail),
+  Changelog (timeline) and Developer notes.
 -->
 <Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex>
+  <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
+  <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+
   <div class="inbox-behind" inert aria-hidden="true"><HomeContent /></div>
-  <div class="inbox-backdrop" aria-hidden="true"></div>
-  <section class="inbox fbk" role="dialog" aria-modal="true" aria-label="Testing">
-    <h1 class="visually-hidden">Testing</h1>
-    <header class="inbox__head">
-      <nav class="views" aria-label="Sections">
-        <a class="views__tab" href="#new" data-view="feedback">Feedback <span data-count="New"></span></a>
-        <a class="views__tab" href="#changelog" data-view="changelog">Changelog</a>
-        <a class="views__tab views__tab--notes" href="#notes" data-view="notes">Developer notes <span data-count="Notes"></span></a>
-      </nav>
-      <p class="inbox__updated">Website last updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></p>
-    </header>
 
-    <div id="feedback-view" class="view">
-    <nav class="tabs" aria-label="Filter by status">
-      <a class="tab" href="#new" data-filter="New">New <span data-count="New"></span></a>
-      <a class="tab" href="#in-progress" data-filter="In progress">In progress <span data-count="In progress"></span></a>
-      <a class="tab" href="#done" data-filter="Done">Done <span data-count="Done"></span></a>
-      <a class="tab" href="#all" data-filter="All">All <span data-count="All"></span></a>
-    </nav>
-    <div id="entries" class="entries" aria-live="polite"><p class="empty">Loading feedback…</p></div>
-
-    <details class="note">
-      <summary>Add a note without a screenshot</summary>
-      <form id="feedback-form" class="note__form">
-        <label>Comment<textarea name="message" required maxlength="10000" rows="3" placeholder="Describe what you noticed…"></textarea></label>
-        <label>Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
-        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
-          Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
-          <input id="image-input" type="file" accept="image/*" multiple hidden />
+  <div class="fbx">
+    <div class="fbx-scrim" data-close aria-hidden="true"></div>
+    <section class="fbx-panel" role="dialog" aria-modal="true" aria-labelledby="fbx-title">
+      <h1 id="fbx-title" class="fbx-sr">Testing</h1>
+      <header class="fbx-head">
+        <nav class="fbx-tabs" aria-label="Sections">
+          <a class="fbx-tab" href="#feedback" data-view="feedback">Feedback <span class="fbx-count fbx-count--accent" data-count="New"></span></a>
+          <a class="fbx-tab" href="#changelog" data-view="changelog">Changelog</a>
+          <a class="fbx-tab" href="#notes" data-view="notes">Developer notes <span class="fbx-count" data-count="Notes"></span></a>
+        </nav>
+        <div class="fbx-head__end">
+          <span class="fbx-updated"><span class="fbx-dot" aria-hidden="true"></span><span>Site updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></span></span>
+          <button type="button" class="fbx-key" data-close title="Close (Esc)" aria-label="Close">Esc</button>
         </div>
-        <div class="previews" id="previews"></div>
-        <div class="note__actions"><button class="fb-btn fb-btn--primary" type="submit">Add note</button><p id="form-status" role="status"></p></div>
-      </form>
-    </details>
-    </div>
+      </header>
 
-    <div id="changelog-view" class="view" hidden>
-      <article id="changelog-body" class="changelog__body" aria-live="polite"><p class="empty">Loading changelog…</p></article>
-    </div>
+      <!-- Feedback: inbox split -->
+      <div id="feedback-view" class="fbx-view fbx-split">
+        <aside class="fbx-list" aria-label="Feedback list">
+          <div class="fbx-chips" role="group" aria-label="Filter by status">
+            <button type="button" class="fbx-chip" data-filter="new">New <span data-count="New"></span></button>
+            <button type="button" class="fbx-chip" data-filter="in_progress">In progress <span data-count="In progress"></span></button>
+            <button type="button" class="fbx-chip" data-filter="done">Done <span data-count="Done"></span></button>
+            <button type="button" class="fbx-chip" data-filter="all">All <span data-count="All"></span></button>
+          </div>
+          <div id="entries" class="fbx-rows" aria-live="polite"><p class="fbx-empty">Loading feedback…</p></div>
+          <button type="button" class="fbx-addnote" data-add-note>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+            Add a note without a screenshot
+          </button>
+        </aside>
 
-    <div id="notes-view" class="view" hidden>
-      <div id="notes-list" class="entries" aria-live="polite"><p class="empty">Loading notes…</p></div>
-    </div>
-  </section>
+        <div class="fbx-detail">
+          <div id="detail" class="fbx-detail__item">
+            <header class="fbx-detail__head" id="detail-head"></header>
+            <div class="fbx-detail__body" id="detail-body"><p class="fbx-empty">Select feedback on the left.</p></div>
+            <form class="fbx-composer" id="composer" hidden>
+              <textarea name="message" rows="1" maxlength="5000" required placeholder="Reply to the developer…" aria-label="Reply"></textarea>
+              <button type="submit" class="fbx-btn fbx-btn--dark">Send</button>
+              <p class="fbx-composer__status" role="status"></p>
+            </form>
+          </div>
 
-  <dialog id="lightbox" class="lightbox fbk"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
+          <!-- Add a note without a screenshot -->
+          <div id="note-pane" class="fbx-detail__item" hidden>
+            <header class="fbx-detail__head">
+              <button type="button" class="fbx-back" data-back aria-label="Back to the list"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg></button>
+              <h2 class="fbx-detail__title">Add a note without a screenshot</h2>
+            </header>
+            <form id="feedback-form" class="fbx-detail__body fbx-noteform">
+              <label class="fbx-field">Comment<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
+              <label class="fbx-field">Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
+              <div class="fbx-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
+                Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
+                <input id="image-input" type="file" accept="image/*" multiple hidden />
+              </div>
+              <div class="fbx-previews" id="previews"></div>
+              <div class="fbx-noteform__actions"><button class="fbx-btn fbx-btn--primary" type="submit">Add note</button><p id="form-status" role="status"></p></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Changelog: timeline -->
+      <div id="changelog-view" class="fbx-view fbx-scroll" hidden>
+        <div id="changelog-body" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading changelog…</p></div>
+      </div>
+
+      <!-- Developer notes: same timeline -->
+      <div id="notes-view" class="fbx-view fbx-scroll" hidden>
+        <div id="notes-list" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading notes…</p></div>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="lightbox" class="fbx fbx-lightbox"><form method="dialog"><button aria-label="Close">×</button></form><img alt="" /></dialog>
 </Base>
 
 <style is:global>
-  /* Own minimal light theme, independent of the site design system. */
-  .fbk {
-    --bg: #f1f2f4; --paper: #fff; --ink: #1d2025; --ink-2: #4a4f57; --muted: #7a808a; --line: #e1e3e7; --line-2: #cdd1d7;
-    --accent: #2d6a3a; --accent-soft: #e6f0e7; --tester: #b7791f; --tester-soft: #fbf3e4; --danger: #b3261e;
-    color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; letter-spacing: normal; text-transform: none;
+  /* ---- Tokens (Pane design system), scoped to the dialog ------------------ */
+  .fbx {
+    --ink-900: #1a1b26; --ink-700: #2e2f3e; --ink-500: #5b5c6e; --ink-400: #8b8c9e; --ink-300: #b8b9c8; --ink-200: #d8d9e3;
+    --divider: rgba(26, 27, 38, 0.10);
+    --accent-500: #7c5cff; --accent-600: #6b49f0; --accent-400: #9d82ff; --accent-100: #ece6ff; --accent-tint: rgba(124, 92, 255, 0.12);
+    --success-500: #10b981; --success-100: #d1fae5; --success-700: #047857;
+    --warn-500: #f59e0b; --warn-100: #fef3c7; --warn-700: #92600a;
+    --info-500: #3b82f6; --info-100: #dbeafe;
+    --danger-500: #ef4444; --danger-100: #fee2e2;
+    --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(26, 27, 38, 0.04), 0 2px 8px rgba(26, 27, 38, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    --shadow-xl: 0 8px 16px rgba(26, 27, 38, 0.06), 0 40px 80px rgba(26, 27, 38, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --shadow-focus: 0 0 0 3px rgba(124, 92, 255, 0.35);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
+    --dur-fast: 140ms; --dur-med: 260ms; --dur-slow: 420ms;
+    --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino', Georgia, serif;
+    --font-body: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    color: var(--ink-700);
+    font: 400 15px/1.5 var(--font-body);
+    letter-spacing: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
   }
-  .fbk *, .fbk *::before, .fbk *::after { box-sizing: border-box; }
-  .fbk a { color: var(--accent); }
-  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .fbx *, .fbx *::before, .fbx *::after { box-sizing: border-box; }
+  .fbx :where(button, input, textarea) { font: inherit; color: inherit; }
+  .fbx :where(a) { color: var(--accent-600); }
+  .fbx svg { flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .fbx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .fbx :focus-visible { outline: none; box-shadow: var(--shadow-focus); }
 
-  /* The homepage behind doesn't scroll (and fills the width like on /: .main
-     centres its children). The dialog floats centred over it, sizes to its
-     content and scrolls on its own when taller than the screen. */
-  html:has(.inbox.fbk) { overflow: hidden; }
+  /* ---- Shell: scrim + panel over the inert homepage ----------------------- */
+  html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
-  /* A light dim and blur between the homepage and the dialog. */
-  .inbox-backdrop { position: fixed; inset: 0; z-index: 9500; background: #00000040; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-  .inbox { position: fixed; top: 50%; left: 50%; z-index: 9600; width: calc(100% - 32px); max-width: 920px; max-height: calc(100dvh - 64px); transform: translate(-50%, -50%); overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0 20px 20px; background: var(--bg); border-radius: 12px; box-shadow: 0 20px 60px #0008; }
-  .inbox__head { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; margin: 0 -20px 12px; padding: 0 20px; background: var(--bg); border-bottom: 1px solid var(--line); }
-  .inbox__updated { margin: 0; padding: 8px 0; color: var(--muted); font-size: 13px; }
-  .inbox__updated time { color: var(--ink-2); font-weight: 600; }
-  .views { display: flex; flex-wrap: wrap; gap: 0 22px; }
-  .views__tab { display: inline-flex; align-items: center; gap: 6px; margin-bottom: -1px; padding: 14px 0 11px; border-bottom: 2px solid transparent; color: var(--ink-2); font-weight: 600; text-decoration: none; }
-  .fbk .views__tab { color: var(--ink-2); }
-  .views__tab:hover { color: var(--ink); }
-  .fbk .views__tab.is-active { border-bottom-color: var(--accent); color: var(--accent); }
-  .views__tab span, .tab span { color: var(--muted); font-size: 13px; font-weight: 400; }
-  .views__tab span:empty, .tab span:empty { display: none; }
-  .views__tab--notes.has-unseen:not(.is-active)::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--tester); }
+  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
+  .fbx-panel { position: fixed; inset: 40px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.65); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
+  .fbx.is-closing .fbx-panel { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
+  .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
+  @keyframes fbx-fade { from { opacity: 0; } }
+  @keyframes fbx-enter { from { opacity: 0; transform: translateY(8px); } }
+  @keyframes fbx-exit { to { opacity: 0; transform: scale(0.98); } }
+  @media (prefers-reduced-motion: reduce) {
+    .fbx-panel { animation-name: fbx-fade; }
+    .fbx.is-closing .fbx-panel { animation-name: fbx-fade; animation-direction: reverse; }
+    .fbx *, .fbx *::before, .fbx *::after { transition-duration: 0s !important; }
+  }
 
-  .view { display: grid; gap: 8px; }
-  .view[hidden] { display: none; }
-  .tabs { display: flex; flex-wrap: wrap; gap: 0 18px; }
-  .fbk .tab { color: var(--muted); font-size: 13px; font-weight: 600; text-decoration: none; }
-  .fbk .tab:hover { color: var(--ink); }
-  .fbk .tab.is-active { color: var(--accent); }
-  .entries { display: grid; gap: 10px; }
-  .empty { margin: 0; padding: 20px; border: 1px dashed var(--line-2); border-radius: 6px; color: var(--muted); text-align: center; }
+  /* Header: tabs left, "site updated" + Esc right */
+  .fbx-head { display: flex; align-items: stretch; justify-content: space-between; gap: 16px; min-height: 60px; padding: 0 28px 0 16px; border-bottom: 1px solid var(--divider); }
+  .fbx-tabs { display: flex; align-items: stretch; }
+  .fbx a.fbx-tab { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--ink-500); font-size: 15px; font-weight: 500; text-decoration: none; transition: color var(--dur-fast); }
+  .fbx a.fbx-tab:hover { color: var(--ink-900); }
+  .fbx a.fbx-tab.is-active { color: var(--ink-900); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent-500); }
+  .fbx a.fbx-tab:focus-visible { box-shadow: inset 0 0 0 3px rgba(124, 92, 255, 0.35); border-radius: var(--radius-xs); }
+  .fbx-count { padding: 1px 7px; border-radius: var(--radius-pill); background: var(--ink-200); color: var(--ink-700); font-size: 12px; font-weight: 600; line-height: 1.4; }
+  .fbx-count--accent, .fbx-count.has-unseen { background: var(--accent-500); color: #fff; }
+  .fbx-count:empty { display: none; }
+  .fbx-head__end { display: flex; align-items: center; gap: 16px; }
+  .fbx-updated { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-500); font-size: 13px; white-space: nowrap; }
+  .fbx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success-500); }
+  .fbx-key { padding: 3px 6px; border: 0; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.05); color: var(--ink-500); font: 500 11px/1.2 var(--font-mono); cursor: pointer; transition: background var(--dur-fast); }
+  .fbx-key:hover { background: rgba(26, 27, 38, 0.1); }
 
-  /* Feedback item */
-  .fb-item { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 16px; padding: 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
-  .fb-item.is-new { box-shadow: inset 3px 0 0 var(--accent); }
-  .fb-item__shot { display: block; height: 96px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); cursor: zoom-in; }
-  .fb-item__shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-  .fb-item__shot--none { display: grid; place-items: center; color: var(--muted); font-size: 12px; cursor: default; }
-  .fb-item__body { display: grid; align-content: start; gap: 8px; min-width: 0; }
-  .fb-item__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; color: var(--muted); font-size: 13px; }
-  .fb-item__meta strong { color: var(--ink-2); font-weight: 600; }
-  .fb-item__meta a { overflow-wrap: anywhere; }
-  .fb-item__badge { padding: 0 6px; border-radius: 3px; background: var(--bg); color: var(--ink-2); font-size: 12px; font-weight: 600; }
-  .fb-item__badge--warn { color: var(--danger); }
-  .fb-item__badge--new { background: var(--accent-soft); color: var(--accent); }
-  .fb-item__message { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .fb-item__more { display: flex; flex-wrap: wrap; gap: 4px; }
-  .fb-item__more button { width: 64px; height: 44px; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; background: none; cursor: zoom-in; }
-  .fb-item__more img { width: 100%; height: 100%; object-fit: cover; }
-  /* Actions sit at the end of the meta line instead of on a row of their own. */
-  .fb-item__body { grid-template-columns: minmax(0, 1fr) auto; }
-  .fb-item__body > * { grid-column: 1 / -1; }
-  .fb-item__body > .fb-item__meta { grid-column: 1; }
-  .fb-item__body > .fb-item__actions { grid-column: 2; grid-row: 1; align-self: start; }
-  .fb-item__actions { display: flex; align-items: center; gap: 12px; }
-  .fb-item__accept, .fb-item__delete, .fb-reply__toggle { padding: 0; border: 0; background: none; font: inherit; font-size: 13px; cursor: pointer; }
-  .fb-item__accept { color: var(--accent); font-weight: 600; }
-  .fb-item__delete { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 4px; color: var(--muted); }
-  .fb-item__delete:hover, .fb-item__delete:focus-visible { background: #b3261e14; color: var(--danger); }
-  .fb-item__accept:hover, .fb-reply__toggle:hover { text-decoration: underline; }
+  .fbx-view { min-height: 0; }
+  .fbx-view[hidden] { display: none; }
+  .fbx-scroll { overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-empty { margin: 0; padding: 24px; color: var(--ink-400); font-size: 14px; text-align: center; }
 
-  /* Comments and replies */
-  .fb-comments { display: grid; gap: 4px; }
-  .fb-comment { display: grid; gap: 3px; padding: 8px 12px; background: var(--accent-soft); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; }
-  .fb-comment--tester { background: var(--tester-soft); border-left-color: var(--tester); }
-  .fb-comment__message { overflow-wrap: anywhere; }
-  .fb-comment__message > * { margin: 0 0 6px; }
-  .fb-comment__message > :last-child { margin-bottom: 0; }
-  .fb-comment__message img { display: block; max-width: min(100%, 360px); max-height: 240px; border: 1px solid var(--line); border-radius: 3px; object-fit: contain; cursor: zoom-in; }
-  .fb-reply__toggle { justify-self: start; color: var(--accent); font-weight: 600; }
-  .fb-reply__toggle[hidden] { display: none; }
-  .fb-reply__form { display: grid; gap: 6px; }
-  .fb-reply__form[hidden] { display: none; }
-  .fb-reply__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .fb-reply__status { margin: 0; color: var(--danger); font-size: 13px; }
+  /* ---- Feedback: inbox split ---------------------------------------------- */
+  .fbx-split { display: grid; grid-template-columns: 340px minmax(0, 1fr); }
+  .fbx-list { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; background: rgba(26, 27, 38, 0.025); border-right: 1px solid var(--divider); }
+  .fbx-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 20px 20px 12px; }
+  .fbx-chip { padding: 4px 10px; border: 1px solid var(--divider); border-radius: var(--radius-pill); background: none; color: var(--ink-500); font-size: 12px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-chip:hover { background: rgba(26, 27, 38, 0.04); }
+  .fbx-chip:active { transform: scale(0.97); }
+  .fbx-chip.is-active { border-color: transparent; background: var(--accent-tint); color: var(--accent-600); font-weight: 600; }
+  .fbx-chip span:empty { display: none; }
+  .fbx-rows { display: grid; align-content: start; gap: 2px; padding: 0 8px 8px; overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; padding: 12px; border: 0; border-radius: var(--radius-sm); background: none; text-align: left; cursor: pointer; transition: background var(--dur-fast), box-shadow var(--dur-fast); }
+  .fbx-row:hover { background: rgba(26, 27, 38, 0.04); }
+  .fbx-row.is-selected { background: #fff; box-shadow: var(--shadow-sm); }
+  .fbx-row.is-selected:focus-visible { box-shadow: var(--shadow-sm), var(--shadow-focus); }
+  .fbx-row.is-leaving { animation: fbx-leave var(--dur-med) var(--ease-smooth) forwards; }
+  @keyframes fbx-leave { to { opacity: 0; transform: translateX(-12px); } }
+  .fbx-row__thumb { width: 56px; height: 42px; overflow: hidden; border-radius: 8px; background: rgba(26, 27, 38, 0.06); }
+  .fbx-row__thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+  .fbx-row__text { display: grid; gap: 2px; min-width: 0; }
+  .fbx-row__meta { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--ink-400); font-size: 12px; }
+  .fbx-row__path { overflow: hidden; font-family: var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
+  .fbx-row__time { margin-left: auto; white-space: nowrap; }
+  .fbx-row__comment { overflow: hidden; color: var(--ink-900); font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+  .fbx-sdot { width: 6px; height: 6px; flex: none; border-radius: 50%; }
+  .fbx-sdot--new { background: var(--accent-500); }
+  .fbx-sdot--in_progress { background: var(--warn-500); }
+  .fbx-sdot--done { background: var(--success-500); }
+  .fbx-addnote { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; margin: 8px 16px 16px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); background: none; color: var(--ink-500); font-size: 14px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
+  .fbx-addnote:hover, .fbx-addnote.is-active { background: rgba(26, 27, 38, 0.04); color: var(--ink-900); }
 
-  /* Buttons and fields */
-  .fb-btn { padding: 6px 14px; border: 1px solid var(--line-2); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .fb-btn:hover { border-color: var(--ink-2); }
-  .fb-btn:disabled { opacity: .5; cursor: progress; }
-  .fb-btn--primary { border-color: var(--accent); background: var(--accent); color: #fff; }
-  .fb-btn--primary:hover { border-color: var(--accent); filter: brightness(1.1); }
-  .fbk textarea, .fbk input { width: 100%; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 4px; background: var(--paper); color: var(--ink); font: inherit; resize: vertical; }
-  .fbk textarea:focus, .fbk input:focus { border-color: var(--accent); outline: 2px solid var(--accent-soft); }
+  .fbx-detail { min-height: 0; }
+  .fbx-detail__item { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; min-height: 0; }
+  .fbx-detail__item[hidden] { display: none; }
+  .fbx-detail__head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; min-height: 67px; padding: 16px 24px; border-bottom: 1px solid var(--divider); }
+  .fbx-detail__head:empty { display: none; }
+  .fbx-detail__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; color: var(--ink-500); font-size: 13px; }
+  .fbx-detail__meta a { font-weight: 500; }
+  .fbx-detail__title { margin: 0; color: var(--ink-900); font: 600 15px/1.3 var(--font-body); }
+  .fbx-detail__actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .fbx-detail__body { display: grid; align-content: start; gap: 20px; padding: 24px; overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-back { display: none; }
 
-  /* Developer notes */
-  .dev-note { display: grid; gap: 6px; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
-  .dev-note__title { margin: 0; font-size: 17px; font-weight: 700; }
-  .dev-note__message { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-pill { padding: 2px 9px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+  .fbx-pill--new { background: var(--accent-tint); color: var(--accent-600); }
+  .fbx-pill--in_progress, .fbx-pill--warn { background: var(--warn-100); color: var(--warn-700); }
+  .fbx-pill--done { background: var(--success-100); color: var(--success-700); }
+  .fbx-pill--danger { background: var(--danger-100); color: #b91c1c; }
 
-  /* Changelog: markdown rendered by the server (raw HTML escaped there). */
-  .changelog__body { padding: 4px 2px; line-height: 1.55; overflow-wrap: anywhere; }
-  .changelog__body > :first-child { margin-top: 0; }
-  .changelog__body h1, .changelog__body h2 { margin: 1.4em 0 .4em; font-size: 19px; }
-  .changelog__body h3, .changelog__body h4 { margin: 1.2em 0 .3em; font-size: 17px; }
-  .changelog__body p, .changelog__body ul, .changelog__body ol, .changelog__body blockquote, .changelog__body table, .changelog__body pre { margin: 0 0 .8em; }
-  .changelog__body ul, .changelog__body ol { padding-left: 1.3em; }
-  .changelog__body code { padding: 1px 4px; border-radius: 3px; background: var(--line); font-size: .9em; }
-  .changelog__body pre { padding: 8px 10px; overflow-x: auto; border-radius: 4px; background: var(--paper); border: 1px solid var(--line); }
-  .changelog__body pre code { padding: 0; background: none; }
-  .changelog__body blockquote { padding-left: 10px; border-left: 2px solid var(--line-2); color: var(--ink-2); }
-  .changelog__body hr { margin: 1.5em 0; border: 0; border-top: 1px solid var(--line); }
-  .changelog__body img { max-width: 100%; border-radius: 4px; }
-  .changelog__body table { width: 100%; border-collapse: collapse; }
-  .changelog__body th, .changelog__body td { padding: 4px 8px; border: 1px solid var(--line); text-align: left; }
+  .fbx-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background var(--dur-fast), filter var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-btn:hover { background: rgba(26, 27, 38, 0.04); }
+  .fbx-btn:active { transform: scale(0.97); }
+  .fbx-btn:disabled { opacity: 0.55; cursor: progress; }
+  .fbx-btn--primary { border-color: transparent; background: var(--accent-500); color: #fff; font-weight: 600; }
+  .fbx-btn--primary:hover { background: var(--accent-500); filter: brightness(1.08); }
+  .fbx-btn--dark { height: 42px; border-color: transparent; background: var(--ink-900); color: #fff; font-size: 14px; font-weight: 600; }
+  .fbx-btn--dark:hover { background: var(--ink-900); filter: brightness(1.25); }
+  .fbx-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-500); cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-icon-btn:hover { background: var(--danger-100); color: var(--danger-500); }
+  .fbx-icon-btn:active { transform: scale(0.97); }
 
-  /* Manual note form */
-  .note { margin-top: 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
-  .note summary { padding: 8px 12px; color: var(--ink-2); font-size: 14px; font-weight: 600; cursor: pointer; }
-  .note__form { display: grid; gap: 10px; padding: 0 12px 12px; }
-  .note label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
-  .note label span { color: var(--muted); font-weight: 400; }
-  .dropzone { padding: 10px; border: 1px dashed var(--line-2); border-radius: 4px; color: var(--muted); font-size: 14px; text-align: center; cursor: pointer; }
-  .dropzone.is-over { border-color: var(--accent); background: var(--accent-soft); }
-  .dropzone button { padding: 0; border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
-  .previews { display: flex; flex-wrap: wrap; gap: 6px; }
-  .previews:empty { display: none; }
-  .preview { position: relative; width: 64px; height: 64px; overflow: hidden; border-radius: 4px; }
-  .preview img { width: 100%; height: 100%; object-fit: cover; }
-  .preview button { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: #000a; color: #fff; font-size: 13px; cursor: pointer; }
-  .note__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-  #form-status { margin: 0; color: var(--accent); font-size: 14px; }
+  .fbx-shot { position: relative; height: 300px; overflow: hidden; border-radius: var(--radius-md); background: rgba(26, 27, 38, 0.06); }
+  .fbx-shot__open { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+  .fbx-shot__open img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+  .fbx-shot--none { display: grid; place-items: center; height: 120px; color: var(--ink-400); font-size: 13px; }
+  .fbx-shot__chips { position: absolute; left: 12px; bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+  .fbx-shot__chip { padding: 2px 7px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: #fff; font: 500 11px/1.5 var(--font-mono); }
+  .fbx-shot--none .fbx-shot__chip { background: rgba(26, 27, 38, 0.06); color: var(--ink-500); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .fbx a.fbx-shot__link { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-xs); background: #fff; color: var(--ink-900); font-size: 12px; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-sm); }
+  .fbx-more { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -8px; }
+  .fbx-more button { width: 72px; height: 52px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: 8px; background: none; cursor: zoom-in; }
+  .fbx-more img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fbx-comment { margin: 0; color: var(--ink-900); font-size: 20px; line-height: 1.45; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-  .lightbox { max-width: min(1200px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 6px; background: var(--paper); box-shadow: 0 10px 40px #0005; }
-  .lightbox::backdrop { background: #0009; }
-  .lightbox img { display: block; max-width: 100%; max-height: 90vh; }
-  .lightbox form { position: absolute; top: 6px; right: 6px; }
-  .lightbox button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: #000a; color: #fff; font-size: 18px; cursor: pointer; }
+  /* Thread: developer bubbles left, tester replies right */
+  .fbx-thread { display: grid; gap: 10px; }
+  .fbx-bubble { justify-self: start; max-width: 70%; padding: 10px 14px; border-radius: 14px 14px 14px 4px; background: var(--accent-100); overflow-wrap: anywhere; }
+  .fbx-bubble--tester { justify-self: end; border-radius: 14px 14px 4px 14px; background: rgba(26, 27, 38, 0.05); }
+  .fbx-bubble--pending { opacity: 0.6; }
+  .fbx-bubble__label { margin-bottom: 2px; color: var(--accent-600); font-size: 12px; font-weight: 600; }
+  .fbx-bubble--tester .fbx-bubble__label { color: var(--ink-500); }
+  .fbx-bubble__body { color: var(--ink-900); font-size: 15px; line-height: 1.5; }
+  .fbx-bubble__body > * { margin: 0 0 6px; }
+  .fbx-bubble__body > :last-child { margin-bottom: 0; }
+  .fbx-bubble__body img { display: block; max-width: 100%; max-height: 260px; border-radius: 8px; cursor: zoom-in; }
+  .fbx-bubble__body code { padding: 1px 5px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.06); font: 13px var(--font-mono); }
 
-  @media (max-width: 640px) {
-    .inbox { width: calc(100% - 16px); max-height: calc(100dvh - 16px); padding: 0 10px 12px; }
-    .inbox__head { margin: 0 -10px 8px; padding: 0 10px; }
-    .views { gap: 0 12px; }
-    .views__tab { font-size: 14px; }
-    .fb-item { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; padding: 12px; }
-    .fb-item__shot { height: 64px; }
-    .fb-item__body > .fb-item__meta { grid-column: 1 / -1; }
-    .fb-item__body > .fb-item__actions { grid-column: 1 / -1; grid-row: auto; justify-self: end; }
+  .fbx-composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; padding: 16px 24px; border-top: 1px solid var(--divider); }
+  .fbx-composer[hidden] { display: none; }
+  .fbx-composer textarea, .fbx-field input, .fbx-field textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-900); font-size: 14px; line-height: 1.45; resize: none; transition: box-shadow var(--dur-fast), border-color var(--dur-fast); }
+  .fbx-composer textarea { min-height: 42px; max-height: 140px; }
+  .fbx-composer textarea::placeholder, .fbx-field ::placeholder { color: var(--ink-400); }
+  .fbx-composer textarea:focus, .fbx-field input:focus, .fbx-field textarea:focus { outline: none; border-color: var(--accent-400); box-shadow: var(--shadow-focus); }
+  .fbx-composer__status { grid-column: 1 / -1; margin: 0; color: #b91c1c; font-size: 13px; }
+  .fbx-composer__status:empty { display: none; }
+
+  /* Add-note form */
+  .fbx-noteform { gap: 14px; }
+  .fbx-field { display: grid; gap: 6px; color: var(--ink-900); font-size: 14px; font-weight: 600; }
+  .fbx-field span { color: var(--ink-400); font-weight: 400; }
+  .fbx-field textarea { resize: vertical; }
+  .fbx-dropzone { padding: 16px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); color: var(--ink-500); font-size: 14px; text-align: center; cursor: pointer; transition: background var(--dur-fast); }
+  .fbx-dropzone.is-over { border-color: var(--accent-500); background: var(--accent-tint); }
+  .fbx-dropzone button { padding: 0; border: 0; background: none; color: var(--accent-600); font-weight: 600; text-decoration: underline; cursor: pointer; }
+  .fbx-previews { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fbx-previews:empty { display: none; }
+  .fbx .preview { position: relative; width: 72px; height: 72px; overflow: hidden; border-radius: var(--radius-sm); }
+  .fbx .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .fbx .preview button { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: rgba(26, 27, 38, 0.7); color: #fff; font-size: 13px; line-height: 1; cursor: pointer; }
+  .fbx-noteform__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  #form-status { margin: 0; color: var(--ink-500); font-size: 13px; }
+
+  /* ---- Changelog + developer notes: timeline ------------------------------ */
+  .fbx-timeline { padding: 32px 40px 40px; }
+  .fbx-entry { display: grid; grid-template-columns: 120px 20px minmax(0, 1fr); gap: 20px; }
+  .fbx-entry__date { text-align: right; }
+  .fbx-entry__day { display: block; color: var(--ink-900); font: 400 32px/1 var(--font-display); font-variation-settings: 'opsz' 72; letter-spacing: -0.02em; }
+  .fbx-entry__month { display: block; margin-top: 6px; color: var(--ink-400); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .fbx-entry__rail { position: relative; display: flex; justify-content: center; }
+  .fbx-entry__rail::before { content: ''; position: relative; z-index: 1; width: 12px; height: 12px; margin-top: 8px; border: 2px solid var(--ink-300); border-radius: 50%; background: #fff; }
+  .fbx-entry:first-child .fbx-entry__rail::before { border: 0; background: var(--accent-500); box-shadow: 0 0 0 4px var(--accent-tint); }
+  .fbx-entry:not(:last-child) .fbx-entry__rail::after { content: ''; position: absolute; top: 24px; bottom: -4px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--ink-200); }
+  .fbx-entry__content { display: grid; align-content: start; gap: 10px; min-width: 0; padding-bottom: 32px; }
+  .fbx-entry__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0; color: var(--ink-900); font: 600 19px/1.3 var(--font-body); letter-spacing: -0.01em; }
+  .fbx-entry__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--ink-500); font-size: 13px; }
+  .fbx-entry__body { max-width: 720px; color: var(--ink-700); font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
+  .fbx-entry__body > * { margin: 0 0 10px; }
+  .fbx-entry__body > :last-child { margin-bottom: 0; }
+  .fbx-entry__body--plain { white-space: pre-wrap; }
+  .fbx-entry__body h1, .fbx-entry__body h2, .fbx-entry__body h3 { color: var(--ink-900); font: 600 16px/1.4 var(--font-body); }
+  .fbx-entry__body ul, .fbx-entry__body ol { padding-left: 1.3em; }
+  .fbx-entry__body img { max-width: 100%; border-radius: var(--radius-sm); }
+  .fbx-entry__body pre { padding: 10px 12px; overflow-x: auto; border-radius: var(--radius-sm); background: rgba(26, 27, 38, 0.05); }
+  .fbx :is(.fbx-entry__body, .fbx-change__text) code { padding: 1px 6px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.06); color: var(--ink-700); font: 13px var(--font-mono); }
+  .fbx-entry__body pre code { padding: 0; background: none; }
+  .fbx-changes { display: grid; gap: 10px; max-width: 820px; }
+  .fbx-change { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+  .fbx-tag { justify-self: start; padding: 2px 8px; border-radius: var(--radius-pill); background: rgba(26, 27, 38, 0.06); color: var(--ink-500); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .fbx-tag--infra { background: var(--info-100); color: var(--info-500); }
+  .fbx-tag--new { background: var(--accent-100); color: var(--accent-600); }
+  .fbx-tag--fix { background: var(--success-100); color: var(--success-700); }
+  .fbx-tag--change { background: var(--warn-100); color: var(--warn-700); }
+  .fbx-change__text { color: var(--ink-700); font-size: 15px; line-height: 1.6; overflow-wrap: anywhere; }
+  .fbx-change__text strong { color: var(--ink-900); font-weight: 600; }
+
+  /* ---- Lightbox ------------------------------------------------------------ */
+  .fbx-lightbox { max-width: 94vw; max-height: 92vh; padding: 0; overflow: auto; border: 0; border-radius: var(--radius-md); background: #fff; box-shadow: var(--shadow-xl); }
+  .fbx-lightbox::backdrop { background: rgba(26, 27, 38, 0.75); }
+  .fbx-lightbox img { display: block; max-width: none; }
+  .fbx-lightbox form { position: sticky; top: 0; height: 0; text-align: right; }
+  .fbx-lightbox form button { width: 32px; height: 32px; margin: 8px; border: 0; border-radius: 50%; background: rgba(26, 27, 38, 0.7); color: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
+
+  /* ---- Smaller screens: list → detail ------------------------------------- */
+  @media (max-width: 900px) {
+    .fbx-panel { inset: 12px; }
+    .fbx-split { grid-template-columns: minmax(0, 1fr); }
+    .fbx-split:not(.is-detail) .fbx-detail { display: none; }
+    .fbx-split.is-detail .fbx-list { display: none; }
+    .fbx-back { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); cursor: pointer; }
+    .fbx-detail__head { padding: 12px 16px; }
+    .fbx-detail__actions { margin-left: 0; width: 100%; }
+    .fbx-detail__body { padding: 16px; }
+    .fbx-composer { padding: 12px 16px; }
+    .fbx-shot { height: 200px; }
+    .fbx-comment { font-size: 18px; }
+    .fbx-bubble { max-width: 88%; }
+    .fbx-timeline { padding: 24px 16px 32px; }
+    .fbx-entry { grid-template-columns: 56px 16px minmax(0, 1fr); gap: 12px; }
+    .fbx-entry__day { font-size: 26px; }
+    .fbx-change { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  }
+  @media (max-width: 600px) {
+    .fbx-panel { inset: 0; border-radius: 0; }
+    .fbx-head { flex-wrap: wrap; gap: 0; padding: 0 12px 0 4px; }
+    .fbx-tabs { overflow-x: auto; }
+    .fbx a.fbx-tab { min-height: 48px; padding: 0 10px; font-size: 14px; white-space: nowrap; }
+    .fbx-head__end { width: 100%; justify-content: space-between; padding: 0 8px 8px; }
   }
 </style>
 
 <script>
+  type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     images: { name: string; url: string }[];
-    comments?: { date: string; author?: string; message: string; html?: string }[];
+    comments?: Comment[];
     metadata?: {
       viewport?: { width: number; height: number };
       embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
       screenshotFailed?: boolean;
     };
   };
+  type Filter = 'new' | 'in_progress' | 'done' | 'all';
+  type View = 'feedback' | 'changelog' | 'notes';
+
   const API = '/__feedback/api/entries';
   // Feedback is anonymous; older entries may still carry a name, never shown.
   const PSEUDONYM = 'Jah a the Creator';
-  const EMBED_LABELS: Record<string, string> = { youtube: '▶ YouTube video', map: 'map', iframe: 'embed' };
-  const FILTERS: Record<string, string> = { '#new': 'New', '#in-progress': 'In progress', '#done': 'Done', '#all': 'All' };
+  const STATUS_KEY: Record<string, Filter> = { New: 'new', 'In progress': 'in_progress', Done: 'done' };
+  const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done', all: 'All' };
+  // Old links (#new, #in-progress, …) still open the Feedback tab with that filter.
+  const LEGACY_HASH: Record<string, Filter> = { '#new': 'new', '#in-progress': 'in_progress', '#done': 'done', '#all': 'all' };
+  const EMBED_LABELS: Record<string, string> = { youtube: '▶ YouTube video', map: 'Map', iframe: 'Embed' };
+  const FILTER_KEY = 'feedback-status-filter';
+  const ICON = {
+    check: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
+    back: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>',
+    open: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>',
+  };
 
-  const list = document.querySelector<HTMLElement>('#entries')!;
-  const lightbox = document.querySelector<HTMLDialogElement>('#lightbox')!;
-  let entries: Entry[] = [];
-  let loaded = false;
+  const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+  const root = $('.fbx');
+  const split = $('#feedback-view');
+  const list = $('#entries');
+  const detailItem = $('#detail');
+  const detailHead = $('#detail-head');
+  const detailBody = $('#detail-body');
+  const composer = $<HTMLFormElement>('#composer');
+  const composerInput = composer.querySelector('textarea')!;
+  const composerStatus = composer.querySelector<HTMLElement>('.fbx-composer__status')!;
+  const notePane = $('#note-pane');
+  const lightbox = $<HTMLDialogElement>('#lightbox');
 
-  // #notes and #changelog open those sections; any other hash is a status filter.
-  const filter = () => (location.hash === '#notes' ? 'Notes' : location.hash === '#changelog' ? 'Changelog' : FILTERS[location.hash] || 'New');
-  const view = (current: string) => (current === 'Notes' ? 'notes' : current === 'Changelog' ? 'changelog' : 'feedback');
   const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!);
-  const relative = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+  const linkify = (text: string) => escapeHtml(text).replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
+  const safeHref = (href: string) => (/^(\/|https?:\/\/)/.test(href) ? escapeHtml(href) : '');
+  const time = (iso: string) => Date.parse(iso) || 0;
+  const relative = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
   function ago(iso: string) {
-    const seconds = (new Date(iso).getTime() - Date.now()) / 1000;
+    const seconds = (time(iso) - Date.now()) / 1000;
     for (const [unit, size] of [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]] as const) {
       if (Math.abs(seconds) >= size) return relative.format(Math.round(seconds / size), unit);
     }
     return 'just now';
   }
+  function shortAgo(iso: string) {
+    const seconds = Math.max(0, (Date.now() - time(iso)) / 1000);
+    for (const [unit, size] of [['y', 31536000], ['w', 604800], ['d', 86400], ['h', 3600], ['m', 60]] as const) {
+      if (seconds >= size) return `${Math.floor(seconds / size)}${unit}`;
+    }
+    return 'now';
+  }
+  const readStorage = (key: string) => { try { return localStorage.getItem(key) || ''; } catch { return ''; } };
+  const writeStorage = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch { /* private mode */ } };
 
+  // ---- State ----------------------------------------------------------------
+  let entries: Entry[] = [];
+  let loaded = false;
+  let lastPayload = '';
+  let statusFilter: Filter = (['new', 'in_progress', 'done', 'all'] as const).find((f) => f === readStorage(FILTER_KEY)) || 'new';
+  let selectedId = '';
+  let addingNote = false;
+  const replyDraft = new Map<string, string>();
+
+  function currentView(): View {
+    if (location.hash === '#changelog') return 'changelog';
+    if (location.hash === '#notes') return 'notes';
+    return 'feedback';
+  }
+  if (LEGACY_HASH[location.hash]) {
+    statusFilter = LEGACY_HASH[location.hash];
+    history.replaceState(null, '', '#feedback');
+  }
+  const visibleEntries = () => (statusFilter === 'all' ? entries : entries.filter((entry) => STATUS_KEY[entry.status] === statusFilter));
+  const selectedEntry = () => entries.find((entry) => entry.id === selectedId);
+  const isNarrow = () => matchMedia('(max-width: 900px)').matches;
+
+  // ---- Rendering --------------------------------------------------------------
   function render() {
-    const current = filter();
-    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.filter === current));
-    document.querySelectorAll<HTMLAnchorElement>('[data-view]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.view === view(current)));
-    document.querySelector<HTMLElement>('#feedback-view')!.hidden = view(current) !== 'feedback';
-    document.querySelector<HTMLElement>('#changelog-view')!.hidden = view(current) !== 'changelog';
-    document.querySelector<HTMLElement>('#notes-view')!.hidden = view(current) !== 'notes';
-    renderNotes();
+    const view = currentView();
+    document.querySelectorAll<HTMLAnchorElement>('[data-view]').forEach((tab) => {
+      tab.classList.toggle('is-active', tab.dataset.view === view);
+      if (tab.dataset.view === view) tab.setAttribute('aria-current', 'page'); else tab.removeAttribute('aria-current');
+    });
+    $('#feedback-view').hidden = view !== 'feedback';
+    $('#changelog-view').hidden = view !== 'changelog';
+    $('#notes-view').hidden = view !== 'notes';
+    document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((chip) => {
+      chip.classList.toggle('is-active', chip.dataset.filter === statusFilter);
+      chip.setAttribute('aria-pressed', String(chip.dataset.filter === statusFilter));
+    });
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
       const status = count.dataset.count!;
       if (status === 'Notes') { count.textContent = notesLoaded && notes.length ? String(notes.length) : ''; return; }
       const n = status === 'All' ? entries.length : entries.filter((entry) => entry.status === status).length;
       count.textContent = loaded && n ? String(n) : '';
     });
+    renderNotes();
+    if (view !== 'feedback') return;
+    renderList();
+    renderDetail();
+  }
+
+  function renderList() {
     if (!loaded) return;
-    const visible = current === 'All' ? entries : entries.filter((entry) => entry.status === current);
+    const visible = visibleEntries();
+    // Keep a valid selection on wide screens (the detail pane is always shown).
+    if (!addingNote && !isNarrow() && !visible.some((entry) => entry.id === selectedId)) {
+      stashDraft();
+      selectedId = visible[0]?.id || '';
+      restoreDraft();
+    }
+    const hadFocus = list.contains(document.activeElement);
     if (!visible.length) {
-      list.innerHTML = `<p class="empty">${current === 'New' ? 'No new feedback. 🎉' : 'Nothing here.'}</p>`;
+      list.innerHTML = `<p class="fbx-empty">${statusFilter === 'new' ? 'No new feedback. 🎉' : 'Nothing here.'}</p>`;
       return;
     }
     list.innerHTML = visible.map((entry) => {
-      const [first, ...rest] = entry.images;
-      const viewport = entry.metadata?.viewport;
-      return `<article class="fb-item ${entry.status === 'New' ? 'is-new' : ''}" data-id="${entry.id}">
-        ${first ? `<button class="fb-item__shot" type="button" data-zoom="${first.url}" aria-label="Enlarge screenshot"><img src="${first.url}" alt="" loading="lazy"></button>` : '<div class="fb-item__shot fb-item__shot--none">No screenshot</div>'}
-        <div class="fb-item__body">
-          <div class="fb-item__meta">
-            <strong>${PSEUDONYM}</strong>
-            <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time>
-            ${entry.page ? `<a href="${escapeHtml(entry.page)}" target="_blank" rel="noreferrer">${escapeHtml(entry.page)}</a>` : ''}
-            ${viewport ? `<span>${viewport.width}×${viewport.height}</span>` : ''}
-            ${current === 'All' ? `<span class="fb-item__badge">${entry.status}</span>` : ''}
-            ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'embed'} on screen</a>`).join('')}
-            ${entry.metadata?.screenshotFailed ? '<span class="fb-item__badge fb-item__badge--warn">screenshot failed</span>' : ''}
-          </div>
-          <p class="fb-item__message">${escapeHtml(entry.message)}</p>
-          ${renderComments(entry)}
-          ${entry.comments?.length ? renderReply(entry) : ''}
-          ${rest.length ? `<div class="fb-item__more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
-          <div class="fb-item__actions">
-            ${entry.status === 'In progress' ? '<button class="fb-item__accept" type="button" data-accept title="The change works: move this to Done">✓ Accept change</button>' : ''}
-            <button class="fb-item__delete" type="button" data-delete aria-label="Delete" title="Delete"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
-          </div>
-        </div>
-      </article>`;
+      const shot = entry.images[0];
+      const status = STATUS_KEY[entry.status] || 'new';
+      return `<button type="button" class="fbx-row${entry.id === selectedId && !addingNote ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${entry.id === selectedId && !addingNote}">
+          <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
+          <span class="fbx-row__text">
+            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
+            <span class="fbx-row__comment">${escapeHtml(entry.message.split('\n')[0])}</span>
+          </span>
+        </button>`;
     }).join('');
+    if (hadFocus) list.querySelector<HTMLElement>('.fbx-row.is-selected')?.focus();
   }
 
-  // Reply drafts survive the 30-second refresh (which re-renders the list).
-  const drafts = new Map<string, { open: boolean; text: string; status?: string }>();
-  function renderReply(entry: Entry) {
-    const draft = drafts.get(entry.id);
-    return `<div class="fb-reply">
-        <button class="fb-reply__toggle" type="button" data-reply-toggle ${draft?.open ? 'hidden' : ''}>Reply</button>
-        <form class="fb-reply__form" data-reply-form ${draft?.open ? '' : 'hidden'}>
-          <textarea name="message" rows="3" maxlength="5000" required placeholder="Reply to the developer…" aria-label="Reply">${escapeHtml(draft?.text || '')}</textarea>
-          <div class="fb-reply__actions">
-            <button class="fb-btn fb-btn--primary" type="submit">Send reply</button>
-            <button class="fb-btn" type="button" data-reply-cancel>Cancel</button>
-            <p class="fb-reply__status" role="status">${escapeHtml(draft?.status || '')}</p>
-          </div>
-        </form>
-      </div>`;
-  }
-
-  // Developer comments (markdown from the feedback CMS, rendered to safe HTML by
-  // the API), oldest first.
-  function renderComments(entry: Entry) {
+  function renderThread(entry: Entry) {
     const comments = (entry.comments || []).filter((comment) => comment && typeof comment.message === 'string' && comment.message.trim());
     if (!comments.length) return '';
-    return `<div class="fb-comments">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => `<div class="fb-comment${comment.author === PSEUDONYM ? ' fb-comment--tester' : ''}">
-        <div class="fb-item__meta">
-          <strong>${escapeHtml(comment.author || 'Developer')}</strong>
-          ${time(comment.date) ? `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>` : ''}
-        </div>
-        <div class="fb-comment__message">${comment.html ?? `<p>${linkify(comment.message)}</p>`}</div>
-      </div>`).join('')}</div>`;
+    return `<div class="fbx-thread">${[...comments].sort((a, b) => time(a.date) - time(b.date)).map((comment) => {
+      const tester = comment.author === PSEUDONYM;
+      return `<div class="fbx-bubble${tester ? ' fbx-bubble--tester' : ''}${comment.pending ? ' fbx-bubble--pending' : ''}">
+          <div class="fbx-bubble__label">${escapeHtml(comment.author || 'Developer')} · ${comment.pending ? 'sending…' : `<time datetime="${escapeHtml(comment.date)}" title="${new Date(comment.date).toLocaleString()}">${ago(comment.date)}</time>`}</div>
+          <div class="fbx-bubble__body">${comment.html ?? `<p>${linkify(comment.message)}</p>`}</div>
+        </div>`;
+    }).join('')}</div>`;
   }
 
-  // Bumped by every status change / delete. A refresh that started before a
-  // change finished is dropped, so it can't bring back a deleted item or an
-  // old status (e.g. the refresh triggered by refocusing after confirm()).
-  let revision = 0;
-  let renderPending = false;
-  const typingReply = () => document.activeElement instanceof HTMLTextAreaElement && !!document.activeElement.closest('[data-reply-form]');
-  // Background refreshes wait while a reply is being typed (re-rendering would
-  // drop the focus); the focusout handler applies them afterwards.
-  function renderUnlessTyping() {
-    if (typingReply()) renderPending = true;
-    else render();
+  function renderDetail() {
+    split.classList.toggle('is-detail', addingNote || !!selectedEntry());
+    notePane.hidden = !addingNote;
+    detailItem.hidden = addingNote;
+    $('[data-add-note]').classList.toggle('is-active', addingNote);
+    if (addingNote) return;
+    const entry = selectedEntry();
+    composer.hidden = !entry;
+    if (!entry) {
+      detailHead.innerHTML = '';
+      detailBody.innerHTML = `<p class="fbx-empty">${loaded ? (visibleEntries().length ? 'Select feedback on the left.' : 'Nothing to show here.') : 'Loading feedback…'}</p>`;
+      return;
+    }
+    const status = STATUS_KEY[entry.status] || 'new';
+    const [shot, ...rest] = entry.images;
+    const viewport = entry.metadata?.viewport;
+    const chips = `${entry.page ? `<span class="fbx-shot__chip">${escapeHtml(entry.page)}</span>` : ''}${viewport ? `<span class="fbx-shot__chip">${viewport.width}×${viewport.height}</span>` : ''}`;
+    const openPage = entry.page && safeHref(entry.page) ? `<a class="fbx-shot__link" href="${safeHref(entry.page)}" target="_blank" rel="noreferrer">Open page ${ICON.open}</a>` : '';
+    detailHead.innerHTML = `
+      <button type="button" class="fbx-back" data-back aria-label="Back to the list">${ICON.back}</button>
+      <span class="fbx-pill fbx-pill--${status}">${entry.status}</span>
+      <span class="fbx-detail__meta">
+        <span>${PSEUDONYM} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
+        ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('')}
+        ${entry.metadata?.screenshotFailed ? '<span class="fbx-pill fbx-pill--danger">Screenshot failed</span>' : ''}
+      </span>
+      <span class="fbx-detail__actions">
+        ${entry.status === 'New' ? '<button type="button" class="fbx-btn" data-progress>Mark in progress</button>' : ''}
+        ${entry.status === 'In progress' ? `<button type="button" class="fbx-btn fbx-btn--primary" data-accept title="The change works: move this to Done">${ICON.check}Accept change</button>` : ''}
+        <button type="button" class="fbx-icon-btn" data-delete aria-label="Delete" title="Delete">${ICON.trash}</button>
+      </span>`;
+    detailBody.innerHTML = `
+      ${shot
+        ? `<div class="fbx-shot"><button type="button" class="fbx-shot__open" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}"></button><span class="fbx-shot__chips">${chips}</span>${openPage}</div>`
+        : `<div class="fbx-shot fbx-shot--none">No screenshot<span class="fbx-shot__chips">${chips}</span>${openPage}</div>`}
+      ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
+      <p class="fbx-comment">${escapeHtml(entry.message)}</p>
+      ${renderThread(entry)}`;
   }
+
+  // ---- Data -------------------------------------------------------------------
+  // Bumped by every change made here. A refresh that started before a change
+  // finished is dropped, so it can't bring back a deleted item or an old status.
+  let revision = 0;
   async function load() {
     const startedAt = revision;
     try {
       const response = await fetch(API, { cache: 'no-store' });
       if (!response.ok) throw new Error();
-      const fresh = (await response.json()).entries;
+      const text = await response.text();
       if (startedAt !== revision) return;
-      entries = fresh;
+      if (loaded && text === lastPayload) return; // nothing changed: keep the DOM (and scroll) as is
+      lastPayload = text;
+      entries = JSON.parse(text).entries;
       loaded = true;
-      renderUnlessTyping();
+      render();
     } catch {
-      if (!loaded) list.innerHTML = '<p class="empty">The feedback service is unavailable.</p>';
+      if (!loaded) list.innerHTML = '<p class="fbx-empty">The feedback service is unavailable.</p>';
     }
   }
 
@@ -368,129 +576,219 @@ try {
     render();
     const response = await request().catch(() => undefined);
     revision += 1;
-    if (!response?.ok) { undo(); render(); alert(failure); }
+    if (!response?.ok) {
+      undo();
+      render();
+      const message = response ? (await response.json().catch(() => ({}))).error : '';
+      alert(message || failure);
+    }
+    lastPayload = '';
     void load();
   }
 
-  list.addEventListener('click', async (event) => {
-    const commentImage = (event.target as Element).closest<HTMLImageElement>('.fb-comment__message img');
-    if (commentImage) {
-      lightbox.querySelector('img')!.src = commentImage.src;
-      lightbox.showModal();
-      return;
+  function select(id: string, focusRow = false) {
+    stashDraft();
+    selectedId = id;
+    addingNote = false;
+    restoreDraft();
+    renderList();
+    renderDetail();
+    detailBody.scrollTop = 0;
+    if (focusRow) list.querySelector<HTMLElement>('.fbx-row.is-selected')?.focus();
+  }
+
+  // When an item leaves the current filter (accepted, marked in progress,
+  // deleted) its row collapses out first, then the next item is selected.
+  async function leaveRow(id: string) {
+    const visible = visibleEntries();
+    const index = visible.findIndex((entry) => entry.id === id);
+    const row = list.querySelector<HTMLElement>(`[data-select="${id}"]`);
+    if (row && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      row.classList.add('is-leaving');
+      await new Promise((resolve) => setTimeout(resolve, 260));
     }
-    const button = (event.target as Element).closest<HTMLButtonElement>('button');
+    return visible[index + 1]?.id || visible[index - 1]?.id || '';
+  }
+
+  // ---- Feedback interactions ----------------------------------------------------
+  list.addEventListener('click', (event) => {
+    const row = (event.target as Element).closest<HTMLElement>('[data-select]');
+    if (row) select(row.dataset.select!);
+  });
+  list.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    const visible = visibleEntries();
+    const index = visible.findIndex((entry) => entry.id === selectedId);
+    const next = visible[Math.min(visible.length - 1, Math.max(0, index + (event.key === 'ArrowDown' ? 1 : -1)))];
+    if (next) select(next.id, true);
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((chip) => chip.addEventListener('click', () => {
+    statusFilter = chip.dataset.filter as Filter;
+    writeStorage(FILTER_KEY, statusFilter);
+    if (isNarrow()) { stashDraft(); selectedId = ''; }
+    render();
+  }));
+  $('[data-add-note]').addEventListener('click', () => {
+    stashDraft();
+    addingNote = true;
+    renderList();
+    renderDetail();
+    notePane.querySelector('textarea')?.focus();
+  });
+
+  $('.fbx-detail').addEventListener('click', async (event) => {
+    const target = event.target as Element;
+    const bubbleImage = target.closest<HTMLImageElement>('.fbx-bubble__body img');
+    if (bubbleImage) return openLightbox(bubbleImage.src);
+    const button = target.closest<HTMLButtonElement>('button');
     if (!button) return;
-    if (button.dataset.zoom) {
-      lightbox.querySelector('img')!.src = button.dataset.zoom;
-      lightbox.showModal();
-      return;
-    }
-    const id = button.closest<HTMLElement>('[data-id]')?.dataset.id;
-    const entry = entries.find((item) => item.id === id);
-    if (!id || !entry) return;
-    if ('replyToggle' in button.dataset) {
-      drafts.set(id, { open: true, text: drafts.get(id)?.text || '' });
+    if (button.dataset.zoom) return openLightbox(button.dataset.zoom);
+    if ('back' in button.dataset) {
+      stashDraft();
+      addingNote = false;
+      selectedId = '';
       render();
-      list.querySelector<HTMLTextAreaElement>(`[data-id="${id}"] [data-reply-form] textarea`)?.focus();
+      list.querySelector<HTMLElement>('.fbx-row')?.focus();
       return;
     }
-    if ('replyCancel' in button.dataset) {
-      drafts.delete(id);
-      render();
-      return;
-    }
-    if ('accept' in button.dataset) {
-      if (!confirm('Accept this change? It moves to Done.')) return;
+    const entry = selectedEntry();
+    if (!entry) return;
+    const id = entry.id;
+    if ('progress' in button.dataset || 'accept' in button.dataset) {
+      const accepting = 'accept' in button.dataset;
+      if (accepting && !confirm('Accept this change? It moves to Done.')) return;
+      const next = accepting ? 'Done' : 'In progress';
       const before = entry.status;
+      const leaves = statusFilter !== 'all' && FILTER_STATUS[statusFilter] !== next;
+      const nextId = leaves ? await leaveRow(id) : id;
       await mutate(
-        () => fetch(`${API}/${id}/accept`, { method: 'POST' }),
-        () => { entry.status = 'Done'; },
-        () => { entry.status = before; },
-        'Could not accept this change.',
+        () => fetch(`${API}/${id}/${accepting ? 'accept' : 'progress'}`, { method: 'POST' }),
+        () => { entry.status = next; if (leaves) { stashDraft(); selectedId = nextId; restoreDraft(); } },
+        () => { entry.status = before; selectedId = id; },
+        accepting ? 'Could not accept this change.' : 'Could not mark this in progress.',
       );
       return;
     }
     if ('delete' in button.dataset) {
-      const preview = entry.message.length > 160 ? `${entry.message.slice(0, 160)}…` : entry.message;
-      if (!confirm(`Delete this feedback?\n\n“${preview}”`)) return;
+      if (!confirm('Delete this feedback? This can’t be undone.')) return;
       const removed = entry;
+      const nextId = await leaveRow(id);
       await mutate(
         () => fetch(`${API}/${id}`, { method: 'DELETE' }),
-        () => { entries = entries.filter((item) => item.id !== id); },
-        () => { if (!entries.some((item) => item.id === id)) entries = [...entries, removed].sort((a, b) => b.createdAt.localeCompare(a.createdAt)); },
+        () => { entries = entries.filter((item) => item.id !== id); replyDraft.delete(id); selectedId = nextId; restoreDraft(); },
+        () => { if (!entries.some((item) => item.id === id)) entries = [...entries, removed].sort((a, b) => b.createdAt.localeCompare(a.createdAt)); selectedId = id; },
         'Could not delete this feedback.',
       );
     }
   });
-  list.addEventListener('input', (event) => {
-    const field = event.target as HTMLTextAreaElement;
-    const id = field.closest<HTMLElement>('[data-id]')?.dataset.id;
-    if (id && field.closest('[data-reply-form]')) drafts.set(id, { open: true, text: field.value });
+
+  // ---- Reply composer (one static field; drafts are kept per item) -------------
+  function stashDraft() {
+    if (selectedId) replyDraft.set(selectedId, composerInput.value);
+  }
+  function restoreDraft() {
+    composerInput.value = replyDraft.get(selectedId) || '';
+    composerStatus.textContent = '';
+    autosize();
+  }
+  function autosize() {
+    composerInput.style.height = 'auto';
+    composerInput.style.height = `${Math.min(140, composerInput.scrollHeight + 2)}px`;
+  }
+  composerInput.addEventListener('input', () => { replyDraft.set(selectedId, composerInput.value); autosize(); });
+  composerInput.addEventListener('keydown', (event) => {
+    // Enter sends, Shift+Enter adds a new line.
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      composer.requestSubmit();
+    }
   });
-  list.addEventListener('focusout', () => {
-    // Apply a refresh that arrived while typing, once focus has really left.
-    setTimeout(() => { if (renderPending && !typingReply()) { renderPending = false; render(); } }, 0);
-  });
-  list.addEventListener('submit', async (event) => {
-    const form = (event.target as Element).closest<HTMLFormElement>('[data-reply-form]');
-    const id = form?.closest<HTMLElement>('[data-id]')?.dataset.id;
-    if (!form || !id) return;
+  composer.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const text = new FormData(form).get('message')?.toString().trim() || '';
-    if (!text) return;
-    const submit = form.querySelector<HTMLButtonElement>('[type="submit"]')!;
-    submit.disabled = true;
-    form.querySelector('.fb-reply__status')!.textContent = 'Sending…';
+    const entry = selectedEntry();
+    const text = composerInput.value.trim();
+    if (!entry || !text) return;
+    const id = entry.id;
+    const pending: Comment = { date: new Date().toISOString(), author: PSEUDONYM, message: text, pending: true };
+    entry.comments = [...(entry.comments || []), pending];
+    replyDraft.delete(id);
+    composerInput.value = '';
+    composerStatus.textContent = '';
+    autosize();
     revision += 1;
+    renderDetail();
+    detailBody.scrollTop = detailBody.scrollHeight;
     try {
       const response = await fetch(`${API}/${id}/replies`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text }) });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'Could not send the reply.');
-      drafts.delete(id);
       entries = entries.map((item) => (item.id === id ? result.entry : item));
-      (document.activeElement as HTMLElement | null)?.blur();
-      render();
     } catch (error) {
-      drafts.set(id, { open: true, text, status: error instanceof Error ? error.message : 'Could not send the reply.' });
-      render();
+      entry.comments = (entry.comments || []).filter((comment) => comment !== pending);
+      replyDraft.set(id, text);
+      if (selectedId === id) {
+        composerInput.value = text;
+        composerStatus.textContent = error instanceof Error ? error.message : 'Could not send the reply.';
+        autosize();
+      }
     } finally {
       revision += 1;
+      lastPayload = '';
+      if (selectedId === id) renderDetail();
     }
   });
+
+  // ---- Lightbox -----------------------------------------------------------------
+  function openLightbox(src: string) {
+    lightbox.querySelector('img')!.src = src;
+    lightbox.showModal();
+  }
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
 
+  // ---- Close: Esc, the scrim or the Esc chip go back to the site --------------------
+  function close() {
+    if (root.classList.contains('is-closing')) return;
+    root.classList.add('is-closing');
+    const fromSite = document.referrer.startsWith(location.origin) && !new URL(document.referrer).pathname.startsWith('/feedback');
+    setTimeout(() => { if (fromSite && history.length > 1) history.back(); else location.href = '/'; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240);
+  }
+  document.querySelectorAll('[data-close]').forEach((element) => element.addEventListener('click', close));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || lightbox.open || event.defaultPrevented) return;
+    const field = document.activeElement;
+    // Esc in a text field first leaves the field.
+    if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) { field.blur(); return; }
+    close();
+  });
 
-  // ---- Developer notes (written in the feedback CMS, served by the API) ----
+  // ---- Developer notes (CMS) ---------------------------------------------------------
   type Note = { title: string; date: string; author?: string; message: string; page?: string };
-  const notesList = document.querySelector<HTMLElement>('#notes-list')!;
+  const notesList = $('#notes-list');
   let notes: Note[] = [];
   let notesLoaded = false;
-  // Notes newer than this browser's last visit to the tab get a "New" badge.
+  // Notes newer than this browser's last visit to the tab get a "New" pill.
   const SEEN_KEY = 'feedback-notes-seen';
-  const readSeen = () => { try { return localStorage.getItem(SEEN_KEY) || ''; } catch { return ''; } };
-  let seenBefore = readSeen();
-  const time = (iso: string) => Date.parse(iso) || 0;
-  const linkify = (text: string) => escapeHtml(text).replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
-  const safeHref = (href: string) => (/^(\/|https?:\/\/)/.test(href) ? escapeHtml(href) : '');
+  let seenBefore = readStorage(SEEN_KEY);
+  const dayParts = (iso: string) => {
+    const date = new Date(/^\d{4}-\d{2}-\d{2}$/.test(iso) ? `${iso}T12:00:00` : iso);
+    return Number.isNaN(date.getTime()) ? { day: '', month: '' } : { day: String(date.getDate()), month: date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) };
+  };
+  const dateColumn = (iso: string) => { const { day, month } = dayParts(iso); return `<div class="fbx-entry__date"><span class="fbx-entry__day">${day}</span><span class="fbx-entry__month">${month}</span></div><div class="fbx-entry__rail" aria-hidden="true"></div>`; };
 
   function renderNotes() {
     const seen = time(seenBefore);
-    document.querySelector<HTMLElement>('.views__tab--notes')!.classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
+    $('[data-count="Notes"]').classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
     if (!notesLoaded) return;
-    if (filter() === 'Notes' && notes[0]) {
-      try { localStorage.setItem(SEEN_KEY, notes[0].date); } catch { /* private mode */ }
-    }
-    notesList.innerHTML = notes.length ? notes.map((note) => `<article class="dev-note">
-        <h2 class="dev-note__title">${escapeHtml(note.title || '')}</h2>
-        <div class="fb-item__meta">
-          <strong>${escapeHtml(note.author || 'Developer')}</strong>
-          <time datetime="${escapeHtml(note.date)}">${new Date(note.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
-          ${note.page && safeHref(note.page) ? `<a href="${safeHref(note.page)}">${escapeHtml(note.page)}</a>` : ''}
-          ${time(note.date) > seen ? '<span class="fb-item__badge fb-item__badge--new">New</span>' : ''}
+    if (currentView() === 'notes' && notes[0]) writeStorage(SEEN_KEY, notes[0].date);
+    notesList.innerHTML = notes.length ? notes.map((note) => `<article class="fbx-entry">
+        ${dateColumn(note.date)}
+        <div class="fbx-entry__content">
+          <h2 class="fbx-entry__title">${escapeHtml(note.title || '')}${time(note.date) > seen ? '<span class="fbx-pill fbx-pill--new">New</span>' : ''}</h2>
+          <div class="fbx-entry__meta"><span>${escapeHtml(note.author || 'Developer')}</span>${note.page && safeHref(note.page) ? `<a href="${safeHref(note.page)}">${escapeHtml(note.page)}</a>` : ''}</div>
+          <div class="fbx-entry__body fbx-entry__body--plain">${linkify(note.message)}</div>
         </div>
-        <p class="dev-note__message">${linkify(note.message)}</p>
-      </article>`).join('') : '<p class="empty">No notes from the developer yet.</p>';
+      </article>`).join('') : '<p class="fbx-empty">No notes from the developer yet.</p>';
   }
 
   async function loadNotes() {
@@ -499,38 +797,59 @@ try {
       if (!response.ok) throw new Error();
       notes = (await response.json()).notes;
       notesLoaded = true;
-      renderUnlessTyping();
+      renderNotes();
+      render();
     } catch {
-      if (!notesLoaded) notesList.innerHTML = '<p class="empty">Notes are unavailable.</p>';
+      if (!notesLoaded) notesList.innerHTML = '<p class="fbx-empty">Notes are unavailable.</p>';
     }
   }
 
-  // "Website last updated": the relative time ("2 hours ago"); the exact date is
-  // in the tooltip.
-  const updated = document.querySelector<HTMLTimeElement>('#last-updated')!;
-  function renderUpdated() {
-    const date = new Date(updated.dateTime);
-    updated.textContent = ago(updated.dateTime);
-    updated.title = date.toLocaleString();
-  }
-  renderUpdated();
-  setInterval(renderUpdated, 60000);
-
-  window.addEventListener('hashchange', () => { seenBefore = readSeen(); render(); });
-  // ---- Changelog (markdown from the feedback CMS, rendered by the server) ----
-  const changelogBody = document.querySelector<HTMLElement>('#changelog-body')!;
+  // ---- Changelog (structured entries from the CMS, rendered by the server) ---------
+  type ChangelogEntry = { date: string; title: string; status?: string; html: string; items: { tag: string; title: string; html: string }[] };
+  const changelogBody = $('#changelog-body');
   let changelogLoaded = false;
+  let changelogPayload = '';
+  const tagClass = (tag: string) => `fbx-tag fbx-tag--${tag.toLowerCase().replace(/[^a-z]+/g, '-')}`;
   async function loadChangelog() {
     try {
       const response = await fetch('/__feedback/api/changelog', { cache: 'no-store' });
       if (!response.ok) throw new Error();
-      const { html } = await response.json();
-      changelogBody.innerHTML = html || '<p class="empty">Nothing in the changelog yet.</p>';
+      const text = await response.text();
+      if (text === changelogPayload) return;
+      changelogPayload = text;
+      const { entries: items = [], html = '' } = JSON.parse(text) as { entries?: ChangelogEntry[]; html?: string };
+      const timeline = items.map((entry) => `<article class="fbx-entry">
+          ${dateColumn(entry.date)}
+          <div class="fbx-entry__content">
+            <h2 class="fbx-entry__title">${escapeHtml(entry.title)}${entry.status ? `<span class="fbx-pill fbx-pill--warn">${escapeHtml(entry.status)}</span>` : ''}</h2>
+            ${entry.html ? `<div class="fbx-entry__body">${entry.html}</div>` : ''}
+            ${entry.items.length ? `<div class="fbx-changes">${entry.items.map((item) => `<div class="fbx-change">${item.tag ? `<span class="${tagClass(item.tag)}">${escapeHtml(item.tag)}</span>` : '<span></span>'}<div class="fbx-change__text">${item.title ? `<strong>${escapeHtml(item.title)}</strong> ` : ''}${item.html}</div></div>`).join('')}</div>` : ''}
+          </div>
+        </article>`).join('');
+      // Older single-markdown changelog (before it was converted to entries).
+      const legacy = html ? `<div class="fbx-entry__body">${html}</div>` : '';
+      changelogBody.innerHTML = timeline || legacy || '<p class="fbx-empty">Nothing in the changelog yet.</p>';
       changelogLoaded = true;
     } catch {
-      if (!changelogLoaded) changelogBody.innerHTML = '<p class="empty">The changelog is unavailable right now.</p>';
+      if (!changelogLoaded) changelogBody.innerHTML = '<p class="fbx-empty">The changelog is unavailable right now.</p>';
     }
   }
+
+  // ---- "Site updated" (relative; exact date in the tooltip) -------------------------
+  const updated = $<HTMLTimeElement>('#last-updated');
+  function renderUpdated() {
+    updated.textContent = ago(updated.dateTime);
+    updated.title = new Date(updated.dateTime).toLocaleString();
+  }
+  renderUpdated();
+  setInterval(renderUpdated, 60000);
+
+  window.addEventListener('hashchange', () => {
+    if (LEGACY_HASH[location.hash]) { statusFilter = LEGACY_HASH[location.hash]; history.replaceState(null, '', '#feedback'); }
+    seenBefore = readStorage(SEEN_KEY);
+    render();
+  });
+  matchMedia('(max-width: 900px)').addEventListener('change', render);
 
   const refresh = () => { void load(); void loadNotes(); void loadChangelog(); };
   window.addEventListener('focus', refresh);
@@ -538,12 +857,12 @@ try {
   render();
   refresh();
 
-  // ---- Manual note form ----
-  const form = document.querySelector<HTMLFormElement>('#feedback-form')!;
-  const fileInput = document.querySelector<HTMLInputElement>('#image-input')!;
-  const dropzone = document.querySelector<HTMLElement>('#dropzone')!;
-  const previews = document.querySelector<HTMLElement>('#previews')!;
-  const formStatus = document.querySelector<HTMLElement>('#form-status')!;
+  // ---- Add a note without a screenshot ----------------------------------------------
+  const form = $<HTMLFormElement>('#feedback-form');
+  const fileInput = $<HTMLInputElement>('#image-input');
+  const dropzone = $('#dropzone');
+  const previews = $('#previews');
+  const formStatus = $('#form-status');
   const files: File[] = [];
 
   function renderPreviews() {
@@ -562,8 +881,8 @@ try {
       return item;
     }));
   }
-  function addFiles(list: FileList | null | undefined) {
-    for (const file of list || []) if (file.type.startsWith('image/') && files.length < 10) files.push(file);
+  function addFiles(fileList: FileList | null | undefined) {
+    for (const file of fileList || []) if (file.type.startsWith('image/') && files.length < 10) files.push(file);
     renderPreviews();
   }
   dropzone.addEventListener('click', () => fileInput.click());
@@ -586,9 +905,12 @@ try {
       form.reset();
       files.splice(0);
       renderPreviews();
-      formStatus.textContent = 'Added.';
-      location.hash = '#new';
+      formStatus.textContent = '';
+      statusFilter = 'new';
+      writeStorage(FILTER_KEY, statusFilter);
+      lastPayload = '';
       await load();
+      select(result.entry.id);
     } catch (error) {
       formStatus.textContent = error instanceof Error ? error.message : 'Could not add the note.';
     }

@@ -44,6 +44,7 @@ const path = Astro.url.pathname;
       rel="stylesheet"
       crossorigin="anonymous"
     />
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

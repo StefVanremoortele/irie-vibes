@@ -184,16 +184,38 @@ function withCommentHtml(entry) {
   };
 }
 
-// The changelog (markdown, written in the CMS) rendered to HTML. Raw HTML in
-// the markdown is escaped, not rendered.
+// Markdown for one line (a changelog item): no wrapping paragraph.
+const renderInline = (markdown) => renderMarkdown(markdown).trim().replace(/^<p>([\s\S]*)<\/p>$/, '$1');
+
+// The changelog, written in the CMS as structured entries (date, title,
+// optional status, markdown body, tagged items), newest first; markdown is
+// rendered to HTML with raw HTML escaped. The older single markdown `body` is
+// still returned as `html` so nothing breaks before it is converted.
 async function readChangelog(dir) {
-  let body = '';
+  let data = {};
   try {
-    body = JSON.parse(await readFile(join(dir, 'changelog.json'), 'utf8')).body || '';
+    data = JSON.parse(await readFile(join(dir, 'changelog.json'), 'utf8')) || {};
   } catch {
     // No changelog yet.
   }
-  return { html: body.trim() ? renderMarkdown(body) : '' };
+  const entries = (Array.isArray(data.entries) ? data.entries : [])
+    .filter((entry) => entry && typeof entry.title === 'string')
+    .map((entry) => ({
+      date: typeof entry.date === 'string' ? entry.date : '',
+      title: entry.title,
+      ...(typeof entry.status === 'string' && entry.status ? { status: entry.status } : {}),
+      html: typeof entry.body === 'string' && entry.body.trim() ? renderMarkdown(entry.body) : '',
+      items: (Array.isArray(entry.items) ? entry.items : [])
+        .filter((item) => item && (item.title || item.body))
+        .map((item) => ({
+          tag: typeof item.tag === 'string' ? item.tag : '',
+          title: typeof item.title === 'string' ? item.title : '',
+          html: typeof item.body === 'string' && item.body.trim() ? renderInline(item.body) : '',
+        })),
+    }))
+    .sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+  const body = typeof data.body === 'string' ? data.body : '';
+  return { entries, html: body.trim() ? renderMarkdown(body) : '' };
 }
 
 // ---- Git sync with the private feedback repo (production only) -------------
@@ -387,6 +409,14 @@ async function addReply(req, dir, id) {
   }), `Reply on feedback: ${text.split('\n')[0].slice(0, 60)}`);
 }
 
+// A tester picks up a new item: it moves to In progress.
+async function markInProgress(dir, id) {
+  return updateEntry(dir, id, (entry) => {
+    if (entry.status !== 'New') throw new HttpError(409, 'Only new feedback can be marked in progress.');
+    return { ...entry, status: 'In progress' };
+  }, `Mark feedback in progress: ${id}`);
+}
+
 // The tester confirms a change that is In progress: it moves to Done.
 async function acceptChange(dir, id) {
   return updateEntry(dir, id, (entry) => {
@@ -416,11 +446,12 @@ async function handleApi(req, res, path) {
     throw new HttpError(405, 'Method not allowed.');
   }
 
-  const actionMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/(replies|accept)$/);
+  const actionMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/(replies|accept|progress)$/);
   if (actionMatch) {
     if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
     const [, id, action] = actionMatch;
-    return send(res, 200, { entry: action === 'replies' ? await addReply(req, dir, id) : await acceptChange(dir, id) });
+    const entry = action === 'replies' ? await addReply(req, dir, id) : action === 'accept' ? await acceptChange(dir, id) : await markInProgress(dir, id);
+    return send(res, 200, { entry });
   }
 
   const deleteMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)$/);

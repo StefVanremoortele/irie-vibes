@@ -29,7 +29,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Where, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
 
 Feedback items (their status: New / In progress / Done), the developer notes
-shown on `/feedback`, and the changelog (markdown, the *Changelog* tab of `/feedback`) are managed in a separate admin, `/admin/feedback/`,
+shown on `/feedback`, and the changelog (dated entries with tagged changes, the *Changelog* tab of `/feedback`) are managed in a separate admin, `/admin/feedback/`,
 which edits the private repo
 `StefVanremoortele/irie-vibes-feedback`; see the README's *Feedback tool*.
 
