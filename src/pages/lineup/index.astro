@@ -9,7 +9,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
   <div class="lineup">
     {!useCustomHtml && <Hero src={heroImages.lineup} alt="Lions Den stage lights" size="md" />}
     <div class="section section--lineup">
-      {!useCustomHtml && <h1 class="title">Line up</h1>}
+      <h1 class="title">Line up</h1>
 
       {useCustomHtml ? <div class="copy custom-html" set:html={customHtml} /> : <>
       <div class="schedule" aria-label="Festival timetable">
