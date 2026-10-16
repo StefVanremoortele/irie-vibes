@@ -65,6 +65,7 @@ collections:
               - { name: headerBanner, label: "Header banner", widget: image }
               - { name: footerBg, label: "Footer background", widget: image }
               - { name: greenforward, label: "Greenforward logo", widget: image }
+              - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
           - name: nav
             label: "Navigation"
             widget: list

@@ -23,6 +23,8 @@ export const site = {
     headerBanner: assetUrl(siteData.assets.headerBanner),
     footerBg: assetUrl(siteData.assets.footerBg),
     greenforward: assetUrl(siteData.assets.greenforward),
+    // Optional: when empty the ticket button shows the "GET YOUR TICKET" text.
+    ticketButton: assetUrl((siteData.assets as { ticketButton?: string }).ticketButton),
   },
 };
 
