@@ -100,6 +100,9 @@ function canonicalHref(href: string): string {
 
 <style>
   .hdr {
+    /* Menu (record) button size; the ticket button is deliberately bigger. */
+    --hdr-btn-size: clamp(52px, 7.5vw, 76px);
+    --hdr-ticket-size: clamp(56px, 9.5vw, 96px);
     position: fixed;
     top: 0;
     left: 0;
@@ -150,7 +153,7 @@ function canonicalHref(href: string): string {
 
   /* Hamburger --------------------------------------------------------------- */
   .burger {
-    --burger-size: clamp(44px, 6vw, 56px);
+    --burger-size: var(--hdr-btn-size);
     position: relative;
     width: var(--burger-size);
     height: var(--burger-size);
@@ -234,8 +237,8 @@ function canonicalHref(href: string): string {
 
   /* Ticket button ----------------------------------------------------------- */
   .ticket-btn {
-    width: clamp(44px, 6vw, 56px);
-    height: clamp(44px, 6vw, 56px);
+    width: var(--hdr-ticket-size);
+    height: var(--hdr-ticket-size);
     border-radius: var(--radius-full);
     background: rgba(0, 0, 0, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -262,16 +265,17 @@ function canonicalHref(href: string): string {
     text-transform: uppercase;
     line-height: 1;
   }
+  /* Text scales with the button (9px / 13px at the former 56px size). */
   .ticket-btn__get {
-    font-size: 9px;
+    font-size: calc(var(--hdr-ticket-size) * 0.16);
     color: #e53935;
   }
   .ticket-btn__your {
-    font-size: 9px;
+    font-size: calc(var(--hdr-ticket-size) * 0.16);
     color: #fbc02d;
   }
   .ticket-btn__main {
-    font-size: 13px;
+    font-size: calc(var(--hdr-ticket-size) * 0.232);
     color: #43a047;
     letter-spacing: 0.06em;
   }
