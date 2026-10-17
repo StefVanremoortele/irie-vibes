@@ -105,7 +105,8 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > (`tokens.css` / the Roots Vanguard look). The `/feedback` dialog uses the
 > *Pane* design tokens (Inter Tight / Fraunces / JetBrains Mono, violet
 > accent), defined as CSS variables scoped to its `.fbx` root so they don't
-> leak into the site; the capture UI keeps its own minimal light theme.
+> leak into the site; the capture UI keeps its own minimal light theme with
+> the same violet accent.
 > `/feedback` is a dialog over the real homepage
 > (`src/components/HomeContent.astro`, shown inert behind a dark blurred
 > scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
