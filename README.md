@@ -58,6 +58,8 @@ nobody edits, a sibling `production/` folder next to the development checkout:
 
 Environment: `PORT` (default `4321`), `HOST` (`0.0.0.0`), `PREVIEW_PORT`
 (internal, `4331`), `PRODUCTION_SYNC_INTERVAL` (seconds, `300`),
+`PRODUCTION_PREVIEW` (`0` skips `astro preview` when a web server such as nginx serves
+`dist/` itself and forwards only `/__deploy` and `/__feedback/` here),
 `DEPLOY_WEBHOOK_SECRET` (the GitHub webhook secret; without it the webhook is
 disabled and only the periodic check runs), and `FEEDBACK_DIR` /
 `FEEDBACK_GIT_SYNC` (see [Feedback tool](#feedback-tool)). Changes to `scripts/production.mjs` and
