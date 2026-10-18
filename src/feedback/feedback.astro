@@ -157,7 +157,8 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   /* ---- Shell: scrim + panel (and its edge light) over the inert homepage ---- */
   html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
-  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
+  /* The scrim only exists while the dialog is open; without backdrop-filter support it is just the dim colour. */
+  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.55); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
   .fbx-stage { position: fixed; top: 56px; right: 24px; left: 24px; z-index: 9600; max-width: 1040px; margin: 0 auto; animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
   .fbx-panel { position: relative; z-index: 1; display: grid; grid-template-columns: 76px minmax(0, 1fr); overflow: hidden; background: #fff; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10), var(--shadow-xl); }
   .fbx.is-closing .fbx-stage { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }

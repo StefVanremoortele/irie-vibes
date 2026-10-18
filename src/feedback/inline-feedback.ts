@@ -46,10 +46,12 @@ const css = `
   .fb-pill .fb-mono { background: var(--brand-700); color: #fff; }
   .fb-pill:hover { opacity: 1; color: var(--brand-700); border-color: var(--brand-300); }
   .fb-pill:active { transform: scale(.97); }
-  .fb-overlay { position: fixed; inset: 0; z-index: 2147483600; cursor: crosshair; background: var(--scrim); touch-action: none; }
-  .fb-overlay.is-drawing { background: transparent; }
-  .fb-overlay.is-selected { background: transparent; cursor: default; pointer-events: none; }
-  .fb-selection { position: fixed; display: none; border: 1px dashed rgba(167, 243, 208, .55); border-radius: 2px; box-shadow: 0 0 0 100vmax var(--scrim); pointer-events: none; }
+  .fb-overlay { position: fixed; inset: 0; z-index: 2147483600; cursor: crosshair; touch-action: none; }
+  .fb-overlay.is-selected { cursor: default; pointer-events: none; }
+  /* Dims and blurs the page while capturing; a clip-path cuts the selection out so it stays sharp.
+     Without backdrop-filter support it is just the dim colour. */
+  .fb-scrim { position: absolute; inset: 0; background: var(--scrim); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); pointer-events: none; }
+  .fb-selection { position: fixed; display: none; border: 1px dashed rgba(167, 243, 208, .55); border-radius: 2px; pointer-events: none; }
   .fb-corner { position: absolute; z-index: 2; width: 26px; height: 26px; border: 0 solid #5eead4; }
   .fb-corner:nth-of-type(1) { top: -3px; left: -3px; border-width: 3px 0 0 3px; }
   .fb-corner:nth-of-type(2) { top: -3px; right: -3px; border-width: 3px 3px 0 0; }
@@ -275,6 +277,7 @@ function init() {
     capture.catch((error) => console.warn('[feedback] screenshot capture failed', error));
     const root = el('div');
     const overlay = el('div', { className: 'fb-overlay' });
+    const scrim = el('div', { className: 'fb-scrim' });
     // The selection: dashed edge, corner brackets, the teal edge light and a label.
     const light = createEdgeLight({ radius: 2, ringOnly: true });
     const size = el('span', { className: 'fb-label__size' });
@@ -286,7 +289,7 @@ function init() {
       el('strong', { textContent: 'Draw around what you mean' }),
       el('span', {}, 'or click for the whole screen · ', skip),
       el('span', {}, el('kbd', { textContent: 'Esc' }), ' to cancel'));
-    overlay.append(selection);
+    overlay.append(scrim, selection);
     root.append(overlay, hint);
     shadow.append(root);
     const previousOverflow = document.documentElement.style.overflow;
@@ -315,6 +318,9 @@ function init() {
       const y = clamp(Math.min(start.y, event.clientY), 0, innerHeight);
       region = { x, y, width: clamp(Math.abs(event.clientX - start.x), 0, innerWidth - x), height: clamp(Math.abs(event.clientY - start.y), 0, innerHeight - y) };
       Object.assign(selection.style, { display: 'block', left: `${x}px`, top: `${y}px`, width: `${region.width}px`, height: `${region.height}px` });
+      // The scrim with a hole where the selection is (even-odd: viewport minus the rectangle).
+      const [right, bottom] = [x + region.width, y + region.height];
+      scrim.style.clipPath = `polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, ${x}px ${y}px, ${right}px ${y}px, ${right}px ${bottom}px, ${x}px ${bottom}px, ${x}px ${y}px)`;
       size.textContent = `${Math.round(region.width)}×${Math.round(region.height)}`;
       // No room above the selection: the label goes inside it.
       label.classList.toggle('is-inside', y < 44);
@@ -322,7 +328,6 @@ function init() {
     overlay.addEventListener('pointerdown', (event) => {
       start = { x: event.clientX, y: event.clientY };
       overlay.setPointerCapture(event.pointerId);
-      overlay.classList.add('is-drawing');
       hint.hidden = true;
       update(event);
       light.play('open');
@@ -337,6 +342,7 @@ function init() {
       if (region.width < 8 || region.height < 8) {
         region = { x: 0, y: 0, width: document.documentElement.clientWidth, height: innerHeight };
         selection.style.display = 'none';
+        scrim.hidden = true;
       } else {
         light.play('accept');
       }
@@ -347,7 +353,7 @@ function init() {
     function openPanel(selected: Region | undefined) {
       hint.remove();
       overlay.classList.add('is-selected');
-      if (!selected) selection.style.display = 'none';
+      if (!selected) { selection.style.display = 'none'; scrim.hidden = true; }
 
       const image = selected ? capture.then((canvas) => cropToBlob(canvas, selected)) : Promise.resolve(undefined);
       image.catch(() => {});
