@@ -15,16 +15,14 @@ try {
 } catch {
   // Not a git checkout: keep the build time.
 }
-// The eyebrow above the title: the dev server (testers) or the live site.
-const environment = import.meta.env.DEV ? 'dev' : 'live';
 ---
 
 <!--
   Testing page (/feedback): a dialog over the real homepage (shown inert behind
-  a dark scrim). The dialog is a tester tool with its own design (teal brand
-  rail, Pane tokens, animated edge light; all scoped to .fbx) and deliberately
-  does NOT follow the festival design system; see README "Feedback tool".
-  Tabs (rail icons): Feedback (cards), Changelog (timeline), Developer notes.
+  a dark scrim). The dialog is a tester tool with its own plain look (Pane
+  tokens with a teal accent, scoped to .fbx) and deliberately does NOT follow
+  the festival design system; see README "Feedback tool". Tabs: Feedback
+  (list), Changelog (timeline) and Developer notes.
 -->
 <Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex>
   <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
@@ -36,81 +34,63 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     <div class="fbx-scrim" data-close aria-hidden="true"></div>
     <div class="fbx-stage">
       <section class="fbx-panel" role="dialog" aria-modal="true" aria-labelledby="fbx-title">
-        <nav class="fbx-rail" aria-label="Sections">
-          <span class="fbx-rail__gas" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="fbx-mono" aria-hidden="true">s</span>
-          <a class="fbx-railtab" href="#feedback" data-view="feedback" title="Feedback">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-            <span class="fbx-sr">Feedback</span><span class="fbx-badge" data-count="New"></span>
-          </a>
-          <a class="fbx-railtab" href="#changelog" data-view="changelog" title="Changelog">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-            <span class="fbx-sr">Changelog</span>
-          </a>
-          <a class="fbx-railtab" href="#notes" data-view="notes" title="Developer notes">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6" /></svg>
-            <span class="fbx-sr">Developer notes</span><span class="fbx-badge" data-count="Notes"></span>
-          </a>
-        </nav>
+        <h1 id="fbx-title" class="fbx-sr">Testing</h1>
+        <header class="fbx-head">
+          <nav class="fbx-tabs" aria-label="Sections">
+            <a class="fbx-tab" href="#feedback" data-view="feedback">Feedback <span class="fbx-count" data-count="New"></span></a>
+            <a class="fbx-tab" href="#changelog" data-view="changelog">Changelog</a>
+            <a class="fbx-tab" href="#notes" data-view="notes">Developer notes <span class="fbx-count" data-count="Notes"></span></a>
+          </nav>
+          <div class="fbx-head__end">
+            <span class="fbx-updated">Site updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></span>
+            <button type="button" class="fbx-key" data-close title="Close (Esc)" aria-label="Close">Esc</button>
+          </div>
+        </header>
 
-        <div class="fbx-main">
-          <header class="fbx-head">
-            <div>
-              <p class="fbx-eyebrow">Irie Vibes · {environment}</p>
-              <h1 id="fbx-title" class="fbx-title">Feedback</h1>
-            </div>
-            <div class="fbx-seg" id="status-filter" role="group" aria-label="Filter by status">
+        <div class="fbx-body" id="body">
+          <!-- Feedback: list -->
+          <div id="feedback-view" class="fbx-view fbx-feedback">
+            <div class="fbx-filter" role="group" aria-label="Filter by status">
               <button type="button" data-filter="new">New <span data-count="New"></span></button>
               <button type="button" data-filter="in_progress">In progress <span data-count="In progress"></span></button>
               <button type="button" data-filter="done">Done <span data-count="Done"></span></button>
               <button type="button" data-filter="all">All <span data-count="All"></span></button>
             </div>
-            <button type="button" class="fbx-key" data-close title="Close (Esc)" aria-label="Close">Esc</button>
-          </header>
-
-          <div class="fbx-body" id="body">
-            <!-- Feedback: cards -->
-            <div id="feedback-view" class="fbx-view fbx-cards-view">
-              <div id="entries" class="fbx-cards" aria-live="polite"><p class="fbx-empty">Loading feedback…</p></div>
-              <button type="button" class="fbx-addnote" data-add-note>
-                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-                Add a note without a screenshot
-              </button>
-              <!-- Add a note without a screenshot -->
-              <form id="feedback-form" class="fbx-card fbx-noteform" hidden>
-                <h2 class="fbx-noteform__title">Add a note without a screenshot</h2>
-                <label class="fbx-field">Comment<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
-                <label class="fbx-field">Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
-                <div class="fbx-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
-                  Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
-                  <input id="image-input" type="file" accept="image/*" multiple hidden />
-                </div>
-                <div class="fbx-previews" id="previews"></div>
-                <div class="fbx-noteform__actions">
-                  <button class="fbx-btn fbx-btn--primary" type="submit">Add note</button>
-                  <button class="fbx-btn" type="button" data-cancel-note>Cancel</button>
-                  <p id="form-status" role="status"></p>
-                </div>
-              </form>
-            </div>
-
-            <!-- Changelog: timeline -->
-            <div id="changelog-view" class="fbx-view" hidden>
-              <div id="changelog-body" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading changelog…</p></div>
-            </div>
-
-            <!-- Developer notes: same timeline -->
-            <div id="notes-view" class="fbx-view" hidden>
-              <div id="notes-list" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading notes…</p></div>
-            </div>
+            <div id="entries" class="fbx-items" aria-live="polite"><p class="fbx-empty">Loading feedback…</p></div>
+            <button type="button" class="fbx-addnote" data-add-note>+ Add a note without a screenshot</button>
+            <!-- Add a note without a screenshot -->
+            <form id="feedback-form" class="fbx-noteform" hidden>
+              <h2 class="fbx-noteform__title">Add a note without a screenshot</h2>
+              <label class="fbx-field">Comment<textarea name="message" required maxlength="10000" rows="4" placeholder="Describe what you noticed…"></textarea></label>
+              <label class="fbx-field">Page <span>(optional)</span><input name="page" maxlength="500" placeholder="/tickets" /></label>
+              <div class="fbx-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add images">
+                Drop or paste images here, or <button type="button" id="pick-images">choose files</button>
+                <input id="image-input" type="file" accept="image/*" multiple hidden />
+              </div>
+              <div class="fbx-previews" id="previews"></div>
+              <div class="fbx-noteform__actions">
+                <button class="fbx-btn fbx-btn--primary" type="submit">Add note</button>
+                <button class="fbx-btn" type="button" data-cancel-note>Cancel</button>
+                <p id="form-status" role="status"></p>
+              </div>
+            </form>
           </div>
 
-          <footer class="fbx-foot">
-            <span>Feedback tool by <a href="https://stef.vanremoortele.be" target="_blank" rel="noreferrer">stef.vanremoortele.be</a></span>
-            <span class="fbx-updated"><span class="fbx-dot" aria-hidden="true"></span><span>Site updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></span></span>
-            <span class="fbx-foot__end" title="On any page of the site">Mark a spot <kbd>Shift</kbd><kbd>F</kbd></span>
-          </footer>
+          <!-- Changelog: timeline -->
+          <div id="changelog-view" class="fbx-view" hidden>
+            <div id="changelog-body" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading changelog…</p></div>
+          </div>
+
+          <!-- Developer notes: same timeline -->
+          <div id="notes-view" class="fbx-view" hidden>
+            <div id="notes-list" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading notes…</p></div>
+          </div>
         </div>
+
+        <footer class="fbx-foot">
+          <span>Feedback tool by <a href="https://stef.vanremoortele.be" target="_blank" rel="noreferrer">stef.vanremoortele.be</a></span>
+          <span class="fbx-foot__end" title="On any page of the site">Mark a spot with Shift F</span>
+        </footer>
       </section>
     </div>
     <div id="jah-manifest" class="fbx-manifest" role="tooltip" hidden><strong>{MANIFEST_TITLE}</strong><p>{MANIFEST_TEXT}</p></div>
@@ -120,22 +100,17 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
 </Base>
 
 <style is:global>
-  /* ---- Tokens (Pane design system + teal brand), scoped to the dialog ------- */
+  /* ---- Tokens (Pane design system, teal accent), scoped to the dialog ------- */
   .fbx {
     --ink-900: #1a1b26; --ink-700: #2e2f3e; --ink-500: #5b5c6e; --ink-400: #8b8c9e; --ink-300: #b8b9c8; --ink-200: #d8d9e3;
     --divider: rgba(26, 27, 38, 0.10);
-    --brand-700: #0f766e; --brand-800: #115e59; --brand-50: #f0fdfa; --brand-100: #ccfbf1; --brand-300: #5eead4; --brand-tint: rgba(15, 118, 110, 0.12);
-    --gas-aqua: #5eead4; --gas-cyan: #22d3ee; --gas-mint: #a7f3d0;
-    --success-500: #10b981;
-    --warn-500: #f59e0b; --warn-100: #fef3c7; --warn-700: #92600a;
+    --brand-700: #0f766e; --brand-800: #115e59; --brand-50: #f0fdfa; --brand-100: #ccfbf1;
+    --warn-100: #fef3c7; --warn-700: #92600a;
     --info-500: #3b82f6; --info-100: #dbeafe;
-    --danger-500: #ef4444; --danger-100: #fee2e2;
-    --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-pill: 999px;
-    --shadow-sm: 0 1px 2px rgba(26, 27, 38, 0.04), 0 2px 8px rgba(26, 27, 38, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    --shadow-xl: 0 8px 16px rgba(26, 27, 38, 0.06), 0 40px 80px rgba(26, 27, 38, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --danger-100: #fee2e2;
+    --radius-xs: 6px; --radius-sm: 8px; --radius-md: 10px; --radius-lg: 16px; --radius-pill: 999px;
+    --shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.35);
     --shadow-focus: 0 0 0 3px rgba(15, 118, 110, 0.35);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
-    --dur-fast: 140ms; --dur-med: 260ms; --dur-slow: 420ms;
     --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino', Georgia, serif;
     --font-body: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
@@ -150,157 +125,115 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   .fbx :where(a), .fbx :where(a):hover { color: var(--brand-700); text-decoration: none; }
   .fbx :where(a):hover { text-decoration: underline; }
   .fbx :where(h1, h2, p) { margin: 0; }
-  .fbx svg { flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
   .fbx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .fbx :focus-visible { outline: none; box-shadow: var(--shadow-focus); }
 
-  /* ---- Shell: scrim + panel (and its edge light) over the inert homepage ---- */
+  /* ---- Shell: scrim + panel over the inert homepage --------------------------- */
+  /* Only the open/close fade animates. */
   html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
-  /* The scrim only exists while the dialog is open; without backdrop-filter support it is just the dim colour. */
-  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.55); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
+  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.6); animation: fbx-fade 200ms ease-out; }
   /* The dialog fills the screen with the same gap above and below, whatever the tab holds. */
-  .fbx-stage { position: fixed; inset: 56px 24px; z-index: 9600; max-width: 1040px; margin: 0 auto; animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
-  .fbx-panel { position: relative; z-index: 1; display: grid; grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100%; overflow: hidden; background: #fff; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10), var(--shadow-xl); }
-  .fbx.is-closing .fbx-stage { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
-  .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
+  .fbx-stage { position: fixed; inset: 56px 24px; z-index: 9600; max-width: 960px; margin: 0 auto; animation: fbx-fade 200ms ease-out; }
+  .fbx-panel { display: flex; flex-direction: column; height: 100%; overflow: hidden; background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-panel); }
+  .fbx.is-closing :is(.fbx-stage, .fbx-scrim) { animation: fbx-fade-out 150ms ease-in forwards; }
   @keyframes fbx-fade { from { opacity: 0; } }
-  @keyframes fbx-enter { from { opacity: 0; transform: translateY(8px); } }
-  @keyframes fbx-exit { to { opacity: 0; transform: scale(0.98); } }
+  @keyframes fbx-fade-out { to { opacity: 0; } }
 
-  /* ---- Rail: teal brand with drifting gas, monogram, tab icons -------------- */
-  .fbx-rail { position: relative; isolation: isolate; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 0; overflow: hidden; color: #fff; background: radial-gradient(140% 45% at 20% 8%, var(--gas-aqua), transparent 60%), radial-gradient(120% 40% at 90% 55%, var(--gas-cyan), transparent 60%), radial-gradient(140% 40% at 10% 100%, var(--gas-mint), transparent 55%), var(--brand-700); }
-  .fbx-rail__gas { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-  .fbx-rail__gas i { position: absolute; border-radius: 50%; filter: blur(10px); mix-blend-mode: screen; opacity: 0.85; }
-  .fbx-rail__gas i:nth-child(1) { top: -4%; left: -40%; width: 140px; height: 200px; background: radial-gradient(closest-side, var(--gas-aqua), transparent); animation: fbx-gas-a 12s ease-in-out infinite; }
-  .fbx-rail__gas i:nth-child(2) { top: 40%; left: -30%; width: 130px; height: 220px; background: radial-gradient(closest-side, var(--gas-cyan), transparent); animation: fbx-gas-b 16.8s ease-in-out infinite; }
-  .fbx-rail__gas i:nth-child(3) { top: 72%; left: -50%; width: 150px; height: 180px; background: radial-gradient(closest-side, var(--gas-mint), transparent); animation: fbx-gas-c 21.6s ease-in-out infinite; }
-  @keyframes fbx-gas-a { 0%, 100% { transform: translate(-20px, -10px) scale(1); } 50% { transform: translate(22px, 140px) scale(1.35); } }
-  @keyframes fbx-gas-b { 0%, 100% { transform: translate(20px, 0) scale(1.1); } 50% { transform: translate(-26px, -160px) scale(0.85); } }
-  @keyframes fbx-gas-c { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(24px, -90px) scale(1.25); } 66% { transform: translate(-18px, 40px) scale(0.9); } }
-  .fbx-mono { display: grid; place-items: center; width: 40px; height: 40px; flex: none; margin-bottom: 16px; padding-bottom: 3px; border-radius: 12px; background: #fff; color: var(--brand-700); box-shadow: var(--shadow-sm); font: 400 24px/1 var(--font-display); }
-  .fbx a.fbx-railtab { position: relative; display: grid; place-items: center; width: 48px; height: 48px; flex: none; border-radius: 12px; color: #fff; text-decoration: none; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx a.fbx-railtab:hover { background: rgba(4, 47, 46, 0.18); }
-  .fbx a.fbx-railtab:active { transform: scale(0.97); }
-  .fbx a.fbx-railtab.is-active { background: rgba(4, 47, 46, 0.3); }
-  .fbx a.fbx-railtab:focus-visible { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7); }
-  .fbx-railtab svg { stroke-width: 1.5; }
-  .fbx-badge { position: absolute; top: 3px; right: 1px; min-width: 18px; padding: 0 5px; border-radius: var(--radius-pill); background: #fff; color: var(--brand-700); box-shadow: 0 1px 3px rgba(4, 47, 46, 0.3); font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
-  .fbx-badge:empty { display: none; }
-  .fbx-badge:not(.has-unseen)[data-count="Notes"] { background: rgba(255, 255, 255, 0.55); }
+  /* Header: tabs left, "site updated" + Esc right */
+  .fbx-head { display: flex; flex: none; align-items: stretch; justify-content: space-between; gap: 16px; height: 60px; padding: 0 28px 0 16px; border-bottom: 1px solid var(--divider); }
+  .fbx-tabs { display: flex; align-items: stretch; }
+  .fbx a.fbx-tab { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; color: var(--ink-500); font-size: 15px; font-weight: 500; text-decoration: none; }
+  .fbx a.fbx-tab:hover { color: var(--ink-900); }
+  .fbx a.fbx-tab.is-active { color: var(--ink-900); font-weight: 600; box-shadow: inset 0 -2px 0 var(--brand-700); }
+  .fbx a.fbx-tab:focus-visible { box-shadow: inset 0 0 0 3px rgba(15, 118, 110, 0.35); border-radius: var(--radius-xs); }
+  .fbx-count { color: var(--ink-400); font-size: 12px; font-weight: 500; }
+  .fbx-tab.is-active .fbx-count { color: var(--brand-700); }
+  .fbx-count:empty { display: none; }
+  .fbx-head__end { display: flex; align-items: center; gap: 16px; }
+  .fbx-updated { color: var(--ink-400); font-size: 13px; white-space: nowrap; }
+  .fbx-key { padding: 2px 6px; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: #fff; color: var(--ink-500); font: 500 11px/1.4 var(--font-mono); cursor: pointer; }
+  .fbx-key:hover { color: var(--ink-900); }
 
-  /* ---- Main column: header, scrolling body, footer -------------------------- */
-  .fbx-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-  .fbx-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; padding: 28px 32px 8px; }
-  .fbx-eyebrow { color: var(--brand-700); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-  .fbx-title { margin-top: 4px; color: var(--ink-900); font: 400 40px/1.05 var(--font-display); font-variation-settings: 'opsz' 96; letter-spacing: -0.01em; }
-  .fbx-seg { display: flex; gap: 2px; margin-left: auto; padding: 3px; border-radius: var(--radius-sm); background: rgba(26, 27, 38, 0.05); }
-  .fbx-seg[hidden] { display: none; }
-  .fbx-seg button { padding: 5px 12px; border: 0; border-radius: 7px; background: none; color: var(--ink-500); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-seg button:hover { background: rgba(26, 27, 38, 0.05); color: var(--ink-900); }
-  .fbx-seg button:active { transform: scale(0.97); }
-  .fbx-seg button.is-active { background: #fff; box-shadow: var(--shadow-sm); color: var(--ink-900); font-weight: 600; }
-  .fbx-seg button.is-active:focus-visible { box-shadow: var(--shadow-sm), var(--shadow-focus); }
-  .fbx-seg span:empty { display: none; }
-  .fbx-key { margin-bottom: 6px; padding: 3px 6px; border: 0; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.05); color: var(--ink-500); font: 500 11px/1.2 var(--font-mono); cursor: pointer; transition: background var(--dur-fast); }
-  .fbx-seg[hidden] + .fbx-key { margin-left: auto; }
-  .fbx-key:hover { background: rgba(26, 27, 38, 0.1); }
   .fbx-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
   .fbx-view[hidden] { display: none; }
-  .fbx-empty { padding: 24px; color: var(--ink-400); font-size: 14px; text-align: center; }
+  .fbx-empty { padding: 24px 0; color: var(--ink-400); font-size: 14px; text-align: center; }
 
-  .fbx-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 12px 32px; border-top: 1px solid var(--divider); background: rgba(26, 27, 38, 0.03); color: var(--ink-500); font-size: 12px; }
-  .fbx .fbx-foot a { color: var(--ink-900); font-weight: 600; }
-  .fbx-updated { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .fbx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success-500); }
-  .fbx-foot__end { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; white-space: nowrap; }
-  .fbx-foot kbd { padding: 1px 6px; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: #fff; color: var(--ink-700); font: 500 11px/1.5 var(--font-mono); }
+  .fbx-foot { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding: 12px 28px; border-top: 1px solid var(--divider); color: var(--ink-400); font-size: 12px; }
+  .fbx-foot__end { margin-left: auto; white-space: nowrap; }
 
-  /* ---- Feedback cards -------------------------------------------------------- */
-  .fbx-cards-view { display: grid; gap: 12px; padding: 16px 32px 24px; }
-  .fbx-cards { display: grid; gap: 12px; }
-  .fbx-card { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 22px; padding: 18px; border: 1px solid var(--divider); border-radius: var(--radius-md); background: #fff; box-shadow: var(--shadow-sm); transition: background var(--dur-med), border-color var(--dur-med); }
-  .fbx-card.is-fresh { border-color: var(--brand-300); background: var(--brand-50); }
-  .fbx-card__media { display: grid; align-content: start; gap: 8px; min-width: 0; }
-  .fbx-thumb { position: relative; height: 130px; overflow: hidden; border-radius: var(--radius-sm); background: rgba(26, 27, 38, 0.06); }
-  .fbx-thumb__open { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-  .fbx-thumb__open img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-  .fbx-thumb__expand { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: rgba(255, 255, 255, 0.9); color: var(--ink-700); cursor: zoom-in; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-thumb__expand:hover { background: #fff; }
-  .fbx-thumb__expand:active { transform: scale(0.97); }
-  .fbx-thumb--none { display: grid; place-items: center; height: 72px; color: var(--ink-400); font-size: 13px; }
-  .fbx-card__chips { display: flex; flex-wrap: wrap; gap: 6px; color: var(--ink-400); font: 12px/1.5 var(--font-mono); }
+  /* ---- Feedback list ---------------------------------------------------------- */
+  .fbx-feedback { padding: 16px 28px 24px; }
+  .fbx-filter { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  .fbx-filter button { padding: 0; border: 0; background: none; color: var(--ink-400); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+  .fbx-filter button:hover { color: var(--ink-900); }
+  .fbx-filter button.is-active { color: var(--ink-900); font-weight: 600; }
+  .fbx-filter span:empty { display: none; }
+  .fbx-items { margin-top: 4px; }
+  .fbx-item { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--divider); }
+  .fbx-item__media { display: grid; align-content: start; gap: 6px; min-width: 0; }
+  .fbx-thumb { display: block; width: 100%; height: 140px; padding: 0; overflow: hidden; border: 0; border-radius: var(--radius-md); background: rgba(26, 27, 38, 0.06); cursor: zoom-in; }
+  .fbx-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .fbx-thumb--none { display: grid; place-items: center; height: 72px; color: var(--ink-400); font-size: 13px; cursor: default; }
+  .fbx-item__size { color: var(--ink-400); font: 12px/1.5 var(--font-mono); }
   .fbx-more { display: flex; flex-wrap: wrap; gap: 6px; }
-  .fbx-more button { width: 52px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: 8px; background: none; cursor: zoom-in; }
+  .fbx-more button { width: 52px; height: 40px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: none; cursor: zoom-in; }
   .fbx-more img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .fbx-card__main { display: grid; align-content: start; gap: 12px; min-width: 0; }
-  .fbx-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-height: 34px; }
+  .fbx-item__main { display: grid; align-content: start; gap: 12px; min-width: 0; }
+  .fbx-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-height: 32px; color: var(--ink-400); font-size: 13px; }
   .fbx-meta__name { color: var(--ink-900); font-size: 14px; font-weight: 600; }
-  .fbx-meta__time { color: var(--ink-400); font-size: 13px; }
-  .fbx .fbx-meta__time a { color: inherit; font: 12px var(--font-mono); }
-  .fbx-meta__embed { font-size: 13px; }
+  .fbx .fbx-meta__path { color: inherit; font: 12px var(--font-mono); }
   .fbx-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-  .fbx-comment { color: var(--ink-900); font-size: 18px; line-height: 1.5; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-comment { color: var(--ink-900); font-size: 17px; line-height: 1.5; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-  .fbx-pill { padding: 2px 9px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+  .fbx-pill { padding: 1px 8px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
   .fbx-pill--new { background: var(--brand-50); color: var(--brand-700); }
-  .fbx-card.is-fresh .fbx-pill--new { background: var(--brand-700); color: #fff; }
+  .fbx-item.is-fresh .fbx-pill--new { background: var(--brand-700); color: #fff; }
   .fbx-pill--in_progress, .fbx-pill--warn { background: var(--warn-100); color: var(--warn-700); }
   .fbx-pill--done { background: var(--brand-100); color: var(--brand-700); }
   .fbx-pill--danger { background: var(--danger-100); color: #b91c1c; }
 
-  .fbx-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-btn:hover { background: rgba(26, 27, 38, 0.05); }
-  .fbx-btn:active { transform: scale(0.97); }
+  .fbx-btn { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+  .fbx-btn:hover { border-color: rgba(26, 27, 38, 0.2); color: var(--ink-900); }
   .fbx-btn:disabled { opacity: 0.55; cursor: progress; }
   .fbx-btn--primary { border-color: transparent; background: var(--brand-700); color: #fff; font-weight: 600; }
-  .fbx-btn--primary:hover { background: var(--brand-800); }
-  .fbx-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-500); cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-icon-btn:hover { border-color: transparent; background: var(--danger-100); color: var(--danger-500); }
-  .fbx-icon-btn:active { transform: scale(0.97); }
+  .fbx-btn--primary:hover { border-color: transparent; background: var(--brand-800); color: #fff; }
 
-  /* Thread: a line on the left, replies indented */
-  .fbx-thread { position: relative; display: grid; gap: 12px; padding-left: 20px; }
-  .fbx-thread::before { content: ''; position: absolute; top: 2px; bottom: 2px; left: 0; width: 2px; border-radius: 1px; background: var(--ink-200); }
-  .fbx-reply-item { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; }
-  .fbx-reply-item--pending { opacity: 0.6; }
-  .fbx-avatar { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--brand-100); color: var(--brand-700); font-size: 11px; font-weight: 600; }
-  .fbx-avatar--tester { background: var(--warn-100); color: var(--warn-700); }
+  /* Thread: replies indented behind a line */
+  .fbx-thread { display: grid; gap: 10px; padding-left: 14px; border-left: 2px solid var(--ink-200); }
   .fbx-reply-item__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
   .fbx-reply-item__name { color: var(--ink-900); font-size: 13px; font-weight: 600; }
   .fbx-reply-item__time { color: var(--ink-400); font-size: 12px; }
+  .fbx-reply-item--pending { opacity: 0.6; }
   .fbx-reply-item__body { color: var(--ink-700); font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
   .fbx-reply-item__body > * { margin: 0 0 6px; }
   .fbx-reply-item__body > :last-child { margin-bottom: 0; }
-  .fbx-reply-item__body img { display: block; max-width: 100%; max-height: 260px; border-radius: 8px; cursor: zoom-in; }
+  .fbx-reply-item__body img { display: block; max-width: 100%; max-height: 260px; border-radius: var(--radius-sm); cursor: zoom-in; }
   .fbx-reply-item__body code { padding: 1px 5px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.06); font: 13px var(--font-mono); }
 
   /* Reply field (Enter sends, Shift+Enter adds a line) */
-  .fbx-reply { position: relative; display: grid; gap: 4px; }
-  .fbx-reply textarea { display: block; width: 100%; min-height: 38px; max-height: 140px; padding: 8px 36px 8px 12px; border: 1px solid transparent; border-radius: var(--radius-sm); background: rgba(26, 27, 38, 0.04); color: var(--ink-900); font-size: 14px; line-height: 20px; resize: none; transition: background var(--dur-fast), box-shadow var(--dur-fast), border-color var(--dur-fast); }
-  .fbx-card.is-fresh .fbx-reply textarea { background: rgba(255, 255, 255, 0.7); }
-  .fbx-reply textarea:hover { background: rgba(26, 27, 38, 0.06); }
-  .fbx-reply textarea:focus { outline: none; border-color: var(--brand-300); background: #fff; box-shadow: var(--shadow-focus); }
+  .fbx-reply { display: grid; gap: 4px; }
+  .fbx-reply textarea { display: block; width: 100%; min-height: 36px; max-height: 140px; padding: 7px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-900); font-size: 14px; line-height: 20px; resize: none; }
+  .fbx-reply textarea:focus { outline: none; border-color: var(--brand-700); box-shadow: var(--shadow-focus); }
   .fbx-reply textarea::placeholder { color: var(--ink-400); }
-  .fbx-reply__hint { position: absolute; top: 9px; right: 12px; color: var(--ink-400); font: 500 11px/20px var(--font-mono); pointer-events: none; }
   .fbx-reply__status { color: #b91c1c; font-size: 13px; }
   .fbx-reply__status:empty { display: none; }
 
-  .fbx-addnote { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); background: none; color: var(--ink-500); font-size: 14px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast); }
-  .fbx-addnote:hover { border-color: var(--brand-300); background: var(--brand-50); color: var(--brand-700); }
+  .fbx-addnote { margin-top: 16px; padding: 0; border: 0; background: none; color: var(--brand-700); font-size: 14px; font-weight: 500; cursor: pointer; }
+  .fbx-addnote:hover { text-decoration: underline; }
   .fbx-addnote[hidden] { display: none; }
 
   /* Add-note form */
-  .fbx-noteform { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .fbx-noteform { display: grid; gap: 14px; padding-top: 20px; }
   .fbx-noteform[hidden] { display: none; }
   .fbx-noteform__title { color: var(--ink-900); font: 600 16px/1.3 var(--font-body); }
   .fbx-field { display: grid; gap: 6px; color: var(--ink-900); font-size: 14px; font-weight: 600; }
   .fbx-field span { color: var(--ink-400); font-weight: 400; }
-  .fbx-field input, .fbx-field textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-900); font-size: 14px; font-weight: 400; line-height: 1.45; resize: vertical; transition: box-shadow var(--dur-fast), border-color var(--dur-fast); }
+  .fbx-field input, .fbx-field textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-900); font-size: 14px; font-weight: 400; line-height: 1.45; resize: vertical; }
   .fbx-field ::placeholder { color: var(--ink-400); }
-  .fbx-field input:focus, .fbx-field textarea:focus { outline: none; border-color: var(--brand-300); box-shadow: var(--shadow-focus); }
-  .fbx-dropzone { padding: 16px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); color: var(--ink-500); font-size: 14px; text-align: center; cursor: pointer; transition: background var(--dur-fast); }
-  .fbx-dropzone.is-over { border-color: var(--brand-700); background: var(--brand-tint); }
+  .fbx-field input:focus, .fbx-field textarea:focus { outline: none; border-color: var(--brand-700); box-shadow: var(--shadow-focus); }
+  .fbx-dropzone { padding: 16px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); color: var(--ink-500); font-size: 14px; text-align: center; cursor: pointer; }
+  .fbx-dropzone.is-over { border-color: var(--brand-700); background: var(--brand-50); }
   .fbx-dropzone button { padding: 0; border: 0; background: none; color: var(--brand-700); font-weight: 600; text-decoration: underline; cursor: pointer; }
   .fbx-previews { display: flex; flex-wrap: wrap; gap: 8px; }
   .fbx-previews:empty { display: none; }
@@ -311,14 +244,14 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   #form-status { color: var(--ink-500); font-size: 13px; }
 
   /* ---- Changelog + developer notes: timeline --------------------------------- */
-  .fbx-timeline { padding: 24px 32px 16px; }
+  .fbx-timeline { padding: 28px 28px 8px; }
   .fbx-entry { display: grid; grid-template-columns: 120px 20px minmax(0, 1fr); gap: 20px; }
   .fbx-entry__date { text-align: right; }
   .fbx-entry__day { display: block; color: var(--ink-900); font: 400 32px/1 var(--font-display); font-variation-settings: 'opsz' 72; letter-spacing: -0.02em; }
   .fbx-entry__month { display: block; margin-top: 6px; color: var(--ink-400); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
   .fbx-entry__rail { position: relative; display: flex; justify-content: center; }
   .fbx-entry__rail::before { content: ''; position: relative; z-index: 1; width: 12px; height: 12px; margin-top: 8px; border: 2px solid var(--ink-300); border-radius: 50%; background: #fff; }
-  .fbx-entry:first-child .fbx-entry__rail::before { border: 0; background: var(--brand-700); box-shadow: 0 0 0 4px var(--brand-tint); }
+  .fbx-entry:first-child .fbx-entry__rail::before { border-color: var(--brand-700); background: var(--brand-700); }
   .fbx-entry:not(:last-child) .fbx-entry__rail::after { content: ''; position: absolute; top: 24px; bottom: -4px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--ink-200); }
   .fbx-entry__content { display: grid; align-content: start; gap: 10px; min-width: 0; padding-bottom: 32px; }
   .fbx-entry__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; color: var(--ink-900); font: 600 19px/1.3 var(--font-body); letter-spacing: -0.01em; }
@@ -345,40 +278,27 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
 
   /* ---- The shared name + its manifest tooltip ------------------------------- */
   .fbx-jah { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline dotted; text-decoration-thickness: 1px; text-underline-offset: 3px; cursor: pointer; }
-  .fbx-jah:hover, .fbx-jah[aria-expanded="true"] { color: var(--ink-900); text-decoration-style: solid; }
-  .fbx-manifest { position: fixed; z-index: 9700; max-width: min(320px, calc(100vw - 16px)); padding: 12px 14px; border-radius: var(--radius-sm); background: var(--ink-900); color: #fff; box-shadow: var(--shadow-xl); font-size: 13px; line-height: 1.5; animation: fbx-fade var(--dur-fast) var(--ease-smooth); }
+  .fbx-jah:hover, .fbx-jah[aria-expanded="true"] { text-decoration-style: solid; }
+  .fbx-manifest { position: fixed; z-index: 9700; max-width: min(320px, calc(100vw - 16px)); padding: 12px 14px; border-radius: var(--radius-sm); background: var(--ink-900); color: #fff; box-shadow: var(--shadow-panel); font-size: 13px; line-height: 1.5; }
   .fbx-manifest[hidden] { display: none; }
   .fbx-manifest strong { display: block; margin-bottom: 4px; font-weight: 600; }
   .fbx-manifest p { color: rgba(255, 255, 255, 0.85); }
 
   /* ---- Lightbox ------------------------------------------------------------ */
-  .fbx-lightbox { max-width: 94vw; max-height: 92vh; padding: 0; overflow: auto; border: 0; border-radius: var(--radius-md); background: #fff; box-shadow: var(--shadow-xl); }
+  .fbx-lightbox { max-width: 94vw; max-height: 92vh; padding: 0; overflow: auto; border: 0; border-radius: var(--radius-md); background: #fff; box-shadow: var(--shadow-panel); }
   .fbx-lightbox::backdrop { background: rgba(26, 27, 38, 0.75); }
   .fbx-lightbox img { display: block; max-width: none; }
   .fbx-lightbox form { position: sticky; top: 0; height: 0; text-align: right; }
   .fbx-lightbox form button { width: 32px; height: 32px; margin: 8px; border: 0; border-radius: 50%; background: rgba(26, 27, 38, 0.7); color: #fff; font-size: 20px; line-height: 1; cursor: pointer; }
 
-  /* ---- Reduced motion: fades only, no drifting gas ------------------------- */
-  @media (prefers-reduced-motion: reduce) {
-    .fbx-stage { animation-name: fbx-fade; }
-    .fbx.is-closing .fbx-stage { animation-name: fbx-fade; animation-direction: reverse; }
-    .fbx-rail__gas i:nth-child(n) { animation: none; }
-    .fbx *, .fbx *::before, .fbx *::after { transition-duration: 0s !important; }
-  }
-
-  /* ---- Smaller screens: the rail becomes a top bar, cards stack ------------- */
+  /* ---- Smaller screens: items stack ------------------------------------------ */
   @media (max-width: 900px) {
     .fbx-stage { inset: 12px; }
-    .fbx-panel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
-    .fbx-rail { flex-direction: row; gap: 6px; padding: 8px 12px; }
-    .fbx-mono { width: 36px; height: 36px; margin: 0 10px 0 0; font-size: 22px; }
-    .fbx a.fbx-railtab { width: 44px; height: 44px; }
-    .fbx-head { padding: 20px 20px 8px; }
-    .fbx-title { font-size: 32px; }
-    .fbx-cards-view { padding: 12px 16px 20px; }
-    .fbx-card { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 14px; }
+    .fbx-head { padding: 0 16px 0 4px; }
+    .fbx-feedback { padding: 12px 16px 20px; }
+    .fbx-item { grid-template-columns: minmax(0, 1fr); gap: 12px; }
     .fbx-thumb { height: 180px; }
-    .fbx-foot { padding: 10px 20px; }
+    .fbx-foot { padding: 10px 16px; }
     .fbx-timeline { padding: 20px 16px 8px; }
     .fbx-entry { grid-template-columns: 56px 16px minmax(0, 1fr); gap: 12px; }
     .fbx-entry__day { font-size: 26px; }
@@ -387,18 +307,17 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   @media (max-width: 600px) {
     .fbx-stage { inset: 0; }
     .fbx-panel { border-radius: 0; }
-    .fbx-head { gap: 12px; }
-    .fbx-head > div:first-child { flex: 1 1 auto; }
-    .fbx-seg { order: 3; width: 100%; margin-left: 0; overflow-x: auto; }
-    .fbx-seg button { flex: 1 0 auto; }
-    .fbx-comment { font-size: 17px; }
+    .fbx-head { flex-wrap: wrap; height: auto; gap: 0; }
+    .fbx-tabs { overflow-x: auto; }
+    .fbx a.fbx-tab { min-height: 48px; padding: 0 10px; font-size: 14px; white-space: nowrap; }
+    .fbx-head__end { width: 100%; justify-content: space-between; padding: 0 8px 8px; }
+    .fbx-comment { font-size: 16px; }
     .fbx-foot__end { display: none; }
   }
 </style>
 
 <script>
   import { PSEUDONYM } from './manifest';
-  import { createEdgeLight, EDGE_CSS } from './edge-light';
 
   type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
   type Entry = {
@@ -417,31 +336,16 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   const API = '/__feedback/api/entries';
   // Feedback is anonymous (PSEUDONYM); older entries may still carry a name, never shown.
   const STATUS_KEY: Record<string, Filter> = { New: 'new', 'In progress': 'in_progress', Done: 'done' };
-  const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done', all: 'All' };
-  const TITLES: Record<View, string> = { feedback: 'Feedback', changelog: 'Changelog', notes: 'Developer notes' };
   // Old links (#new, #in-progress, …) still open the Feedback tab with that filter.
   const LEGACY_HASH: Record<string, Filter> = { '#new': 'new', '#in-progress': 'in_progress', '#done': 'done', '#all': 'all' };
   const EMBED_LABELS: Record<string, string> = { youtube: '▶ YouTube video', map: 'Map', iframe: 'Embed' };
   const FILTER_KEY = 'feedback-status-filter';
-  const ICON = {
-    check: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
-    trash: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
-    expand: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>',
-  };
-
   const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
   const root = $('.fbx');
   const body = $('#body');
   const list = $('#entries');
   const addNoteButton = $<HTMLButtonElement>('[data-add-note]');
   const lightbox = $<HTMLDialogElement>('#lightbox');
-  const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // The animated teal edge light behind the panel.
-  document.head.append(Object.assign(document.createElement('style'), { textContent: EDGE_CSS }));
-  const edge = createEdgeLight({ radius: 20 });
-  $('.fbx-stage').prepend(edge.element);
-  requestAnimationFrame(() => edge.play('open'));
 
   const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]!);
   const linkify = (text: string) => escapeHtml(text).replace(/https?:\/\/[^\s<]+/g, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
@@ -482,7 +386,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     history.replaceState(null, '', '#feedback');
   }
   const visibleEntries = () => (statusFilter === 'all' ? entries : entries.filter((entry) => STATUS_KEY[entry.status] === statusFilter));
-  const cardId = (element: Element | null) => element?.closest<HTMLElement>('[data-id]')?.dataset.id || '';
+  const itemId = (element: Element | null) => element?.closest<HTMLElement>('[data-id]')?.dataset.id || '';
 
   // ---- Rendering --------------------------------------------------------------
   let shownView: View | undefined;
@@ -492,8 +396,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
       tab.classList.toggle('is-active', tab.dataset.view === view);
       if (tab.dataset.view === view) tab.setAttribute('aria-current', 'page'); else tab.removeAttribute('aria-current');
     });
-    $('#fbx-title').textContent = TITLES[view];
-    $('#status-filter').hidden = view !== 'feedback';
     $('#feedback-view').hidden = view !== 'feedback';
     $('#changelog-view').hidden = view !== 'changelog';
     $('#notes-view').hidden = view !== 'notes';
@@ -520,47 +422,43 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
       const tester = comment.author === PSEUDONYM;
       const name = tester ? PSEUDONYM : comment.author || 'Developer';
       return `<div class="fbx-reply-item${comment.pending ? ' fbx-reply-item--pending' : ''}">
-          <span class="fbx-avatar${tester ? ' fbx-avatar--tester' : ''}" aria-hidden="true">${escapeHtml(name.charAt(0).toUpperCase())}</span>
-          <div>
-            <div class="fbx-reply-item__head"><span class="fbx-reply-item__name">${tester ? nameButton() : escapeHtml(name)}</span><span class="fbx-reply-item__time">${comment.pending ? 'sending…' : timeTag(comment.date)}</span></div>
-            <div class="fbx-reply-item__body">${comment.html ?? `<p>${linkify(comment.message)}</p>`}</div>
-          </div>
+          <div class="fbx-reply-item__head"><span class="fbx-reply-item__name">${tester ? nameButton() : escapeHtml(name)}</span><span class="fbx-reply-item__time">${comment.pending ? 'sending…' : timeTag(comment.date)}</span></div>
+          <div class="fbx-reply-item__body">${comment.html ?? `<p>${linkify(comment.message)}</p>`}</div>
         </div>`;
     }).join('')}</div>`;
   }
 
-  function renderCard(entry: Entry) {
+  function renderItem(entry: Entry) {
     const status = STATUS_KEY[entry.status] || 'new';
     const [shot, ...rest] = entry.images;
     const viewport = entry.metadata?.viewport;
-    const page = entry.page ? (safeHref(entry.page) ? `<a href="${safeHref(entry.page)}" target="_blank" rel="noreferrer" title="Open the page">${escapeHtml(entry.page)}</a>` : escapeHtml(entry.page)) : '';
+    const page = entry.page ? (safeHref(entry.page) ? `<a class="fbx-meta__path" href="${safeHref(entry.page)}" target="_blank" rel="noreferrer" title="Open the page">${escapeHtml(entry.page)}</a>` : `<span class="fbx-meta__path">${escapeHtml(entry.page)}</span>`) : '';
     const embeds = (entry.metadata?.embeds || []).map((embed) => `<a class="fbx-meta__embed" href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('');
-    return `<article class="fbx-card${fresh.has(entry.id) ? ' is-fresh' : ''}" data-id="${entry.id}">
-        <div class="fbx-card__media">
+    return `<article class="fbx-item${fresh.has(entry.id) ? ' is-fresh' : ''}" data-id="${entry.id}">
+        <div class="fbx-item__media">
           ${shot
-            ? `<div class="fbx-thumb"><button type="button" class="fbx-thumb__open" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}" loading="lazy"></button><button type="button" class="fbx-thumb__expand" data-zoom="${shot.url}" aria-label="Enlarge screenshot" title="Enlarge">${ICON.expand}</button></div>`
+            ? `<button type="button" class="fbx-thumb" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}" loading="lazy"></button>`
             : '<div class="fbx-thumb fbx-thumb--none">No screenshot</div>'}
-          ${viewport ? `<div class="fbx-card__chips"><span title="Viewport">${viewport.width}×${viewport.height}</span></div>` : ''}
+          ${viewport ? `<span class="fbx-item__size" title="Viewport">${viewport.width}×${viewport.height}</span>` : ''}
           ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
         </div>
-        <div class="fbx-card__main">
+        <div class="fbx-item__main">
           <div class="fbx-meta">
             <span class="fbx-meta__name">${nameButton()}</span>
-            <span class="fbx-meta__time">${timeTag(entry.createdAt)}${page ? ` · ${page}` : ''}</span>
+            <span>${timeTag(entry.createdAt)}${page ? ` · ${page}` : ''}</span>
             <span class="fbx-pill fbx-pill--${status}">${escapeHtml(entry.status)}</span>
             ${embeds}
             ${entry.metadata?.screenshotFailed ? '<span class="fbx-pill fbx-pill--danger">Screenshot failed</span>' : ''}
             <span class="fbx-actions">
+              <button type="button" class="fbx-btn" data-delete>Delete</button>
               ${entry.status === 'New' ? '<button type="button" class="fbx-btn" data-progress>Mark in progress</button>' : ''}
-              ${entry.status === 'In progress' ? `<button type="button" class="fbx-btn fbx-btn--primary" data-accept title="The change works: move this to Done">${ICON.check}Accept change</button>` : ''}
-              <button type="button" class="fbx-icon-btn" data-delete aria-label="Delete" title="Delete">${ICON.trash}</button>
+              ${entry.status === 'In progress' ? '<button type="button" class="fbx-btn fbx-btn--primary" data-accept title="The change works: move this to Done">Accept change</button>' : ''}
             </span>
           </div>
           <p class="fbx-comment">${escapeHtml(entry.message)}</p>
           ${renderThread(entry)}
           <form class="fbx-reply">
             <textarea name="message" rows="1" maxlength="5000" required placeholder="Write a reply…" aria-label="Reply"></textarea>
-            <span class="fbx-reply__hint" aria-hidden="true">⏎</span>
             <p class="fbx-reply__status" role="status">${escapeHtml(replyError.get(entry.id) || '')}</p>
           </form>
         </div>
@@ -572,13 +470,13 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     const visible = visibleEntries();
     // Keep the reply being typed (focus, caret and draft) across re-renders.
     const active = document.activeElement;
-    const focusId = active instanceof HTMLTextAreaElement && list.contains(active) ? cardId(active) : '';
+    const focusId = active instanceof HTMLTextAreaElement && list.contains(active) ? itemId(active) : '';
     const caret = focusId ? [(active as HTMLTextAreaElement).selectionStart, (active as HTMLTextAreaElement).selectionEnd] as const : undefined;
     list.innerHTML = visible.length
-      ? visible.map(renderCard).join('')
+      ? visible.map(renderItem).join('')
       : `<p class="fbx-empty">${statusFilter === 'new' ? 'No new feedback. 🎉' : 'Nothing here.'}</p>`;
     list.querySelectorAll<HTMLTextAreaElement>('.fbx-reply textarea').forEach((field) => {
-      field.value = replyDraft.get(cardId(field)) || '';
+      field.value = replyDraft.get(itemId(field)) || '';
       if (field.value) autosize(field);
     });
     if (focusId && caret) {
@@ -605,7 +503,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
       const arrived = loaded ? entries.filter((entry) => !known.has(entry.id)) : [];
       entries.forEach((entry) => known.add(entry.id));
       arrived.forEach((entry) => fresh.add(entry.id));
-      if (arrived.length) edge.play('new');
       loaded = true;
       render();
     } catch {
@@ -630,17 +527,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     return Boolean(response?.ok);
   }
 
-  // When an item leaves the current filter (accepted, marked in progress,
-  // deleted) its card collapses out first.
-  async function leaveCard(id: string) {
-    const card = list.querySelector<HTMLElement>(`[data-id="${id}"]`);
-    if (!card || reducedMotion()) return;
-    await card.animate(
-      [{ height: `${card.offsetHeight}px`, opacity: 1 }, { height: '0px', paddingTop: '0px', paddingBottom: '0px', marginBottom: '-12px', borderWidth: '0px', opacity: 0, transform: 'scale(0.98)' }],
-      { duration: 260, easing: 'cubic-bezier(0.32, 0.72, 0, 1)', fill: 'forwards' },
-    ).finished.catch(() => {});
-  }
-
   // ---- Feedback interactions ----------------------------------------------------
   document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((button) => button.addEventListener('click', () => {
     statusFilter = button.dataset.filter as Filter;
@@ -655,16 +541,14 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     const button = target.closest<HTMLButtonElement>('button');
     if (!button) return;
     if (button.dataset.zoom) return openLightbox(button.dataset.zoom);
-    const id = cardId(button);
+    const id = itemId(button);
     const entry = entries.find((item) => item.id === id);
     if (!entry) return;
     if ('progress' in button.dataset || 'accept' in button.dataset) {
       const accepting = 'accept' in button.dataset;
       if (accepting && !confirm('Accept this change? It moves to Done.')) return;
-      if (accepting) edge.play('accept');
       const next = accepting ? 'Done' : 'In progress';
       const before = entry.status;
-      if (statusFilter !== 'all' && FILTER_STATUS[statusFilter] !== next) await leaveCard(id);
       await mutate(
         () => fetch(`${API}/${id}/${accepting ? 'accept' : 'progress'}`, { method: 'POST' }),
         () => { entry.status = next; fresh.delete(id); },
@@ -676,7 +560,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     if ('delete' in button.dataset) {
       if (!confirm('Delete this feedback? This can’t be undone.')) return;
       const removed = entry;
-      await leaveCard(id);
       await mutate(
         () => fetch(`${API}/${id}`, { method: 'DELETE' }),
         () => { entries = entries.filter((item) => item.id !== id); replyDraft.delete(id); },
@@ -686,7 +569,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     }
   });
 
-  // ---- Replies (a field on every card; drafts are kept per item) ----------------
+  // ---- Replies (a field on every item; drafts are kept per item) ----------------
   function autosize(field: HTMLTextAreaElement) {
     field.style.height = 'auto';
     field.style.height = `${Math.min(140, field.scrollHeight + 2)}px`;
@@ -694,7 +577,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   list.addEventListener('input', (event) => {
     const field = event.target;
     if (!(field instanceof HTMLTextAreaElement)) return;
-    replyDraft.set(cardId(field), field.value);
+    replyDraft.set(itemId(field), field.value);
     autosize(field);
   });
   list.addEventListener('keydown', (event) => {
@@ -708,7 +591,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   list.addEventListener('submit', async (event) => {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
-    const id = cardId(form);
+    const id = itemId(form);
     const entry = entries.find((item) => item.id === id);
     const field = form.querySelector('textarea')!;
     const text = field.value.trim();
@@ -746,9 +629,8 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   function close() {
     if (root.classList.contains('is-closing')) return;
     root.classList.add('is-closing');
-    edge.play('close');
     const fromSite = document.referrer.startsWith(location.origin) && !new URL(document.referrer).pathname.startsWith('/feedback');
-    setTimeout(() => { if (fromSite && history.length > 1) history.back(); else location.href = '/'; }, reducedMotion() ? 0 : 240);
+    setTimeout(() => { if (fromSite && history.length > 1) history.back(); else location.href = '/'; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 150);
   }
   document.querySelectorAll('[data-close]').forEach((element) => element.addEventListener('click', close));
   document.addEventListener('keydown', (event) => {
@@ -763,7 +645,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   window.addEventListener('pageshow', (event) => {
     if (!event.persisted) return;
     root.classList.remove('is-closing');
-    edge.play('open');
   });
 
   // ---- The shared name: click pins the manifest tooltip, hover previews it ----------
@@ -828,7 +709,6 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
 
   function renderNotes() {
     const seen = time(seenBefore);
-    $('.fbx-badge[data-count="Notes"]').classList.toggle('has-unseen', notes.some((note) => time(note.date) > seen));
     if (!notesLoaded) return;
     if (currentView() === 'notes' && notes[0]) writeStorage(SEEN_KEY, notes[0].date);
     notesList.innerHTML = notes.length ? notes.map((note) => `<article class="fbx-entry">
@@ -918,7 +798,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
     form.hidden = !show;
     addNoteButton.hidden = show;
     if (show) {
-      form.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
+      form.scrollIntoView({ block: 'nearest', behavior: 'auto' });
       form.querySelector('textarea')?.focus({ preventScroll: true });
     } else {
       addNoteButton.focus();

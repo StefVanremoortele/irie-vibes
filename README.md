@@ -104,25 +104,23 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 
 > **Design:** the feedback tool is a tester tool, not part of the festival
 > site, so it deliberately does **not** follow the site design system
-> (`tokens.css` / the Roots Vanguard look). It has its own look: the *Pane*
-> design tokens (Inter Tight / Fraunces / JetBrains Mono) with a teal brand
-> (`#0f766e`), a teal rail with drifting "gas" and an "s" monogram, and an
-> animated teal edge light (`src/feedback/edge-light.ts`) around the
-> `/feedback` panel and the Shift+F selection. The `/feedback` styles are CSS
-> variables and classes scoped to its `.fbx` root so they don't leak into the
-> site; the capture UI lives in a shadow root, so site styles can't reach it.
-> Its fonts load only when it opens. Animations respect
-> `prefers-reduced-motion` (a static ring, no drifting gas).
+> (`tokens.css` / the Roots Vanguard look). It has its own plain look: the
+> *Pane* design tokens (Inter Tight, JetBrains Mono; Fraunces for the
+> timeline dates) with a teal accent (`#0f766e`), no gradients, and no motion
+> other than the dialog fading in (200ms) and out (150ms). The `/feedback`
+> styles are CSS variables and classes scoped to its `.fbx` root so they
+> don't leak into the site; the capture UI lives in a shadow root, so site
+> styles can't reach it, and loads its fonts only when it opens.
 > `/feedback` is a dialog over the real homepage
-> (`src/components/HomeContent.astro`, shown inert behind a dark blurred
-> scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
-> came from.
+> (`src/components/HomeContent.astro`, shown inert behind a dark scrim).
+> Esc, a click on the scrim or the *Esc* chip go back to the page you came
+> from.
 
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press
 **Shift+F**, drag over the area in question (or click for the whole screen,
-or skip the screenshot), and type a comment. The selection shows teal
-corner brackets, its size and the edge light, which flashes on release. The screenshot of the visible
+or skip the screenshot), and type a comment. The selection is a teal
+rectangle; the rest of the page is dimmed. The screenshot of the visible
 screen renders in the background while they draw, and is stored with the page
 URL, viewport size, scroll position, selected region and browser. Embedded
 iframes (YouTube, maps) can't be rendered into the screenshot: YouTube videos
@@ -133,21 +131,19 @@ pseudonym *Jah a the Creator*. Clicking the name (on `/feedback` and in the
 capture form) shows the *Jah a the Creator Manifest*; its text lives in
 `src/feedback/manifest.ts`.
 
-`/feedback` is the inbox, with three tabs (the icons in the teal rail):
-*Feedback*, *Changelog* and *Developer notes*. The footer shows when the
-website last changed: the date of the latest commit outside the CMS-owned
-`content/` and `public/assets/` (read at build time), so CMS edits don't
-count. The *Feedback* tab is a list of cards with a status filter (*New*,
-*In progress*, *Done*, *All*; the last choice is remembered per browser).
-Each card shows the screenshot (click to enlarge), the comment, the
-conversation and a reply field (Enter sends, Shift+Enter adds a line), with
-*Mark in progress* (on *New* items), *Accept change* (on *In progress* items)
-and delete; a card collapses out when it leaves the current filter. Feedback
-that arrives while the page is open is highlighted and makes the edge light
-lap once; accepting a change flashes it. *Add a note without a screenshot* is
-below the list. Under 900px wide the rail becomes a top bar and the cards
-stack. It refreshes every 30 seconds. The inbox is not linked from the site
-and has no login, so anyone with the URL can read it.
+`/feedback` is the inbox, with three tabs: *Feedback*, *Changelog* and
+*Developer notes*. The header shows when the website last changed: the date
+of the latest commit outside the CMS-owned `content/` and `public/assets/`
+(read at build time), so CMS edits don't count. The *Feedback* tab is a list
+with a status filter (*New*, *In progress*, *Done*, *All*; the last choice is
+remembered per browser). Each item shows the screenshot (click to enlarge),
+the comment, the conversation and a reply field (Enter sends, Shift+Enter
+adds a line), with *Delete*, *Mark in progress* (on *New* items) and *Accept
+change* (on *In progress* items). Feedback that arrives while the page is
+open gets a filled *New* pill. *Add a note without a screenshot* is below
+the list. Under 900px wide the items stack. It refreshes every 30 seconds.
+The inbox is not linked from the site and has no login, so anyone with the
+URL can read it.
 
 **Statuses are managed in Sveltia** at `/admin/feedback/` (in dev:
 `/admin/feedback/index.html`), a second admin page for the private repo
