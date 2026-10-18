@@ -159,8 +159,9 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   .inbox-behind { width: 100%; }
   /* The scrim only exists while the dialog is open; without backdrop-filter support it is just the dim colour. */
   .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.55); -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
-  .fbx-stage { position: fixed; top: 56px; right: 24px; left: 24px; z-index: 9600; max-width: 1040px; margin: 0 auto; animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
-  .fbx-panel { position: relative; z-index: 1; display: grid; grid-template-columns: 76px minmax(0, 1fr); overflow: hidden; background: #fff; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10), var(--shadow-xl); }
+  /* The dialog fills the screen with the same gap above and below, whatever the tab holds. */
+  .fbx-stage { position: fixed; inset: 56px 24px; z-index: 9600; max-width: 1040px; margin: 0 auto; animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
+  .fbx-panel { position: relative; z-index: 1; display: grid; grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100%; overflow: hidden; background: #fff; border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.10), var(--shadow-xl); }
   .fbx.is-closing .fbx-stage { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
   .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
   @keyframes fbx-fade { from { opacity: 0; } }
@@ -189,7 +190,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   .fbx-badge:not(.has-unseen)[data-count="Notes"] { background: rgba(255, 255, 255, 0.55); }
 
   /* ---- Main column: header, scrolling body, footer -------------------------- */
-  .fbx-main { display: flex; flex-direction: column; min-width: 0; max-height: calc(100dvh - 56px - 40px); }
+  .fbx-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
   .fbx-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; padding: 28px 32px 8px; }
   .fbx-eyebrow { color: var(--brand-700); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
   .fbx-title { margin-top: 4px; color: var(--ink-900); font: 400 40px/1.05 var(--font-display); font-variation-settings: 'opsz' 96; letter-spacing: -0.01em; }
@@ -367,9 +368,8 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
 
   /* ---- Smaller screens: the rail becomes a top bar, cards stack ------------- */
   @media (max-width: 900px) {
-    .fbx-stage { top: 12px; right: 12px; left: 12px; }
-    .fbx-panel { grid-template-columns: minmax(0, 1fr); }
-    .fbx-main { max-height: calc(100dvh - 24px - 60px); }
+    .fbx-stage { inset: 12px; }
+    .fbx-panel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
     .fbx-rail { flex-direction: row; gap: 6px; padding: 8px 12px; }
     .fbx-mono { width: 36px; height: 36px; margin: 0 10px 0 0; font-size: 22px; }
     .fbx a.fbx-railtab { width: 44px; height: 44px; }
@@ -386,8 +386,7 @@ const environment = import.meta.env.DEV ? 'dev' : 'live';
   }
   @media (max-width: 600px) {
     .fbx-stage { inset: 0; }
-    .fbx-panel { height: 100dvh; grid-template-rows: auto minmax(0, 1fr); border-radius: 0; }
-    .fbx-main { max-height: none; }
+    .fbx-panel { border-radius: 0; }
     .fbx-head { gap: 12px; }
     .fbx-head > div:first-child { flex: 1 1 auto; }
     .fbx-seg { order: 3; width: 100%; margin-left: 0; overflow-x: auto; }
