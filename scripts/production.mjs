@@ -11,6 +11,8 @@
 //
 // Env: PORT (4321), HOST (0.0.0.0), PREVIEW_PORT (4331),
 //      PRODUCTION_SYNC_INTERVAL seconds (300),
+//      PRODUCTION_PREVIEW (1; 0 when a web server such as nginx serves dist/
+//      itself and only forwards /__deploy and /__feedback/ here),
 //      DEPLOY_WEBHOOK_SECRET (GitHub webhook secret; webhook disabled if unset),
 //      FEEDBACK_DIR (feedback storage, see feedback-server.mjs).
 import { execFile, spawn } from 'node:child_process';
@@ -29,6 +31,7 @@ const astro = join(root, 'node_modules/.bin/astro');
 const port = Number(process.env.PORT || 4321);
 const host = process.env.HOST || '0.0.0.0';
 const previewPort = Number(process.env.PREVIEW_PORT || 4331);
+const usePreview = process.env.PRODUCTION_PREVIEW !== '0';
 const interval = Math.max(5, Number(process.env.PRODUCTION_SYNC_INTERVAL) || 300) * 1000;
 const webhookSecret = process.env.DEPLOY_WEBHOOK_SECRET || '';
 const WEBHOOK_PATH = '/__deploy';
@@ -69,6 +72,7 @@ let preview;
 let stopping = false;
 
 function startPreview() {
+  if (!usePreview) return;
   preview = spawn(astro, ['preview', '--host', '127.0.0.1', '--port', String(previewPort)], { cwd: root, stdio: 'inherit' });
   preview.on('exit', (code, signal) => {
     if (stopping) return;
@@ -246,7 +250,7 @@ const front = createServer((req, res) => {
     return;
   }
   handleFeedbackRequest(req, res).then(
-    (handled) => handled || proxy(req, res),
+    (handled) => handled || (usePreview ? proxy(req, res) : respond(res, 404, 'Not found')),
     (error) => {
       log(`Feedback error: ${error.message}`);
       if (!res.headersSent) respond(res, 500, 'Feedback error');
