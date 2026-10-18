@@ -1,71 +1,111 @@
 // Feedback capture, injected into every page by the feedback integration.
 // Open it with the "Feedback" button or Shift+F, drag over (or click) the
-// page, and send a comment with a screenshot of the selected area.
+// page, and send a comment with a screenshot of the selected area. The UI
+// lives in a shadow root (see `css` below).
 //
 // The screenshot of the visible viewport starts rendering the moment feedback
 // mode opens, so it is usually ready by the time the user finishes drawing.
 
 import { MANIFEST_TEXT, MANIFEST_TITLE, PSEUDONYM } from './manifest';
+import { createEdgeLight, EDGE_CSS } from './edge-light';
 
 type Region = { x: number; y: number; width: number; height: number };
 type Embed = { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string; rect: Region };
 
 const UI_ATTR = 'data-feedback-ui';
+const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap';
 
-// Own minimal light theme, independent of the site design system (see README
-// "Feedback tool"): fixed colours and the system font, no site tokens.
+// The tool's own look (teal brand, Pane tokens; see README "Feedback tool"),
+// independent of the site design system. Everything lives in a shadow root,
+// so the site's styles can't reach it and its styles can't leak out.
 const css = `
-  [${UI_ATTR}] { box-sizing: border-box; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2025; }
-  [${UI_ATTR}] *, [${UI_ATTR}] *::before, [${UI_ATTR}] *::after { box-sizing: border-box; }
-  .fb-pill { position: fixed; left: 12px; bottom: 12px; z-index: 2147483000; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px solid #cdd1d7; border-radius: 999px; background: #fffffff2; color: #4a4f57; font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: 0 2px 8px #0002; opacity: .85; transition: opacity .15s, color .15s; }
-  .fb-pill:hover, .fb-pill:focus-visible { opacity: 1; color: #2d6a3a; border-color: #2d6a3a; outline: none; }
-  .fb-pill[hidden] { display: none; }
-  .fb-pill svg { width: 15px; height: 15px; }
-  .fb-overlay { position: fixed; inset: 0; z-index: 2147483600; cursor: crosshair; background: #0005; touch-action: none; }
+  :host {
+    all: initial;
+    --ink-900: #1a1b26; --ink-700: #2e2f3e; --ink-500: #5b5c6e; --ink-400: #8b8c9e; --ink-300: #b8b9c8;
+    --divider: rgba(26, 27, 38, .10);
+    --brand-700: #0f766e; --brand-800: #115e59; --brand-50: #f0fdfa; --brand-300: #5eead4;
+    --scrim: rgba(10, 18, 14, .6);
+    --shadow-sm: 0 1px 2px rgba(26, 27, 38, .04), 0 2px 8px rgba(26, 27, 38, .06);
+    --shadow-xl: 0 8px 16px rgba(26, 27, 38, .06), 0 40px 80px rgba(26, 27, 38, .16);
+    --shadow-focus: 0 0 0 3px rgba(15, 118, 110, .35);
+    --ease-smooth: cubic-bezier(.32, .72, 0, 1); --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter Tight', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+    color: var(--ink-700); font: 400 15px/1.45 var(--font-body); -webkit-font-smoothing: antialiased;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  button, input, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+  svg { flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  [hidden] { display: none !important; }
+  .fb-mono { display: inline-grid; place-items: center; flex: none; width: 18px; height: 18px; padding-bottom: 1px; border-radius: 5px; background: #fff; color: var(--brand-700); font: 400 13px/1 var(--font-display); }
+  .fb-mono--dark { width: 26px; height: 26px; border-radius: 50%; background: var(--ink-900); color: #fff; font-size: 15px; }
+  .fb-mono--brand { width: 24px; height: 24px; border-radius: 7px; background: var(--brand-700); color: #fff; font-size: 16px; }
+  .fb-pill { position: fixed; left: 12px; bottom: 12px; z-index: 2147483000; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px 0 8px; border: 1px solid var(--divider); border-radius: 999px; background: rgba(255, 255, 255, .95); color: var(--ink-700); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow-sm); opacity: .9; transition: opacity .14s, color .14s, border-color .14s, transform .14s var(--ease-spring); }
+  .fb-pill .fb-mono { background: var(--brand-700); color: #fff; }
+  .fb-pill:hover { opacity: 1; color: var(--brand-700); border-color: var(--brand-300); }
+  .fb-pill:active { transform: scale(.97); }
+  .fb-overlay { position: fixed; inset: 0; z-index: 2147483600; cursor: crosshair; background: var(--scrim); touch-action: none; }
+  .fb-overlay.is-drawing { background: transparent; }
   .fb-overlay.is-selected { background: transparent; cursor: default; pointer-events: none; }
-  .fb-selection { position: fixed; display: none; border: 2px solid #2d6a3a; border-radius: 3px; box-shadow: 0 0 0 9999px #0005; pointer-events: none; }
-  .fb-hint { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 2147483601; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 12px; width: max-content; max-width: calc(100vw - 24px); padding: 7px 12px; border-radius: 6px; background: #fff; box-shadow: 0 4px 18px #0004; cursor: default; font-size: 14px; text-align: center; }
-  .fb-hint strong { color: #1d2025; }
-  .fb-hint button { padding: 0; border: 0; background: none; color: #2d6a3a; font: inherit; text-decoration: underline; cursor: pointer; }
-  .fb-hint kbd { padding: 0 4px; border: 1px solid #cdd1d7; border-radius: 3px; font: 11px ui-monospace, monospace; }
-  .fb-panel { position: fixed; top: 12px; right: 12px; z-index: 2147483602; display: flex; flex-direction: column; gap: 8px; width: min(380px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 12px; border: 1px solid #e1e3e7; border-radius: 8px; background: #fff; box-shadow: 0 10px 34px #0004; }
+  .fb-selection { position: fixed; display: none; border: 1px dashed rgba(167, 243, 208, .55); border-radius: 2px; box-shadow: 0 0 0 100vmax var(--scrim); pointer-events: none; }
+  .fb-corner { position: absolute; z-index: 2; width: 26px; height: 26px; border: 0 solid #5eead4; }
+  .fb-corner:nth-of-type(1) { top: -3px; left: -3px; border-width: 3px 0 0 3px; }
+  .fb-corner:nth-of-type(2) { top: -3px; right: -3px; border-width: 3px 3px 0 0; }
+  .fb-corner:nth-of-type(3) { bottom: -3px; left: -3px; border-width: 0 0 3px 3px; }
+  .fb-corner:nth-of-type(4) { right: -3px; bottom: -3px; border-width: 0 3px 3px 0; }
+  .fb-label { position: absolute; top: -40px; left: 0; z-index: 2; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px 0 6px; border-radius: 8px; background: var(--brand-700); color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .fb-label.is-inside { top: 8px; left: 8px; }
+  .fb-label__size { color: rgba(255, 255, 255, .7); font: 500 11px var(--font-mono); }
+  .fb-hint { position: fixed; left: 12px; bottom: 12px; z-index: 2147483601; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; max-width: calc(100vw - 24px); padding: 6px 16px 6px 6px; border-radius: 22px; background: rgba(255, 255, 255, .96); box-shadow: var(--shadow-xl); color: var(--ink-700); cursor: default; font-size: 13px; }
+  .fb-hint strong { color: var(--ink-900); font-weight: 600; }
+  .fb-hint button { padding: 0; border: 0; background: none; color: var(--brand-700); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+  kbd { padding: 1px 6px; border: 1px solid var(--divider); border-radius: 6px; background: #fff; color: var(--ink-700); font: 500 11px/1.5 var(--font-mono); }
+  .fb-panel { position: fixed; top: 12px; right: 12px; z-index: 2147483602; display: flex; flex-direction: column; gap: 12px; width: min(380px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 16px; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px rgba(26, 27, 38, .06), var(--shadow-xl); animation: fb-enter .42s var(--ease-smooth); }
   .fb-panel.is-left { right: auto; left: 12px; }
-  .fb-panel__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .fb-panel__title { margin: 0; font-size: 15px; font-weight: 700; }
-  .fb-close { width: 24px; height: 24px; flex: none; padding: 0; border: 0; border-radius: 4px; background: none; color: #7a808a; font-size: 18px; line-height: 1; cursor: pointer; }
-  .fb-close:hover { background: #f1f2f4; color: #1d2025; }
-  .fb-shot { display: grid; place-items: center; height: 140px; flex: none; overflow: hidden; border: 1px solid #e1e3e7; border-radius: 4px; background: #f1f2f4; color: #7a808a; font-size: 13px; }
+  @keyframes fb-enter { from { opacity: 0; transform: translateY(8px); } }
+  .fb-panel__head { display: flex; align-items: center; gap: 10px; }
+  .fb-panel__title { margin: 0; color: var(--ink-900); font: 600 16px/1.3 var(--font-body); }
+  .fb-close { display: grid; place-items: center; width: 28px; height: 28px; flex: none; margin-left: auto; padding: 0; border: 0; border-radius: 8px; background: none; color: var(--ink-500); font-size: 18px; line-height: 1; cursor: pointer; transition: background .14s, color .14s; }
+  .fb-close:hover { background: rgba(26, 27, 38, .05); color: var(--ink-900); }
+  .fb-shot { display: grid; place-items: center; height: 140px; flex: none; overflow: hidden; border-radius: 10px; background: rgba(26, 27, 38, .05); color: var(--ink-400); font-size: 13px; text-align: center; }
   .fb-shot img { width: 100%; height: 100%; object-fit: contain; }
-  .fb-spinner { width: 18px; height: 18px; border: 2px solid #e1e3e7; border-top-color: #2d6a3a; border-radius: 50%; animation: fb-spin .8s linear infinite; }
+  .fb-spinner { width: 18px; height: 18px; border: 2px solid rgba(26, 27, 38, .1); border-top-color: var(--brand-700); border-radius: 50%; animation: fb-spin .8s linear infinite; }
   @keyframes fb-spin { to { transform: rotate(360deg); } }
-  .fb-field { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
-  .fb-field input, .fb-field textarea { width: 100%; padding: 8px 10px; border: 1px solid #cdd1d7; border-radius: 4px; background: #fff; color: #1d2025; font: inherit; font-weight: 400; }
-  .fb-field input:focus, .fb-field textarea:focus { outline: 2px solid #e6f0e7; border-color: #2d6a3a; }
-  .fb-field textarea { min-height: 96px; resize: vertical; }
-  .fb-as { margin: 0; color: #7a808a; font-size: 13px; }
-  .fb-as strong { color: #4a4f57; }
-  .fb-jah { padding: 0; border: 0; background: none; color: #4a4f57; font: inherit; font-weight: 700; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
-  .fb-jah:hover, .fb-jah[aria-expanded="true"] { color: #1d2025; text-decoration-style: solid; }
-  .fb-manifest { margin: 0; padding: 10px 12px; border-radius: 6px; background: #1d2025; color: #ffffffd9; font-size: 13px; line-height: 1.5; }
-  .fb-manifest[hidden] { display: none; }
-  .fb-manifest strong { display: block; margin-bottom: 2px; color: #fff; }
+  .fb-field { display: grid; gap: 6px; color: var(--ink-900); font-size: 14px; font-weight: 600; }
+  .fb-field textarea { width: 100%; min-height: 96px; padding: 10px 12px; border: 1px solid var(--divider); border-radius: 10px; background: #fff; color: var(--ink-900); font-size: 15px; font-weight: 400; line-height: 1.45; resize: vertical; transition: border-color .14s, box-shadow .14s; }
+  .fb-field textarea::placeholder { color: var(--ink-400); }
+  .fb-field textarea:focus { outline: none; border-color: var(--brand-300); box-shadow: var(--shadow-focus); }
+  .fb-as { margin: 0; color: var(--ink-500); font-size: 13px; }
+  .fb-jah { padding: 0; border: 0; background: none; color: var(--ink-900); font: inherit; font-weight: 600; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+  .fb-jah:hover, .fb-jah[aria-expanded="true"] { text-decoration-style: solid; }
+  .fb-manifest { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--ink-900); color: rgba(255, 255, 255, .85); font-size: 13px; line-height: 1.5; }
+  .fb-manifest strong { display: block; margin-bottom: 2px; color: #fff; font-weight: 600; }
   .fb-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .fb-actions small { color: #7a808a; font-size: 12px; }
-  .fb-submit { padding: 7px 14px; border: 0; border-radius: 4px; background: #2d6a3a; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .fb-submit:hover { filter: brightness(1.1); }
+  .fb-actions small { color: var(--ink-400); font-size: 12px; }
+  .fb-submit { height: 36px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--brand-700); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .14s, transform .14s var(--ease-spring); }
+  .fb-submit:hover { background: var(--brand-800); }
+  .fb-submit:active { transform: scale(.97); }
   .fb-submit:disabled { opacity: .6; cursor: progress; }
-  .fb-status { margin: 0; color: #b3261e; font-size: 13px; }
+  .fb-status { margin: 0; color: #b91c1c; font-size: 13px; }
   .fb-status:empty { display: none; }
-  .fb-toast { position: fixed; left: 50%; bottom: 16px; z-index: 2147483603; transform: translateX(-50%); padding: 8px 12px; border-radius: 6px; background: #fff; box-shadow: 0 4px 18px #0004; font-size: 14px; }
-  .fb-toast a { color: #2d6a3a; }
+  .fb-toast { position: fixed; left: 50%; bottom: 16px; z-index: 2147483603; display: flex; align-items: center; gap: 8px; transform: translateX(-50%); max-width: calc(100vw - 24px); padding: 8px 14px 8px 8px; border-radius: 999px; background: #fff; box-shadow: var(--shadow-xl); color: var(--ink-700); font-size: 14px; animation: fb-enter .42s var(--ease-smooth); }
+  .fb-toast .fb-mono { background: var(--brand-700); color: #fff; }
+  .fb-toast a { color: var(--brand-700); font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) {
+    .fb-panel, .fb-toast { animation-name: fb-fade; }
+    @keyframes fb-fade { from { opacity: 0; } }
+    * { transition-duration: 0s !important; }
+  }
   @media (max-width: 640px) {
     .fb-pill { left: 8px; bottom: 8px; }
-    .fb-panel, .fb-panel.is-left { top: auto; right: 0; bottom: 0; left: 0; width: 100%; max-height: 85dvh; border-width: 1px 0 0; border-radius: 10px 10px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+    .fb-hint { left: 8px; right: 8px; bottom: 8px; }
+    .fb-panel, .fb-panel.is-left { top: auto; right: 0; bottom: 0; left: 0; width: 100%; max-height: 85dvh; border-radius: 14px 14px 0 0; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
     .fb-shot { height: 96px; }
   }
+  ${EDGE_CSS}
 `;
-
-const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, props: Record<string, unknown> = {}, ...children: (Node | string)[]): HTMLElementTagNameMap[K] {
   const node = Object.assign(document.createElement(tag), props);
@@ -192,14 +232,27 @@ async function cropToBlob(source: HTMLCanvasElement, region: Region) {
   throw new Error('Screenshot is too large to send.');
 }
 
-function init() {
-  document.head.append(el('style', { textContent: css }));
+// The "s" monogram of the tool (CSS text, no image).
+const monogram = (variant = '') => el('span', { className: `fb-mono${variant ? ` fb-mono--${variant}` : ''}`, textContent: 's' });
 
-  const pill = el('button', { type: 'button', className: 'fb-pill', title: 'Send feedback (Shift+F)' });
-  pill.setAttribute(UI_ATTR, '');
-  pill.innerHTML = `${ICON}<span>Feedback</span>`;
+// The tool's fonts load with the first open, not with every page.
+function loadFonts() {
+  if (document.querySelector('link[data-feedback-fonts]')) return;
+  const link = el('link', { rel: 'stylesheet', href: FONTS_URL, crossOrigin: 'anonymous' });
+  link.dataset.feedbackFonts = '';
+  document.head.append(link);
+}
+
+function init() {
+  const host = el('div');
+  host.setAttribute(UI_ATTR, '');
+  const shadow = host.attachShadow({ mode: 'open' });
+  shadow.append(el('style', { textContent: css }));
+  document.body.append(host);
+
+  const pill = el('button', { type: 'button', className: 'fb-pill', title: 'Send feedback (Shift+F)' }, monogram(), el('span', { textContent: 'Feedback' }));
   pill.addEventListener('click', () => open());
-  document.body.append(pill);
+  shadow.append(pill);
 
   // Warm the screenshot library so the first capture doesn't wait on it.
   const warm = () => void loadScreenshotLib().catch(() => {});
@@ -209,29 +262,33 @@ function init() {
   let close: (() => void) | undefined;
 
   function toast() {
-    const node = el('div', { className: 'fb-toast', role: 'status' }, 'Thanks — feedback sent. ', el('a', { href: '/feedback', textContent: 'View all feedback' }));
-    node.setAttribute(UI_ATTR, '');
-    document.body.append(node);
+    const node = el('div', { className: 'fb-toast', role: 'status' }, monogram(), 'Thanks — feedback sent.', el('a', { href: '/feedback', textContent: 'View all feedback' }));
+    shadow.append(node);
     setTimeout(() => node.remove(), 6000);
   }
 
   function open() {
     if (close) return;
+    loadFonts();
     const embeds = visibleEmbeds();
     const capture = captureViewport();
     capture.catch((error) => console.warn('[feedback] screenshot capture failed', error));
     const root = el('div');
-    root.setAttribute(UI_ATTR, '');
     const overlay = el('div', { className: 'fb-overlay' });
-    const selection = el('div', { className: 'fb-selection' });
-    const skip = el('button', { type: 'button', textContent: 'send without screenshot' });
+    // The selection: dashed edge, corner brackets, the teal edge light and a label.
+    const light = createEdgeLight({ radius: 2, ringOnly: true });
+    const size = el('span', { className: 'fb-label__size' });
+    const label = el('div', { className: 'fb-label' }, monogram(), 'Release to add a comment', size);
+    const selection = el('div', { className: 'fb-selection' }, light.element, ...[0, 1, 2, 3].map(() => el('span', { className: 'fb-corner' })), label);
+    const skip = el('button', { type: 'button', textContent: 'skip the screenshot' });
     const hint = el('div', { className: 'fb-hint', role: 'status' },
-      el('strong', { textContent: 'Drag to highlight an area' }),
-      el('span', {}, 'Click for the whole screen · ', skip),
-      el('span', {}, el('kbd', { textContent: 'Esc' }), ' cancel'));
+      monogram('dark'),
+      el('strong', { textContent: 'Draw around what you mean' }),
+      el('span', {}, 'or click for the whole screen · ', skip),
+      el('span', {}, el('kbd', { textContent: 'Esc' }), ' to cancel'));
     overlay.append(selection);
     root.append(overlay, hint);
-    document.body.append(root);
+    shadow.append(root);
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = 'hidden';
     pill.hidden = true;
@@ -241,6 +298,7 @@ function init() {
     document.addEventListener('keydown', onKey, true);
     close = () => {
       panelCleanup?.();
+      light.destroy();
       root.remove();
       document.removeEventListener('keydown', onKey, true);
       document.documentElement.style.overflow = previousOverflow;
@@ -257,21 +315,30 @@ function init() {
       const y = clamp(Math.min(start.y, event.clientY), 0, innerHeight);
       region = { x, y, width: clamp(Math.abs(event.clientX - start.x), 0, innerWidth - x), height: clamp(Math.abs(event.clientY - start.y), 0, innerHeight - y) };
       Object.assign(selection.style, { display: 'block', left: `${x}px`, top: `${y}px`, width: `${region.width}px`, height: `${region.height}px` });
+      size.textContent = `${Math.round(region.width)}×${Math.round(region.height)}`;
+      // No room above the selection: the label goes inside it.
+      label.classList.toggle('is-inside', y < 44);
     };
     overlay.addEventListener('pointerdown', (event) => {
       start = { x: event.clientX, y: event.clientY };
       overlay.setPointerCapture(event.pointerId);
+      overlay.classList.add('is-drawing');
+      hint.hidden = true;
       update(event);
+      light.play('open');
     });
     overlay.addEventListener('pointermove', update);
     overlay.addEventListener('pointerup', (event) => {
       if (!start) return;
       update(event);
       start = undefined;
+      label.hidden = true;
       // A click (or a tiny drag) means "the whole screen".
       if (region.width < 8 || region.height < 8) {
         region = { x: 0, y: 0, width: document.documentElement.clientWidth, height: innerHeight };
         selection.style.display = 'none';
+      } else {
+        light.play('accept');
       }
       openPanel(region);
     });
@@ -306,7 +373,7 @@ function init() {
       const status = el('p', { className: 'fb-status', role: 'alert' });
       const submit = el('button', { type: 'submit', className: 'fb-submit', textContent: 'Send feedback' });
       const panel = el('form', { className: 'fb-panel' },
-        el('div', { className: 'fb-panel__head' }, el('h2', { className: 'fb-panel__title', textContent: 'Feedback' }), closeButton),
+        el('div', { className: 'fb-panel__head' }, monogram('brand'), el('h2', { className: 'fb-panel__title', textContent: 'Feedback' }), closeButton),
         ...(selected ? [shot] : []),
         el('label', { className: 'fb-field' }, 'Comment', comment),
         sendingAs, manifest, status,
@@ -361,8 +428,9 @@ function init() {
   }
 
   document.addEventListener('keydown', (event) => {
-    const target = event.target as HTMLElement | null;
-    if (target?.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
+    // The real target: typing in the feedback form (inside the shadow root) is not a shortcut.
+    const target = event.composedPath()[0];
+    if (target instanceof Element && target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
     if (event.key.toLowerCase() === 'f' && event.shiftKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault();
       if (close) close(); else open();
