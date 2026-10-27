@@ -159,7 +159,13 @@
     }
   ],
   "band": "Soon to come here. test 123",
-  "bandMedia": [],
+  "bandMedia": [
+    {
+      "photo": "",
+      "video": "https://www.youtube.com/watch?v=Xqpn7xvJJ1c",
+      "caption": "BE Navigatie overslaan Maken Avatar-afbeelding IRIE VIBES BAND feat. TEDDY DAN @ Galder Open Air - 'Jah Day' +"
+    }
+  ],
   "editionMinYear": 2002,
   "editionMaxYear": 2025,
   "defaultEditionText": "Throwback text for this edition is on its way.",
