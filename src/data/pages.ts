@@ -1,4 +1,4 @@
-import type { ContentPage } from './types';
+import type { CampingPage, ContentPage } from './types';
 import media from '../../content/media.json';
 import camping from '../../content/camping.json';
 import { assetUrl } from '../lib/assets';
@@ -32,7 +32,8 @@ export const heroImages = {
 };
 
 /** Camping & parking page (content/camping.json, edited under Content pages in the CMS). */
-export const campingPage = {
+export const campingPage: CampingPage = {
+  ...(camping as CampingPage),
   hero: assetUrl(camping.hero),
 };
 

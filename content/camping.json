@@ -1,3 +1,25 @@
 {
-  "hero": "/assets/hero-camping.png"
+  "hero": "/assets/hero-camping.png",
+  "title": "Camping & parking",
+  "intro": [
+    {
+      "type": "p",
+      "html": "Parking and camping open on Thursday at ??h and close on Sunday at ??h."
+    },
+    {
+      "type": "p",
+      "html": "These are paid upon entry in cash or electronecly. Prices are:"
+    }
+  ],
+  "showFees": true,
+  "outro": [
+    {
+      "type": "p",
+      "html": "Pets are not allowed on the festival, camping and parking."
+    },
+    {
+      "type": "p",
+      "html": "For specific rules and regulations, please check our <a href=\"/regulations\">Festival and Camping Regulations</a>."
+    }
+  ]
 }

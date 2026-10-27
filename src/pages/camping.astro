@@ -1,29 +1,25 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import CopyBlocks from '../components/CopyBlocks.astro';
 import PriceTable from '../components/PriceTable.astro';
 import { campingPage } from '../data/pages';
 import { campingParking } from '../data/tickets';
 ---
 
-<Base title="Camping & parking">
+<Base title={campingPage.title}>
   <div class="camping">
     <Hero src={campingPage.hero} alt="Camping at the festival" size="md" />
     <div class="section section--narrow">
-      <h1 class="title">Camping &amp; parking</h1>
+      <h1 class="title">{campingPage.title}</h1>
       <div class="copy copy--center">
-        <p>Parking and camping open on Thursday at ??h and close on Sunday at ??h.</p>
-        <p>These are paid upon entry in cash or electronecly. Prices are:</p>
+        <CopyBlocks blocks={campingPage.intro} />
       </div>
 
-      <PriceTable rows={campingParking} />
+      {campingPage.showFees && <PriceTable rows={campingParking} />}
 
       <div class="copy copy--center">
-        <p>Pets are not allowed on the festival, camping and parking.</p>
-        <p>
-          For specific rules and regulations, please check our
-          <a href="/regulations">Festival and Camping Regulations</a>.
-        </p>
+        <CopyBlocks blocks={campingPage.outro} />
       </div>
     </div>
   </div>

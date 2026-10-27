@@ -1,0 +1,21 @@
+---
+import type { CopyBlock } from '../data/types';
+
+interface Props {
+  blocks: CopyBlock[];
+}
+const { blocks } = Astro.props;
+---
+
+{blocks.map((b) => (b.type === 'h' ? <h2 class="copy__h" set:html={b.html} /> : <p set:html={b.html} />))}
+
+<style>
+  .copy__h {
+    font-family: var(--font-display);
+    font-size: clamp(17px, 2.4vw, 24px);
+    letter-spacing: 0.08em;
+    color: var(--secondary);
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+  }
+</style>

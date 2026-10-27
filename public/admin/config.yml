@@ -278,7 +278,7 @@ collections:
             collapsed: true
             minimize_collapsed: true
             summary: "{{fields.html}}"
-            fields:
+            fields: &copyBlockFields
               - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
               - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
       - name: where
@@ -303,7 +303,23 @@ collections:
         file: "content/camping.json"
         icon: camping
         fields:
-          - { name: hero, label: "Hero image", widget: image, hint: "Banner at the top of the Camping & parking page. Fees are edited under Tickets & fees." }
+          - { name: hero, label: "Hero image", widget: image, hint: "Banner at the top of the Camping & parking page." }
+          - { name: title, label: "Title", widget: string }
+          - name: intro
+            label: "Text above the fees"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
+          - { name: showFees, label: "Show fee table", widget: boolean, default: true, hint: "The fees themselves are edited under Tickets & fees → Camping & parking fees." }
+          - name: outro
+            label: "Text below the fees"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
       - name: tickets
         label: "Tickets & fees"
         file: "content/tickets.json"

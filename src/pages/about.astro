@@ -96,8 +96,8 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
               {
                 shop.items.map((item) => (
                   <div class="shop__item">
+                    <h3 class="shop__name">{item.name}</h3>
                     {item.image && <img class="shop__image" src={item.image} alt={item.name} />}
-                    <div class="shop__name">{item.name}</div>
                     <div class="shop__desc">{item.description}</div>
                   </div>
                 ))
@@ -269,12 +269,39 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
   .years__video[hidden] {
     display: none;
   }
+  .shop {
+    display: grid;
+    gap: 28px;
+  }
+  .shop__item {
+    display: grid;
+    grid-template-areas: 'name' 'image' 'desc';
+    gap: 10px;
+  }
+  .shop__name {
+    grid-area: name;
+    margin: 0;
+    font-size: clamp(16px, 2vw, 19px);
+    font-weight: 700;
+    color: var(--secondary);
+  }
   .shop__image {
+    grid-area: image;
     width: min(100%, 220px);
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: var(--radius);
-    margin-bottom: 10px;
+  }
+  .shop__desc {
+    grid-area: desc;
+  }
+  @media (min-width: 640px) {
+    .shop__item {
+      grid-template-areas: 'name name' 'desc image';
+      grid-template-columns: 1fr auto;
+      column-gap: 24px;
+      align-items: start;
+    }
   }
 </style>
 

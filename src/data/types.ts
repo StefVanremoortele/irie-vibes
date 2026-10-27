@@ -85,6 +85,15 @@ export interface ContentPage {
   blocks: CopyBlock[];
 }
 
+/** The Camping & parking page: copy above and below the fee table. */
+export interface CampingPage {
+  hero: string;
+  title: string;
+  intro: CopyBlock[];
+  showFees: boolean;
+  outro: CopyBlock[];
+}
+
 /** A sponsor logo, or a text-only sponsor when no logo asset exists. */
 export interface Sponsor {
   src?: string;
