@@ -270,7 +270,13 @@ try {
   .fbx-props__text { margin: 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
   .fbx-props__how summary { color: var(--ink-500); font-size: 13px; cursor: pointer; }
   .fbx-props__how p { margin: 6px 0 0; color: var(--ink-700); font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .fbx-props__action { display: flex; justify-content: flex-end; }
+  .fbx-props__action { display: flex; justify-content: flex-end; min-height: 18px; }
+  .fbx-props__option.is-choosable { cursor: pointer; }
+  .fbx-props__option.is-choosable:hover, .fbx-props__option.is-choosable:focus-visible { border-color: var(--accent-400); background: var(--accent-tint); outline: none; }
+  .fbx-props__option.is-choosable:focus-visible { box-shadow: 0 0 0 3px var(--accent-tint); }
+  .fbx-props__hint { color: var(--accent-600); font-size: 13px; font-weight: 600; opacity: 0; transition: opacity var(--dur-fast); }
+  .fbx-props__option.is-choosable:hover .fbx-props__hint, .fbx-props__option.is-choosable:focus-visible .fbx-props__hint { opacity: 1; }
+  @media (hover: none) { .fbx-props__hint { opacity: 1; } }
   .fbx-props__chosen { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-600); font-size: 13px; font-weight: 600; }
 
   /* Thread: developer bubbles left, tester replies right */
@@ -602,7 +608,7 @@ try {
     const locked = entry.status !== 'New';
     const intro = proposals.chosen
       ? (locked ? 'You chose the interpretation marked below; work on it has started.' : 'Thanks! You can still change your choice until work starts.')
-      : 'The AI developer read your feedback in these ways. Pick the one that matches what you meant.';
+      : 'The AI developer read your feedback in these ways. Click the card that matches what you meant.';
     return `<section class="fbx-props" aria-label="Proposed interpretations">
         <div class="fbx-ai__label">Which interpretation fits? · ${escapeHtml(proposals.by || 'AI')}</div>
         <p class="fbx-props__intro">${intro}</p>
@@ -613,10 +619,11 @@ try {
             option.effort ? `<span class="fbx-props__chip" title="Effort">Effort ${escapeHtml(option.effort)}</span>` : '',
             option.vision ? `<span class="fbx-props__chip" title="Fit with the site vision">${escapeHtml(option.vision)}</span>` : '',
           ].join('');
-          const action = chosen
-            ? `<span class="fbx-props__chosen">${ICON.check}Chosen</span>`
-            : locked ? '' : `<button type="button" class="fbx-btn${proposals.chosen ? '' : ' fbx-btn--primary'}" data-choose="${escapeHtml(option.key)}">This is what I mean</button>`;
-          return `<article class="fbx-props__option${chosen ? ' is-chosen' : ''}">
+          // The whole card is the choice: hover highlights it, click (or Enter/Space) picks it.
+          const choosable = !locked && !chosen;
+          const action = chosen ? `<span class="fbx-props__chosen">${ICON.check}Chosen</span>` : choosable ? '<span class="fbx-props__hint">Click to choose</span>' : '';
+          const attrs = choosable ? ` data-choose="${escapeHtml(option.key)}" role="button" tabindex="0" aria-label="Choose option ${escapeHtml(option.key)}: ${escapeHtml(option.title || '')}"` : '';
+          return `<article class="fbx-props__option${chosen ? ' is-chosen' : ''}${choosable ? ' is-choosable' : ''}"${attrs}>
               <div class="fbx-props__head"><span class="fbx-props__key">${escapeHtml(option.key)}</span><strong>${escapeHtml(option.title || '')}</strong>${chips}</div>
               <p class="fbx-props__text">${escapeHtml(option.interpretation)}</p>
               ${option.implementation ? `<details class="fbx-props__how"><summary>How we'd build it</summary><p>${escapeHtml(option.implementation)}</p></details>` : ''}
@@ -727,8 +734,32 @@ try {
     notePane.querySelector('textarea')?.focus();
   });
 
+  // Picking a proposed interpretation: the card itself is the control.
+  async function chooseOption(option: string) {
+    const entry = selectedEntry();
+    const proposals = entry?.proposals;
+    if (!entry || !proposals) return;
+    const before = { chosen: proposals.chosen, chosenAt: proposals.chosenAt };
+    await mutate(
+      () => fetch(`${API}/${entry.id}/choose`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ option }) }),
+      () => { proposals.chosen = option; proposals.chosenAt = new Date().toISOString(); },
+      () => { proposals.chosen = before.chosen; proposals.chosenAt = before.chosenAt; },
+      'Could not save your choice.',
+    );
+  }
+  const choosableCard = (target: Element) =>
+    target.closest('.fbx-props__how') ? null : target.closest<HTMLElement>('.fbx-props__option[data-choose]');
+  $('.fbx-detail').addEventListener('keydown', (event) => {
+    const card = event.target instanceof HTMLElement && event.target.matches('.fbx-props__option[data-choose]') ? event.target : null;
+    if (!card || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    void chooseOption(card.dataset.choose!);
+  });
+
   $('.fbx-detail').addEventListener('click', async (event) => {
     const target = event.target as Element;
+    const card = choosableCard(target);
+    if (card) return chooseOption(card.dataset.choose!);
     const bubbleImage = target.closest<HTMLImageElement>('.fbx-bubble__body img');
     if (bubbleImage) return openLightbox(bubbleImage.src);
     const button = target.closest<HTMLButtonElement>('button');
@@ -757,18 +788,6 @@ try {
         () => { entry.status = next; if (leaves) { stashDraft(); selectedId = nextId; restoreDraft(); } },
         () => { entry.status = before; selectedId = id; },
         accepting ? 'Could not accept this change.' : 'Could not mark this in progress.',
-      );
-      return;
-    }
-    if (button.dataset.choose && entry.proposals) {
-      const proposals = entry.proposals;
-      const before = { chosen: proposals.chosen, chosenAt: proposals.chosenAt };
-      const option = button.dataset.choose;
-      await mutate(
-        () => fetch(`${API}/${id}/choose`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ option }) }),
-        () => { proposals.chosen = option; proposals.chosenAt = new Date().toISOString(); },
-        () => { proposals.chosen = before.chosen; proposals.chosenAt = before.chosenAt; },
-        'Could not save your choice.',
       );
       return;
     }

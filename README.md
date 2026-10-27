@@ -146,8 +146,8 @@ comment, the AI interpretation (when an AI developer picked it up: an optional
 how the comment was read, in English, and the commit that addressed it), the
 proposed interpretations (optional `proposals` `{ by, date, recommended, options:
 [{ key, title, interpretation, implementation, effort, vision }], chosen, chosenAt }`,
-written by the AI triage: the tester picks the one they meant with *This is what I
-mean*, via `POST /__feedback/api/entries/<id>/choose`; changeable while the item is
+written by the AI triage: the tester picks the one they meant by clicking its card
+(highlighted on hover; Enter/Space with the keyboard), via `POST /__feedback/api/entries/<id>/choose`; changeable while the item is
 *New*), the conversation and a reply box (Enter sends, Shift+Enter adds a
 line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
 items) and delete sit in its header; *Add a note without a screenshot* is at
