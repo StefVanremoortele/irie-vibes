@@ -23,6 +23,20 @@ local_backend: true
 media_folder: "public/assets"
 public_folder: "/assets"
 
+# Uploads: photos are scaled down (max 2000px) and converted to WebP in the browser
+# before they are committed, so phone photos (5-15 MB) stay small and GitHub accepts them.
+# Anything still over 5 MB gets a clear "too large" message instead of "Failed to save image".
+# GIFs and SVGs are left as they are.
+media_libraries:
+  default:
+    config:
+      max_file_size: 5242880
+      transformations:
+        jpeg: { format: webp, quality: 85, width: 2000, height: 2000 }
+        png: { format: webp, quality: 85, width: 2000, height: 2000 }
+        heic: { format: webp, quality: 85, width: 2000, height: 2000 }
+        webp: { format: webp, quality: 85, width: 2000, height: 2000 }
+
 collections:
   # ---- Singletons (one file each) --------------------------------------
   - name: settings
