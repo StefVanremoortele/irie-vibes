@@ -159,6 +159,7 @@
     }
   ],
   "band": "Soon to come here. test 123",
+  "bandMedia": [],
   "editionMinYear": 2002,
   "editionMaxYear": 2025,
   "defaultEditionText": "Throwback text for this edition is on its way.",
@@ -193,7 +194,10 @@
     {
       "year": 2002,
       "poster": "/assets/poster2002.jpg",
-      "video": "",
+      "video": "https://www.youtube.com/watch?v=WWx7z6DRznk",
+      "showVideo": true,
+      "photo": "",
+      "showPhoto": true,
       "paragraphs": [
         "Het begon allemaal in 2002...",
         "Eigenlijk organiseerden we met enkelen al technofeesten onder de naam Dionysos. Filip (Verhaeghe) was toen verantwoordelijk voor de chill-out en die werd opgeluisterd door de tweeling Bram en Pieter Horré en Gorik Casier (aka jayokay, medewerkers van het vroegere DK in Roeselare). Het idee om dan een reggaefestival op poten te zetten, is gekomen onder vrienden aan de toog in café Delirium in Handzame (Kortemark). Eigenaar Dominiek Hemeryck organiseerde al een festival (Delirium Blues) en de handen werden in elkaar geslagen.",
@@ -204,6 +208,9 @@
       "year": 2026,
       "poster": "/assets/Irie vibes 26 DigiRelease met vibewinnaar 1080x1350.png",
       "video": "https://www.youtube.com/watch?v=knswTYKdwh0",
+      "showVideo": true,
+      "photo": "",
+      "showPhoto": true,
       "paragraphs": [
         "it was Iwesome"
       ]
@@ -212,6 +219,9 @@
       "year": 2030,
       "poster": "/assets/banners website 25 (60 x 26 cm) (60 x 50 cm) (1).jpg",
       "video": "https://www.youtube.com/watch?v=Aq5WXmQQooo",
+      "showVideo": true,
+      "photo": "",
+      "showPhoto": true,
       "paragraphs": [
         "Very chill"
       ]
