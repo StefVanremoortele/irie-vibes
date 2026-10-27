@@ -92,17 +92,8 @@ button {
 /* Hero -------------------------------------------------------------------- */
 .hero {
   width: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
-}
-.hero--lg {
-  height: clamp(200px, 38vw, 460px);
-}
-.hero--md {
-  height: clamp(120px, 20vw, 250px);
-}
-.hero--sm {
-  height: clamp(90px, 14vw, 180px);
 }
 
 /* Section wrapper --------------------------------------------------------- */

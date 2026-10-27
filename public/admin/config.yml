@@ -98,7 +98,6 @@ collections:
               - { name: tickets, label: "Tickets", widget: image }
               - { name: lineup, label: "Line-up", widget: image }
               - { name: act, label: "Act detail", widget: image }
-              - { name: camping, label: "Camping", widget: image }
               - { name: about, label: "About", widget: image }
           - name: images
             label: "Shared images"
@@ -299,6 +298,12 @@ collections:
         label: "Volunteer"
         file: "content/pages/volunteer.json"
         fields: *contentPageFields
+      - name: camping
+        label: "Camping & parking"
+        file: "content/camping.json"
+        icon: camping
+        fields:
+          - { name: hero, label: "Hero image", widget: image, hint: "Banner at the top of the Camping & parking page. Fees are edited under Tickets & fees." }
       - name: tickets
         label: "Tickets & fees"
         file: "content/tickets.json"

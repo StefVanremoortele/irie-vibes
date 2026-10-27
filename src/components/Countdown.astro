@@ -44,30 +44,40 @@ const units: [keyof typeof initial, string][] = [
 
 <style>
   .countdown {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 104px));
+    gap: clamp(8px, 2vw, 16px);
     justify-content: center;
     margin: 0 0 14px;
+  }
+  @media (min-width: 640px) {
+    .countdown {
+      grid-template-columns: repeat(4, auto);
+    }
   }
   .cd {
     background: var(--card-panel);
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-lg);
-    padding: 16px clamp(18px, 3vw, 34px);
-    min-width: 104px;
+    padding: clamp(10px, 2vw, 16px) clamp(4px, 3vw, 34px);
+    min-width: 0;
     text-align: center;
+  }
+  @media (min-width: 640px) {
+    .cd {
+      min-width: 104px;
+    }
   }
   .cd__num {
     font-family: var(--font-display);
-    font-size: clamp(30px, 5vw, 44px);
+    font-size: clamp(24px, 5vw, 44px);
     color: var(--secondary);
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
   .cd__label {
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: clamp(9px, 2.4vw, 11px);
+    letter-spacing: clamp(0.06em, 0.5vw, 0.18em);
     color: var(--muted);
     text-transform: uppercase;
     margin-top: 8px;

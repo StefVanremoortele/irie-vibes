@@ -2,13 +2,13 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import PriceTable from '../components/PriceTable.astro';
-import { heroImages } from '../data/pages';
+import { campingPage } from '../data/pages';
 import { campingParking } from '../data/tickets';
 ---
 
 <Base title="Camping & parking">
   <div class="camping">
-    <Hero src={heroImages.camping} alt="Camping at the festival" size="md" />
+    <Hero src={campingPage.hero} alt="Camping at the festival" size="md" />
     <div class="section section--narrow">
       <h1 class="title">Camping &amp; parking</h1>
       <div class="copy copy--center">
