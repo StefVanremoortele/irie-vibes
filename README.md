@@ -8,6 +8,8 @@ All content lives in editable JSON files under `content/`, managed through
 The `src/data/` modules read those files and the templates read `src/data/`, so
 content and presentation are fully separated.
 
+What the site is for and who it serves: [`VISION.md`](./VISION.md).
+
 ## Requirements
 
 - Node.js 18+ (built and verified on Node 24)
