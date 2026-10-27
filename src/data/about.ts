@@ -1,6 +1,6 @@
 import type { AboutBlock, BandMedia, Edition, ShopItem } from './types';
 import data from '../../content/about.json';
-import { assetUrl } from '../lib/assets';
+import { assetUrl, existingAssetUrl } from '../lib/assets';
 import { youtubeEmbed } from '../lib/youtube';
 
 /** Accordion 1 — VZW Greenforward. */
@@ -26,9 +26,9 @@ function toEdition(edition: EditionSource): Edition {
   return {
     year: edition.year,
     paragraphs: edition.paragraphs,
-    poster: edition.poster ? assetUrl(edition.poster) : undefined,
+    poster: existingAssetUrl(edition.poster, `About → Editions → ${edition.year} → Poster`),
     video: edition.showVideo === false ? undefined : youtubeEmbed(edition.video),
-    photo: edition.showPhoto === false || !edition.photo ? undefined : assetUrl(edition.photo),
+    photo: edition.showPhoto === false ? undefined : existingAssetUrl(edition.photo, `About → Editions → ${edition.year} → Group photo`),
   };
 }
 

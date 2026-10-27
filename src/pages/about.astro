@@ -79,7 +79,7 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
                   {startEdition.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
                 </div>
                 <div class="years__media">
-                  <img class="years__poster" data-year-poster src={startEdition.poster} alt="Festival poster" />
+                  <img class="years__poster" data-year-poster src={startEdition.poster} alt="Festival poster" hidden={!startEdition.poster} />
                   <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden allowfullscreen></iframe>
                   <img class="years__photo" data-year-photo src={undefined} alt="Festival crew group photo" hidden />
                 </div>
@@ -386,6 +386,8 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
     const photoEl = root.querySelector('[data-year-photo]');
     if (!selectEl || !parasEl || !posterEl || !videoEl || !photoEl) return;
     let index = startIndex;
+    // A poster or photo that fails to load (e.g. a broken external link) is hidden, not shown broken.
+    [posterEl, photoEl].forEach((img) => img.addEventListener('error', () => { img.hidden = true; }));
 
     const render = () => {
       const edition = editionsData[index];
