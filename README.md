@@ -26,15 +26,20 @@ npm run production  # self-updating production server (see below)
 
 ## Branches and deployment
 
-**`main` is production.** Every commit on `main`, including every save in the
-CMS, goes live automatically within seconds: GitHub sends a push webhook to
-the production server, which pulls and rebuilds immediately.
+Two self-updating environments, one per branch. Every commit lands on its site
+within seconds: GitHub sends a push webhook, the server pulls and rebuilds.
 
-- Do development on feature branches (`git switch -c feat/…`) and merge to
-  `main` only when the change is ready to go live.
-- The production site is served from the maintainer's host on port **4321**
-  (exposed publicly through a Tailscale gateway). The dev server uses port
-  **4320**, so both can run side by side.
+| Branch | Site | Server |
+| --- | --- | --- |
+| **`main`** = production | https://irie-vibes.prod.vanremoortele.be | `irie-vibes-production`, port **4321** |
+| **`dev`** = development | https://irie-vibes.concept.vanremoortele.be (noindex) | `irie-vibes-development`, port **4322** |
+
+- Develop on `dev` (or feature branches merged into it), check the change on the
+  concept site, then merge `dev` into `main` to go live.
+- **The CMS always saves to `main`** (on both sites), so CMS edits go live at once
+  and reach `dev` only when `main` is merged back into `dev`. Merge `main` into
+  `dev` before pushing `dev` to `main`.
+- The local dev server (`npm run dev`) uses port **4320**, so it can run next to both.
 
 ### How the production server works
 
@@ -69,25 +74,40 @@ didn't change keep the live release's modification time, so nginx's
 ETag/Last-Modified stay stable across deploys. Changes to `scripts/production.mjs` and
 `scripts/feedback-server.mjs` need a restart of the service.
 
-On the host it runs as the systemd user service `irie-vibes-production`
-(defined in `~/.config/systemd/user/irie-vibes-production.service`, not in this
-repo). The webhook secret lives outside the repo in
+On the host each environment runs as a systemd service (`irie-vibes-production`
+from `~/production`, `irie-vibes-development` from `~/development`; unit files in
+`/etc/systemd/system/`, not in this repo). nginx serves each site's `dist/` by
+host name and forwards `/__deploy` and `/__feedback/` to its Node server
+(`PRODUCTION_PREVIEW=0`). The webhook secret lives outside the repo in
 `~/.config/irie-vibes/production.env` (loaded via `EnvironmentFile=`):
 
 ```bash
-journalctl --user -u irie-vibes-production -f   # follow pulls, builds, releases
-systemctl --user restart irie-vibes-production  # restart (e.g. after script changes)
-systemctl --user stop irie-vibes-production     # take production offline
+journalctl -u irie-vibes-production -f        # follow pulls, builds, releases
+sudo systemctl restart irie-vibes-production  # restart (e.g. after script changes)
+sudo systemctl stop irie-vibes-production     # take production offline
 ```
 
 To set it up on a new host: clone the repo into the production folder, run
-`npm ci`, and create a user service whose `WorkingDirectory` is that clone and
+`npm ci`, and create a service whose `WorkingDirectory` is that clone and
 whose `ExecStart` is `node scripts/production.mjs` (with `Restart=always` and
 `PATH` including Node and git). Git must be able to fetch without prompts
 (SSH key without passphrase or a credential helper). Then add a repo webhook
 in GitHub (*Settings → Webhooks*): payload URL `https://<public host>/__deploy`,
 content type `application/json`, the same secret as `DEPLOY_WEBHOOK_SECRET`,
 and only the *push* event.
+
+### Caching and images
+
+- **Fingerprinted asset URLs:** `assetUrl()` (`src/lib/assets.ts`) appends
+  `?v=<content hash>` to every local `/assets/` file. nginx caches fingerprinted
+  URLs for a year (immutable) and revalidates plain URLs and pages (`no-cache`), so a
+  file replaced in the CMS shows up at once and unchanged files never reload.
+- **Missing files:** `existingAssetUrl()` leaves out a CMS image whose file doesn't
+  exist (e.g. never uploaded) and logs `[assets] <field>: … not found` in the build.
+- **Sponsor logos** are shrunk to 160px tall at build time
+  (`src/integrations/sponsor-logos.ts`); the CMS originals stay untouched.
+- **Stable dates:** unchanged files keep their modification time across deploys,
+  so browsers get `304 Not Modified` instead of re-downloading.
 
 ## Editing content
 
@@ -133,6 +153,12 @@ anonymous: there is no name field, and every post is stored and shown under the
 pseudonym *Jah a the Creator*. Clicking the name (on `/feedback` and in the
 capture form) shows the *Jah a the Creator Manifest*; its text lives in
 `src/feedback/manifest.ts`.
+
+Workflow: a tester sends feedback (status *New*); the AI triage
+(`feedback-triage` skill, outside this repo) adds three interpretations checked
+against [VISION.md](VISION.md); the tester clicks the card that matches; only the
+chosen one is built, the item moves to *In progress* with the AI interpretation
+and commit; the tester accepts it (*Done*).
 
 `/feedback` is the inbox, with three tabs: *Feedback*, *Changelog* and
 *Developer notes*. The top right shows when the website last changed: the
@@ -261,6 +287,17 @@ Colour, type and spacing come from the "Roots Vanguard" system in the original
 (night-forest `#101510` surface, amber-gold `#fabc4d` accent, the reggae
 tri-colour, `Anton` display + `Work Sans` body). Exact rendered values were
 matched against the original export for fidelity.
+
+Layout rules agreed through feedback (2026-10):
+
+- **Page banners** (every page except home) share one shape (512:67, the Where
+  banner) and span 4/5 of the page width, centred; the home hero is full width.
+  The CMS *Hero size* field is hidden (no effect any more).
+- **Header buttons:** the round menu button is as big as the ticket button. The
+  menu button's spinning-record animation can be switched off (or replaced by an
+  image) in *Site settings*, and never plays when the visitor's device asks for
+  reduced motion.
+- Sponsors without a logo show as a text tile (name, optional subtitle).
 
 ## Content still to be filled in
 

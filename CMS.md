@@ -20,18 +20,33 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 
 | Admin section | File(s) | What it controls |
 | ------------- | ------- | ---------------- |
-| Settings → Site settings | `content/site.json` | dates, countdown, ticket/volunteer links, home intro, toggles, nav, socials, chrome images |
-| Settings → Hero images | `content/media.json` | hero image per page + shared images |
+| Settings → Site settings | `content/site.json` | dates, countdown, ticket/volunteer links, home intro, toggles (countdown, aftermovie, **menu button animation**), nav, socials, chrome images (header banner, footer, **ticket button image**, **menu button image**) |
+| Settings → Hero images | `content/media.json` | hero image per bespoke page + shared images |
 | Settings → Line-up settings | `content/lineup.json` | stages and days |
 | Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
-| Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions, band |
+| Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions (poster, YouTube video, group photo, show video/photo switches), band (text + photos & videos) |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Content pages | `content/pages/*.json`, `content/tickets.json`, `content/regulations.json` | When, Where, Drinks, Kids, Volunteer, Tickets & fees, Regulations |
+| Content pages | `content/pages/*.json`, `content/camping.json`, `content/tickets.json`, `content/regulations.json` | When, Where, Drinks, Kids, Volunteer, Camping & parking (hero, title, text above/below the fees, show fees), Tickets & fees, Regulations |
 
 Feedback items (their status: New / In progress / Done), the developer notes
 shown on `/feedback`, and the changelog (one dated post per change, the *Changelog* tab of `/feedback`) are managed in a separate admin, `/admin/feedback/`,
 which edits the private repo
 `StefVanremoortele/irie-vibes-feedback`; see the README's *Feedback tool*.
+
+## Images and uploads
+
+- **Upload limit 5 MB.** Photos (JPEG, PNG, HEIC, WebP) are scaled to at most
+  2000px and converted to WebP in the browser *before* uploading, so phone photos
+  end up a few hundred KB. GIFs and SVGs are uploaded as they are. (Large files
+  used to fail with "Failed to save image": GitHub rejects very large commits.)
+- **Changes show at once:** image URLs carry a content fingerprint, so a replaced
+  logo or banner appears on the next page view.
+- An image field pointing at a file that doesn't exist is left out of the page
+  (the build logs which field).
+- Page banners are shown at one fixed shape (512:67) on every page except home;
+  upload wide images, other proportions are trimmed.
+- Signing in online needs a GitHub token with *Contents: Read and write* on this
+  repo (or the local mode below). The login is stored per browser.
 
 ## Editing locally (no account needed)
 
