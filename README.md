@@ -134,7 +134,10 @@ date of the latest commit outside the CMS-owned `content/` and `public/assets/`
 split: a list on the left with status filters (*New*, *In progress*, *Done*,
 *All*; the last choice is remembered per browser; ↑/↓ move the selection) and
 the selected item on the right, with its screenshot (click to enlarge), the
-comment, the conversation and a reply box (Enter sends, Shift+Enter adds a
+comment, the AI interpretation (when an AI developer picked it up: an optional
+`interpretation` object `{ text, by, date, commit }` in the entry JSON, showing
+how the comment was read, in English, and the commit that addressed it), the
+conversation and a reply box (Enter sends, Shift+Enter adds a
 line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
 items) and delete sit in its header; *Add a note without a screenshot* is at
 the bottom of the list. Under 900px wide the list and the item are shown one

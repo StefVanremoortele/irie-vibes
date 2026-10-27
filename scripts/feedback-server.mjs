@@ -291,6 +291,9 @@ async function regenerateIndex(dir) {
     lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
     if (entry.page) lines.push(`Page: ${entry.page}`);
     lines.push('', entry.message, '');
+    if (entry.interpretation?.text) {
+      lines.push(`> **AI interpretation** (${entry.interpretation.by || 'AI'}${entry.interpretation.commit ? `, fixed in ${entry.interpretation.commit}` : ''}):`, ...entry.interpretation.text.split('\n').map((line) => `> ${line}`), '');
+    }
     for (const comment of entry.comments || []) {
       lines.push(`> **${comment.author || 'Developer'}** (${comment.date}):`, ...comment.message.split('\n').map((line) => `> ${line.replace(/\]\(\/images\//g, '](./images/')}`), '');
     }

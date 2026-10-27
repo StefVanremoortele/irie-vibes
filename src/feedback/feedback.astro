@@ -251,6 +251,11 @@ try {
   .fbx-more img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fbx-comment { margin: 0; color: var(--ink-900); font-size: 20px; line-height: 1.45; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+  /* AI interpretation: how the developer's AI read the comment */
+  .fbx-ai { padding: 12px 14px; border-left: 3px solid var(--accent-500); border-radius: 0 12px 12px 0; background: var(--accent-tint); }
+  .fbx-ai__label { color: var(--ink-500); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+  .fbx-ai__text { margin: 4px 0 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+
   /* Thread: developer bubbles left, tester replies right */
   .fbx-thread { display: grid; gap: 10px; }
   .fbx-bubble { justify-self: start; max-width: 70%; padding: 10px 14px; border-radius: 14px 14px 14px 4px; background: var(--accent-100); overflow-wrap: anywhere; }
@@ -373,6 +378,8 @@ try {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     images: { name: string; url: string }[];
     comments?: Comment[];
+    /** How the AI developer read the feedback (English), and the commit that addressed it. */
+    interpretation?: { text: string; by?: string; date?: string; commit?: string };
     metadata?: {
       viewport?: { width: number; height: number };
       embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
@@ -558,7 +565,21 @@ try {
         : `<div class="fbx-shot fbx-shot--none">No screenshot<span class="fbx-shot__chips">${chips}</span>${openPage}</div>`}
       ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
       <p class="fbx-comment">${escapeHtml(entry.message)}</p>
+      ${renderInterpretation(entry)}
       ${renderThread(entry)}`;
+  }
+
+  function renderInterpretation(entry: Entry) {
+    const ai = entry.interpretation;
+    if (!ai?.text?.trim()) return '';
+    const when = ai.date ? ` · <time datetime="${escapeHtml(ai.date)}" title="${new Date(ai.date).toLocaleString()}">${ago(ai.date)}</time>` : '';
+    const commit = ai.commit && /^[0-9a-f]{7,40}$/.test(ai.commit)
+      ? ` · <a href="https://github.com/StefVanremoortele/irie-vibes/commit/${ai.commit}" target="_blank" rel="noreferrer">fixed in ${ai.commit.slice(0, 7)}</a>`
+      : '';
+    return `<div class="fbx-ai">
+        <div class="fbx-ai__label">AI interpretation · ${escapeHtml(ai.by || 'AI')}${when}${commit}</div>
+        <p class="fbx-ai__text">${escapeHtml(ai.text)}</p>
+      </div>`;
   }
 
   // ---- Data -------------------------------------------------------------------
