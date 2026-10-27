@@ -196,6 +196,18 @@ collections:
               - { name: description, label: "Description", widget: text }
               - { name: image, label: "Product image", widget: image, required: false }
           - { name: band, label: "Band text", widget: string }
+          - name: bandMedia
+            label: "Band photos & videos"
+            widget: list
+            required: false
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.caption}}"
+            hint: "Shown right of the band text on wide screens, below it on small screens. Fill in a photo or a YouTube URL per item."
+            fields:
+              - { name: photo, label: "Photo", widget: image, required: false }
+              - { name: video, label: "YouTube video URL", widget: string, required: false }
+              - { name: caption, label: "Description (alt text)", widget: string, required: false }
           - { name: editionMinYear, label: "Earliest edition year", widget: number, value_type: int }
           - { name: editionMaxYear, label: "Latest edition year", widget: number, value_type: int }
           - { name: defaultEditionText, label: "Default edition text", widget: string }
@@ -218,7 +230,10 @@ collections:
             fields:
               - { name: year, label: "Year", widget: number, value_type: int }
               - { name: poster, label: "Poster", widget: image, required: false }
-              - { name: video, label: "YouTube video URL", widget: string, required: false }
+              - { name: video, label: "YouTube video URL", widget: string, required: false, hint: "Aftermovie, shown under the poster." }
+              - { name: showVideo, label: "Show video", widget: boolean, default: true, required: false }
+              - { name: photo, label: "Group photo", widget: image, required: false, hint: "Crew group photo, shown under the poster (and video)." }
+              - { name: showPhoto, label: "Show group photo", widget: boolean, default: true, required: false }
               - name: paragraphs
                 label: "Paragraphs"
                 widget: list

@@ -78,7 +78,8 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
                 </div>
                 <div class="years__media">
                   <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
-                  <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden></iframe>
+                  <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden allowfullscreen></iframe>
+                  <img class="years__photo" data-year-photo src={undefined} alt="Festival crew group photo" hidden />
                 </div>
               </div>
             </div>
@@ -112,7 +113,22 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
-            <p class="acc__p">{band.text}</p>
+            <div class={band.media.length ? 'band band--media' : 'band'}>
+              <p class="acc__p">{band.text}</p>
+              {
+                band.media.length > 0 && (
+                  <div class="band__media">
+                    {band.media.map((item) =>
+                      item.video ? (
+                        <iframe class="band__video" src={item.video} title={item.alt} loading="lazy" allowfullscreen />
+                      ) : (
+                        <img class="band__photo" src={item.image} alt={item.alt} loading="lazy" />
+                      ),
+                    )}
+                  </div>
+                )
+              }
+            </div>
           </div>
         </details>
       </div>
@@ -269,6 +285,39 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
   .years__video[hidden] {
     display: none;
   }
+  .years__photo {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    display: block;
+    border: 1px solid var(--border-hairline);
+  }
+  .years__photo[hidden] {
+    display: none;
+  }
+  .band {
+    display: grid;
+    gap: 24px;
+  }
+  @media (min-width: 640px) {
+    .band--media {
+      grid-template-columns: 1fr minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+  .band__media {
+    display: grid;
+    gap: 16px;
+  }
+  .band__photo,
+  .band__video {
+    width: 100%;
+    display: block;
+    border: 0;
+    border-radius: var(--radius-lg);
+  }
+  .band__video {
+    aspect-ratio: 16 / 9;
+  }
   .shop {
     display: grid;
     gap: 28px;
@@ -337,7 +386,8 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
     const parasEl = root.querySelector('[data-year-paras]');
     const posterEl = root.querySelector('[data-year-poster]');
     const videoEl = root.querySelector('[data-year-video]');
-    if (!selectEl || !parasEl || !posterEl || !videoEl) return;
+    const photoEl = root.querySelector('[data-year-photo]');
+    if (!selectEl || !parasEl || !posterEl || !videoEl || !photoEl) return;
     let index = 0;
 
     const render = () => {
@@ -363,13 +413,18 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
         posterEl.hidden = true;
       }
       if (edition?.video) {
-        const url = new URL(edition.video);
-        const videoId = url.searchParams.get('v') || url.pathname.split('/').pop();
-        videoEl.src = videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : '';
-        videoEl.hidden = !videoId;
+        videoEl.src = edition.video;
+        videoEl.hidden = false;
       } else {
         videoEl.removeAttribute('src');
         videoEl.hidden = true;
+      }
+      if (edition?.photo) {
+        photoEl.src = edition.photo;
+        photoEl.hidden = false;
+      } else {
+        photoEl.removeAttribute('src');
+        photoEl.hidden = true;
       }
     };
 

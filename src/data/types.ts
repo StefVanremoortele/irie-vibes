@@ -123,7 +123,18 @@ export interface Edition {
   year: number;
   paragraphs: string[];
   poster?: string;
+  /** YouTube embed URL (aftermovie); omitted when empty or switched off. */
   video?: string;
+  /** Group photo of the crew; omitted when empty or switched off. */
+  photo?: string;
+}
+
+/** A photo or YouTube video shown next to the band text. */
+export interface BandMedia {
+  image?: string;
+  /** YouTube embed URL. */
+  video?: string;
+  alt?: string;
 }
 
 /** A merchandise item in the festival shop preview. */
