@@ -104,9 +104,12 @@ button {
 .actpage {
   width: 100%;
 }
-/* Page heroes (all but the home page's large one) share the Where banner shape;
-   uploads with other proportions are trimmed to it so every page matches. */
+/* Page heroes (all but the home page's large one) share the Where banner shape and
+   span 4/5 of the page width, centred; uploads with other proportions are trimmed
+   to the shape so every page matches. */
 .hero:not(.hero--lg) {
+  width: 80%;
+  margin-inline: auto;
   aspect-ratio: 512 / 67;
   object-fit: cover;
 }
