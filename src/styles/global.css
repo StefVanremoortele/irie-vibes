@@ -95,6 +95,12 @@ button {
   height: auto;
   display: block;
 }
+/* Page heroes (all but the home page's large one) share the Where banner shape;
+   uploads with other proportions are trimmed to it so every page matches. */
+.hero:not(.hero--lg) {
+  aspect-ratio: 512 / 67;
+  object-fit: cover;
+}
 
 /* Section wrapper --------------------------------------------------------- */
 .section {

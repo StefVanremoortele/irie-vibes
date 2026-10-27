@@ -28,8 +28,11 @@ function canonicalHref(href: string): string {
     </div>
     <div class="hdr__bar">
       <div class="hdr__menu" data-menu>
-        <button type="button" class="burger" aria-label="Open navigation" aria-expanded="false" aria-controls="menu" data-menu-toggle>
-          <svg class="burger__record" viewBox={VIEWBOX} aria-hidden="true" focusable="false" data-record>
+        <button type="button" class:list={['burger', { 'burger--image': site.assets.menuButton }]} aria-label="Open navigation" aria-expanded="false" aria-controls="menu" data-menu-toggle>
+          {site.assets.menuButton ? (
+            <img class="burger__img" src={site.assets.menuButton} alt="" />
+          ) : (
+          <svg class="burger__record" viewBox={VIEWBOX} aria-hidden="true" focusable="false" data-record data-animate={site.menuAnimation ? 'true' : 'false'}>
             <defs>
               <clipPath id="record-label"><circle r={rec.clipR} data-r="clip" /></clipPath>
               <filter id="record-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14" /></filter>
@@ -64,6 +67,7 @@ function canonicalHref(href: string): string {
               <rect x="-112" y="252" width="34" height="20" rx="4" transform="rotate(-42 -92 262)" fill="#2b2b2e" />
             </g>
           </svg>
+          )}
         </button>
         <nav id="menu" class="drawer" aria-label="Main navigation" data-menu-drawer hidden>
           <ul class="drawer__list">
@@ -106,10 +110,10 @@ function canonicalHref(href: string): string {
 
 <style>
   .hdr {
-    /* Menu (record) button size; the ticket button is deliberately bigger. */
-    --hdr-btn-size: clamp(52px, 7.5vw, 76px);
-    /* Capped just under the header height so it never sticks out (phones). */
+    /* Ticket button size, capped just under the header height so it never sticks out (phones). */
     --hdr-ticket-size: min(clamp(84px, 14.25vw, 144px), calc(var(--header-h) - 4px));
+    /* The menu (record) button matches the ticket button. */
+    --hdr-btn-size: var(--hdr-ticket-size);
     position: fixed;
     top: 0;
     left: 0;
@@ -181,6 +185,16 @@ function canonicalHref(href: string): string {
     transform: translate(-50%, -50%);
     overflow: visible;
     pointer-events: none;
+  }
+  /* CMS image instead of the record: the image fills the round button. */
+  .burger--image {
+    overflow: hidden;
+  }
+  .burger__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .burger:focus-visible {
     outline: 2px solid var(--secondary);
@@ -306,7 +320,7 @@ function canonicalHref(href: string): string {
   // server-rendered first frame is the plain hamburger).
   function initRecord() {
     const svg = document.querySelector<SVGSVGElement>('[data-record]');
-    if (!svg || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!svg || svg.dataset.animate === 'false' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const part = <T extends Element>(name: string) => svg.querySelector<T>(`[data-r="${name}"]`)!;
     const shadow = part<SVGEllipseElement>('shadow');
     const disc = part<SVGCircleElement>('disc');

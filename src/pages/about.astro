@@ -344,9 +344,12 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
   @media (min-width: 640px) {
     .shop__item {
       grid-template-areas: 'name name' 'desc image';
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) 220px;
       column-gap: 24px;
       align-items: start;
+    }
+    .shop__image {
+      justify-self: end;
     }
   }
 </style>

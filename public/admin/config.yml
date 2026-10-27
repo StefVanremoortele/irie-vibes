@@ -64,6 +64,7 @@ collections:
           - { name: intro, label: "Home intro text", widget: text }
           - { name: showCountdown, label: "Show countdown", widget: boolean, default: true }
           - { name: showAftermovie, label: "Show aftermovie", widget: boolean, default: true }
+          - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
           - name: aftermovie
             label: "Aftermovie"
             widget: object
@@ -80,6 +81,7 @@ collections:
               - { name: footerBg, label: "Footer background", widget: image }
               - { name: greenforward, label: "Greenforward logo", widget: image }
               - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
+              - { name: menuButton, label: "Menu button image", widget: image, required: false, hint: "Optional. Replaces the record icon of the round menu button (top left); a square image works best. Leave empty for the animated record." }
           - name: nav
             label: "Navigation"
             widget: list

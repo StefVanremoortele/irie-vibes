@@ -18,6 +18,8 @@ export const site = {
   intro: siteData.intro,
   showCountdown: siteData.showCountdown,
   showAftermovie: siteData.showAftermovie,
+  // Menu button record animation; on unless switched off in the CMS (still respects reduced motion).
+  menuAnimation: (siteData as { menuAnimation?: boolean }).menuAnimation !== false,
   aftermovie: siteData.aftermovie,
   assets: {
     headerBanner: assetUrl(siteData.assets.headerBanner),
@@ -25,6 +27,8 @@ export const site = {
     greenforward: assetUrl(siteData.assets.greenforward),
     // Optional: when empty the ticket button shows the "GET YOUR TICKET" text.
     ticketButton: assetUrl((siteData.assets as { ticketButton?: string }).ticketButton),
+    // Optional: when set, replaces the record/hamburger icon of the menu button.
+    menuButton: assetUrl((siteData.assets as { menuButton?: string }).menuButton),
   },
 };
 
