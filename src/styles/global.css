@@ -95,6 +95,15 @@ button {
   height: auto;
   display: block;
 }
+/* Page wrappers must span the page: .main centres its children, so a wrapper
+   without a width shrinks to its text and the hero with it (Tickets, Camping,
+   Where, act pages had no width; the others set it in their own styles). */
+.tickets,
+.camping,
+.where,
+.actpage {
+  width: 100%;
+}
 /* Page heroes (all but the home page's large one) share the Where banner shape;
    uploads with other proportions are trimmed to it so every page matches. */
 .hero:not(.hero--lg) {
