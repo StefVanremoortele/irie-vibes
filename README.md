@@ -293,8 +293,9 @@ Layout rules agreed through feedback (2026-10):
 - **Page banners** (every page except home) share one shape (512:67, the Where
   banner) and span 4/5 of the page width, centred; the home hero is full width.
   The CMS *Hero size* field is hidden (no effect any more).
-- **Header buttons:** the round menu button is as big as the ticket button. The
-  menu button's spinning-record animation can be switched off (or replaced by an
+- **Header buttons:** the round menu button is sized in `rem` (2.75rem on small
+  screens, 3.25rem from 768px, 4rem from 1200px, 4.5rem from 1600px), so it
+  follows the text size rather than the screen width. The menu button's spinning-record animation can be switched off (or replaced by an
   image) in *Site settings*, and never plays when the visitor's device asks for
   reduced motion.
 - Sponsors without a logo show as a text tile (name, optional subtitle).
