@@ -64,13 +64,11 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           <div class="acc__panel">
             <div class="years" data-years data-archive data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
               <div class="years__nav">
-                <button type="button" class="years__btn years__btn--step" data-year-step="-5">-5y</button>
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
                 <select id="edition-year" class="years__select" data-year aria-label="Edition year">
                   {editionOptions.map((edition) => <option value={edition.year}>{edition.year}</option>)}
                 </select>
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
-                <button type="button" class="years__btn years__btn--step" data-year-step="5">+5y</button>
               </div>
               <div class="years__content">
                 <div class="years__paras" data-year-paras>
@@ -232,11 +230,6 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
     padding: 8px 14px;
     font-size: 14px;
     cursor: pointer;
-  }
-  .years__btn--step {
-    padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 700;
   }
   .years__btn:hover {
     border-color: var(--secondary);
