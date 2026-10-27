@@ -32,7 +32,8 @@ function toEdition(edition: EditionSource): Edition {
   };
 }
 
-export const editions: Edition[] = data.editions.map(toEdition);
+/** Oldest first, so ‹ / › step to the previous / next year. */
+export const editions: Edition[] = data.editions.map(toEdition).sort((a, b) => a.year - b.year);
 
 /** Returns the throwback content for a given edition year. */
 export function getEdition(year: number): Edition {

@@ -15,8 +15,12 @@ import {
   band,
 } from '../data/about';
 
-const edition2002 = getEdition(2002);
-const editionOptions = editions.length > 0 ? editions : [edition2002];
+const editionOptions = editions.length > 0 ? editions : [getEdition(2002)];
+// Open on the most recent edition that already took place (future years stay reachable via ›).
+const thisYear = new Date().getFullYear();
+const pastIndexes = editionOptions.flatMap((edition, i) => (edition.year <= thisYear ? [i] : []));
+const startIndex = pastIndexes.length ? pastIndexes[pastIndexes.length - 1] : editionOptions.length - 1;
+const startEdition = editionOptions[startIndex];
 const sectionConfig = (key: string) => aboutSections.find((section) => section.key === key);
 const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
 ---
@@ -66,16 +70,16 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
               <div class="years__nav">
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
                 <select id="edition-year" class="years__select" data-year aria-label="Edition year">
-                  {editionOptions.map((edition) => <option value={edition.year}>{edition.year}</option>)}
+                  {[...editionOptions].reverse().map((edition) => <option value={edition.year} selected={edition === startEdition}>{edition.year}</option>)}
                 </select>
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
               </div>
               <div class="years__content">
                 <div class="years__paras" data-year-paras>
-                  {edition2002.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
+                  {startEdition.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
                 </div>
                 <div class="years__media">
-                  <img class="years__poster" data-year-poster src={edition2002.poster} alt="Festival poster" />
+                  <img class="years__poster" data-year-poster src={startEdition.poster} alt="Festival poster" />
                   <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden allowfullscreen></iframe>
                   <img class="years__photo" data-year-photo src={undefined} alt="Festival crew group photo" hidden />
                 </div>
@@ -370,7 +374,7 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
   initAboutAccordions();
 </script>
 
-<script define:vars={{ editionsData: editionOptions, defaultEditionText }}>
+<script define:vars={{ editionsData: editionOptions, defaultEditionText, startIndex }}>
   function initYears() {
     const root = document.querySelector('[data-years]');
     if (!root) return;
@@ -381,7 +385,7 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
     const videoEl = root.querySelector('[data-year-video]');
     const photoEl = root.querySelector('[data-year-photo]');
     if (!selectEl || !parasEl || !posterEl || !videoEl || !photoEl) return;
-    let index = 0;
+    let index = startIndex;
 
     const render = () => {
       const edition = editionsData[index];
