@@ -1,8 +1,34 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 // The original export references assets as relative paths ("assets/hero-home.png").
 // In this site those files live under /public/assets, i.e. served from "/assets/...".
 // Remote URLs (http/https) are passed through untouched so a CMS can point at a CDN.
+//
+// Local files get a content fingerprint (?v=<hash>): a file replaced in the CMS gets a
+// new URL, so browsers can cache /assets/ forever and still see changes immediately.
+const fingerprints = new Map<string, string>();
+
+function fingerprint(url: string): string {
+  if (!fingerprints.has(url)) {
+    let hash = '';
+    try {
+      // Builds run from the project root; bundling makes import.meta.url unreliable here.
+      const file = join(process.cwd(), 'public', decodeURI(url));
+      hash = createHash('sha1').update(readFileSync(file)).digest('hex').slice(0, 10);
+    } catch {
+      // Missing file: leave the URL as is (served with no-cache).
+    }
+    fingerprints.set(url, hash);
+  }
+  return fingerprints.get(url)!;
+}
+
 export function assetUrl(path: string | null | undefined): string {
   if (!path) return '';
   if (/^https?:\/\//i.test(path)) return path;
-  return '/' + path.replace(/^\/+/, '');
+  const url = '/' + path.replace(/^\/+/, '').split('?')[0];
+  const hash = fingerprint(url);
+  return hash ? `${url}?v=${hash}` : url;
 }

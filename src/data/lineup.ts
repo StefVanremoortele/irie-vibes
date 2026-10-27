@@ -1,5 +1,6 @@
 import type { Act, LineupDay, Stage, StageKey } from './types';
 import config from '../../content/lineup.json';
+import { assetUrl } from '../lib/assets';
 
 // One JSON file per act (the CMS "Acts" collection). The slug is the filename.
 const actModules = import.meta.glob<Record<string, unknown>>('/content/acts/*.json', {
@@ -35,7 +36,7 @@ const acts: Act[] = Object.entries(actModules).map(([path, raw]) => {
       : typeof d.description === 'string' && d.description.trim()
         ? d.description
         : undefined,
-    image: d.image,
+    image: d.image ? assetUrl(d.image as string) : undefined,
   };
 });
 

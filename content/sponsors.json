@@ -21,8 +21,8 @@
       "alt": "Drank Center Rojo"
     },
     {
-      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCx8Yr0jkD1DeW46racHczCXqytH6HjuTxmwF1QafHMT7djQCfoVIfEhrg-fR7JQLJEZ3VXSgRsJjuxi47ANgMe9RfBX2ZgTIP0fp8E5NU93M7zLsYvbZan5_RJ9lDaJWxI5-tremtS-Nr42z3GN0BinRtMlnJx1PbI2ul2qbEA-a9atQijY98mvSRcDL40-p1hn4AgRFESAAcp95iXTAsACKBpyr0bBnfUKpPhnazXeJE2vDxZEpT0YhHIclwdovBHWc",
-      "alt": "4AD"
+      "label": "4AD",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-hotel-pax.png",
@@ -107,8 +107,8 @@
       "alt": "Proxy Zarren"
     },
     {
-      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBjaneUBu99XNwTterLVJhh3zvCa7ESd08t7Poehs_BOhnpVFqBX1DALSYTJXiGRzJg4QZnU-k9ko53zxhLzP9x3HUVAqQc_vixEv5AF-heU0vKouB9YWBcnGUhBA6v7xS9AAgGzzHI4ldcVpqIx0PRyDbDedFMid2mo1V-MvMXvJe_AYms3vfOvcPE1GF4ykTNEYFoGill91P25ezZ33cm9jfaQRo9g02KJJCf2bVs7bFCMRRQGdzQDBTS99pw-NP0pU",
-      "alt": "Oxfam België"
+      "label": "Oxfam België",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/c-hotels.png",
@@ -123,8 +123,8 @@
       "alt": "'t Haantje"
     },
     {
-      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCdKurCOfm8H3UzK4_aUSw6HyavBHn3aN9kF0QCb2grCDgdTCRwfiRhLMNToYH0anaCDROiSuulZCTC49aiP4w1G18lVZVXbifLiX8_YbFM6fwiCNnVLQ_kLsZ-72_SIQGrb00tcHaWzAfXX1iQuvKgfKf1JgOuAVpcJwBfd-RC1WMsjGDcJ74TpVsi0hQOkLEMinWEUCpwInUusJ4GVStm2B4KjVnB2KhXcPlyRd-Ru_HFkGjwe1HZs2ayywq3dZVIrE",
-      "alt": "Vernafix"
+      "label": "Vernafix",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/terrest-brewery.jpg",
@@ -143,8 +143,8 @@
       "sub": "DIRK V."
     },
     {
-      "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuBZEhcZg93NIg04EU11KB7ruSBOkSVLdiL3ATZXhSVq0B_tODlpO7c9omd31AprspCkrJSDEOQseIKMH5TdO-0siQhC3l4K_kggBWy2lpWUMwTWYjf32ZNGajKmEV8enQh_8dmbbbZ-b7zoaMUM1X-3P4Xs_076tnqJxCAMx9KMmMBBg-_lLZGfBwgSikXXOxVauaU8uq1DpxI5ZPFpFkK9cV87we7mokGg4G8exdC1B9zyKYT_8UrKJ_70mNSbe4zk2E",
-      "alt": "OKay Kortemark"
+      "label": "OKay Kortemark",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/brood-banket-deleu.png",

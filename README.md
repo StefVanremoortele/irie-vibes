@@ -62,7 +62,9 @@ Environment: `PORT` (default `4321`), `HOST` (`0.0.0.0`), `PREVIEW_PORT`
 `dist/` itself and forwards only `/__deploy` and `/__feedback/` here),
 `DEPLOY_WEBHOOK_SECRET` (the GitHub webhook secret; without it the webhook is
 disabled and only the periodic check runs), and `FEEDBACK_DIR` /
-`FEEDBACK_GIT_SYNC` (see [Feedback tool](#feedback-tool)). Changes to `scripts/production.mjs` and
+`FEEDBACK_GIT_SYNC` (see [Feedback tool](#feedback-tool)). Files whose content
+didn't change keep the live release's modification time, so nginx's
+ETag/Last-Modified stay stable across deploys. Changes to `scripts/production.mjs` and
 `scripts/feedback-server.mjs` need a restart of the service.
 
 On the host it runs as the systemd user service `irie-vibes-production`

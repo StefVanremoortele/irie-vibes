@@ -1,12 +1,13 @@
 import { defineConfig } from 'astro/config';
 import contentSyncIntegration from './src/integrations/content-sync';
 import feedbackIntegration from './src/integrations/feedback';
+import sponsorLogosIntegration from './src/integrations/sponsor-logos';
 
 // Static site. Content lives in src/data (the future CMS schema) and is
 // rendered at build time — swap the data source for a headless CMS later
 // without touching the templates.
 export default defineConfig({
-  integrations: [feedbackIntegration(), contentSyncIntegration()],
+  integrations: [feedbackIntegration(), contentSyncIntegration(), sponsorLogosIntegration()],
   site: 'https://www.irievibes.be',
   trailingSlash: 'ignore',
   // Public preview hostnames, for both `astro dev` and `astro preview`.

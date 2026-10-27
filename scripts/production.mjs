@@ -18,7 +18,7 @@
 import { execFile, spawn } from 'node:child_process';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { rename, rm } from 'node:fs/promises';
+import { readdir, readFile, rename, rm, stat, utimes } from 'node:fs/promises';
 import { createServer, request } from 'node:http';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -101,6 +101,28 @@ function stopPreview() {
 async function build() {
   await rm(join(root, NEXT), { recursive: true, force: true });
   await exec(astro, ['build', '--outDir', NEXT]);
+  await keepUnchangedDates(join(root, NEXT), join(root, LIVE));
+}
+
+// Every build writes every file anew, so nginx's ETag/Last-Modified (mtime + size)
+// would change on each deploy and browsers re-download everything. Files whose
+// content didn't change keep the live release's modification time instead, so
+// revalidation answers 304 and only really changed files are fetched again.
+async function keepUnchangedDates(nextDir, liveDir) {
+  if (!existsSync(liveDir)) return;
+  const entries = await readdir(nextDir, { recursive: true, withFileTypes: true });
+  await Promise.all(entries.filter((entry) => entry.isFile()).map(async (entry) => {
+    const next = join(entry.parentPath, entry.name);
+    const live = join(liveDir, next.slice(nextDir.length));
+    try {
+      const [liveStat, nextStat] = await Promise.all([stat(live), stat(next)]);
+      if (liveStat.size !== nextStat.size) return;
+      const [a, b] = await Promise.all([readFile(live), readFile(next)]);
+      if (a.equals(b)) await utimes(next, liveStat.atime, liveStat.mtime);
+    } catch {
+      // New file (no live copy): keeps its fresh date.
+    }
+  }));
 }
 
 async function release() {
