@@ -258,6 +258,21 @@ try {
   .fbx-ai__label { color: var(--ink-500); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
   .fbx-ai__text { margin: 4px 0 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+  /* Proposed interpretations: the tester picks the one they meant */
+  .fbx-props { display: grid; gap: 10px; }
+  .fbx-props__intro { margin: 0; color: var(--ink-500); font-size: 14px; }
+  .fbx-props__option { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--divider); border-radius: 12px; background: #fff; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+  .fbx-props__option.is-chosen { border-color: var(--accent-500); box-shadow: 0 0 0 3px var(--accent-tint); }
+  .fbx-props__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; color: var(--ink-900); font-size: 15px; }
+  .fbx-props__key { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-100); color: var(--accent-600); font-size: 12px; font-weight: 700; }
+  .fbx-props__chip { padding: 1px 8px; border-radius: var(--radius-pill); background: rgba(26, 27, 38, 0.05); color: var(--ink-500); font-size: 11px; font-weight: 600; }
+  .fbx-props__chip--rec { background: var(--accent-tint); color: var(--accent-600); }
+  .fbx-props__text { margin: 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-props__how summary { color: var(--ink-500); font-size: 13px; cursor: pointer; }
+  .fbx-props__how p { margin: 6px 0 0; color: var(--ink-700); font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-props__action { display: flex; justify-content: flex-end; }
+  .fbx-props__chosen { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-600); font-size: 13px; font-weight: 600; }
+
   /* Thread: developer bubbles left, tester replies right */
   .fbx-thread { display: grid; gap: 10px; }
   .fbx-bubble { justify-self: start; max-width: 70%; padding: 10px 14px; border-radius: 14px 14px 14px 4px; background: var(--accent-100); overflow-wrap: anywhere; }
@@ -384,6 +399,11 @@ try {
     comments?: Comment[];
     /** How the AI developer read the feedback (English), and the commit that addressed it. */
     interpretation?: { text: string; by?: string; date?: string; commit?: string };
+    /** Interpretations proposed by the feedback-triage skill; the tester picks one. */
+    proposals?: {
+      by?: string; date?: string; recommended?: string; chosen?: string; chosenAt?: string;
+      options: { key: string; title: string; interpretation: string; implementation?: string; effort?: string; vision?: string }[];
+    };
     metadata?: {
       viewport?: { width: number; height: number };
       embeds?: { kind: 'youtube' | 'map' | 'iframe'; url: string; title?: string }[];
@@ -571,7 +591,39 @@ try {
       ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
       <p class="fbx-comment">${escapeHtml(entry.message)}</p>
       ${renderInterpretation(entry)}
+      ${renderProposals(entry)}
       ${renderThread(entry)}`;
+  }
+
+  function renderProposals(entry: Entry) {
+    const proposals = entry.proposals;
+    const options = (proposals?.options || []).filter((option) => option && option.key && option.interpretation);
+    if (!proposals || !options.length) return '';
+    const locked = entry.status !== 'New';
+    const intro = proposals.chosen
+      ? (locked ? 'You chose the interpretation marked below; work on it has started.' : 'Thanks! You can still change your choice until work starts.')
+      : 'The AI developer read your feedback in these ways. Pick the one that matches what you meant.';
+    return `<section class="fbx-props" aria-label="Proposed interpretations">
+        <div class="fbx-ai__label">Which interpretation fits? · ${escapeHtml(proposals.by || 'AI')}</div>
+        <p class="fbx-props__intro">${intro}</p>
+        ${options.map((option) => {
+          const chosen = option.key === proposals.chosen;
+          const chips = [
+            option.key === proposals.recommended ? '<span class="fbx-props__chip fbx-props__chip--rec">Recommended</span>' : '',
+            option.effort ? `<span class="fbx-props__chip" title="Effort">Effort ${escapeHtml(option.effort)}</span>` : '',
+            option.vision ? `<span class="fbx-props__chip" title="Fit with the site vision">${escapeHtml(option.vision)}</span>` : '',
+          ].join('');
+          const action = chosen
+            ? `<span class="fbx-props__chosen">${ICON.check}Chosen</span>`
+            : locked ? '' : `<button type="button" class="fbx-btn${proposals.chosen ? '' : ' fbx-btn--primary'}" data-choose="${escapeHtml(option.key)}">This is what I mean</button>`;
+          return `<article class="fbx-props__option${chosen ? ' is-chosen' : ''}">
+              <div class="fbx-props__head"><span class="fbx-props__key">${escapeHtml(option.key)}</span><strong>${escapeHtml(option.title || '')}</strong>${chips}</div>
+              <p class="fbx-props__text">${escapeHtml(option.interpretation)}</p>
+              ${option.implementation ? `<details class="fbx-props__how"><summary>How we'd build it</summary><p>${escapeHtml(option.implementation)}</p></details>` : ''}
+              ${action ? `<div class="fbx-props__action">${action}</div>` : ''}
+            </article>`;
+        }).join('')}
+      </section>`;
   }
 
   function renderInterpretation(entry: Entry) {
@@ -705,6 +757,18 @@ try {
         () => { entry.status = next; if (leaves) { stashDraft(); selectedId = nextId; restoreDraft(); } },
         () => { entry.status = before; selectedId = id; },
         accepting ? 'Could not accept this change.' : 'Could not mark this in progress.',
+      );
+      return;
+    }
+    if (button.dataset.choose && entry.proposals) {
+      const proposals = entry.proposals;
+      const before = { chosen: proposals.chosen, chosenAt: proposals.chosenAt };
+      const option = button.dataset.choose;
+      await mutate(
+        () => fetch(`${API}/${id}/choose`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ option }) }),
+        () => { proposals.chosen = option; proposals.chosenAt = new Date().toISOString(); },
+        () => { proposals.chosen = before.chosen; proposals.chosenAt = before.chosenAt; },
+        'Could not save your choice.',
       );
       return;
     }

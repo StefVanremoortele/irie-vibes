@@ -144,7 +144,11 @@ the selected item on the right, with its screenshot (click to enlarge), the
 comment, the AI interpretation (when an AI developer picked it up: an optional
 `interpretation` object `{ text, by, date, commit }` in the entry JSON, showing
 how the comment was read, in English, and the commit that addressed it), the
-conversation and a reply box (Enter sends, Shift+Enter adds a
+proposed interpretations (optional `proposals` `{ by, date, recommended, options:
+[{ key, title, interpretation, implementation, effort, vision }], chosen, chosenAt }`,
+written by the AI triage: the tester picks the one they meant with *This is what I
+mean*, via `POST /__feedback/api/entries/<id>/choose`; changeable while the item is
+*New*), the conversation and a reply box (Enter sends, Shift+Enter adds a
 line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
 items) and delete sit in its header; *Add a note without a screenshot* is at
 the bottom of the list. Under 900px wide the list and the item are shown one

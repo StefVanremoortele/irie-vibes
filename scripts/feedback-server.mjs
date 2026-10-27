@@ -291,6 +291,14 @@ async function regenerateIndex(dir) {
     lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
     if (entry.page) lines.push(`Page: ${entry.page}${entry.scope === 'site' ? ' (applies to every page)' : ''}`);
     lines.push('', entry.message, '');
+    if (Array.isArray(entry.proposals?.options) && entry.proposals.options.length) {
+      lines.push('Proposed interpretations:');
+      for (const option of entry.proposals.options) {
+        const marks = [option.key === entry.proposals.recommended ? 'recommended' : '', option.key === entry.proposals.chosen ? '**chosen**' : ''].filter(Boolean).join(', ');
+        lines.push(`- **${option.key}. ${option.title}**${marks ? ` (${marks})` : ''}: ${option.interpretation}`);
+      }
+      lines.push('');
+    }
     if (entry.interpretation?.text) {
       lines.push(`> **AI interpretation** (${entry.interpretation.by || 'AI'}${entry.interpretation.commit ? `, fixed in ${entry.interpretation.commit}` : ''}):`, ...entry.interpretation.text.split('\n').map((line) => `> ${line}`), '');
     }
@@ -442,6 +450,19 @@ async function acceptChange(dir, id) {
   }, `Accept feedback: ${id}`);
 }
 
+// The tester picks which of the AI's proposed interpretations (entry.proposals,
+// written by the feedback-triage skill) matches what they meant. Can be changed
+// until work starts (status New).
+async function chooseProposal(req, dir, id) {
+  const { option } = await readJson(req);
+  return updateEntry(dir, id, (entry) => {
+    const options = Array.isArray(entry.proposals?.options) ? entry.proposals.options : [];
+    if (!options.some((item) => item.key === option)) throw new HttpError(400, 'Unknown option.');
+    if (entry.status !== 'New') throw new HttpError(409, 'Work on this item has started; the choice can no longer change.');
+    return { ...entry, proposals: { ...entry.proposals, chosen: option, chosenAt: now() } };
+  }, `Choose interpretation ${option} for feedback: ${id}`);
+}
+
 async function handleApi(req, res, path) {
   const dir = feedbackDir();
   if (path === '/__feedback/api/changelog') {
@@ -463,11 +484,14 @@ async function handleApi(req, res, path) {
     throw new HttpError(405, 'Method not allowed.');
   }
 
-  const actionMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/(replies|accept|progress)$/);
+  const actionMatch = path.match(/^\/__feedback\/api\/entries\/([^/]+)\/(replies|accept|progress|choose)$/);
   if (actionMatch) {
     if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed.');
     const [, id, action] = actionMatch;
-    const entry = action === 'replies' ? await addReply(req, dir, id) : action === 'accept' ? await acceptChange(dir, id) : await markInProgress(dir, id);
+    const entry = action === 'replies' ? await addReply(req, dir, id)
+      : action === 'accept' ? await acceptChange(dir, id)
+        : action === 'choose' ? await chooseProposal(req, dir, id)
+          : await markInProgress(dir, id);
     return send(res, 200, { entry });
   }
 
