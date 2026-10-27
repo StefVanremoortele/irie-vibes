@@ -42,6 +42,14 @@ const css = `
   .fb-field input, .fb-field textarea { width: 100%; padding: 8px 10px; border: 1px solid #cdd1d7; border-radius: 4px; background: #fff; color: #1d2025; font: inherit; font-weight: 400; }
   .fb-field input:focus, .fb-field textarea:focus { outline: 2px solid #e6f0e7; border-color: #2d6a3a; }
   .fb-field textarea { min-height: 96px; resize: vertical; }
+  .fb-scope { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .fb-scope legend { padding: 0; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
+  .fb-scope__toggle { display: grid; grid-template-columns: 1fr 1fr; padding: 2px; border: 1px solid #cdd1d7; border-radius: 6px; background: #f1f2f4; }
+  .fb-scope__option { position: relative; display: block; cursor: pointer; }
+  .fb-scope__option input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .fb-scope__option span { display: block; padding: 5px 8px; border-radius: 4px; color: #4a4f57; font-size: 13px; font-weight: 600; text-align: center; }
+  .fb-scope__option input:checked + span { background: #fff; color: #2d6a3a; box-shadow: 0 1px 3px #0002; }
+  .fb-scope__option input:focus-visible + span { outline: 2px solid #2d6a3a; outline-offset: 1px; }
   .fb-as { margin: 0; color: #7a808a; font-size: 13px; }
   .fb-as strong { color: #4a4f57; }
   .fb-jah { padding: 0; border: 0; background: none; color: #4a4f57; font: inherit; font-weight: 700; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
@@ -303,12 +311,19 @@ function init() {
       name.addEventListener('click', () => { manifest.hidden = !manifest.hidden; name.setAttribute('aria-expanded', String(!manifest.hidden)); });
       const sendingAs = el('p', { className: 'fb-as' }, 'Sent anonymously as ', name);
       const comment = el('textarea', { required: true, maxLength: 10000, placeholder: 'What should change, or what is wrong here?' });
+      // Scope: does the change concern only this page, or every page (header, footer, shared layout…)?
+      const scopeOption = (value: string, label: string, checked: boolean) =>
+        el('label', { className: 'fb-scope__option' }, el('input', { type: 'radio', name: 'fb-scope', value, checked }), el('span', { textContent: label }));
+      const scope = el('fieldset', { className: 'fb-scope' },
+        el('legend', { textContent: 'Applies to' }),
+        el('div', { className: 'fb-scope__toggle' }, scopeOption('page', 'This page', true), scopeOption('site', 'Every page', false)));
       const status = el('p', { className: 'fb-status', role: 'alert' });
       const submit = el('button', { type: 'submit', className: 'fb-submit', textContent: 'Send feedback' });
       const panel = el('form', { className: 'fb-panel' },
         el('div', { className: 'fb-panel__head' }, el('h2', { className: 'fb-panel__title', textContent: 'Feedback' }), closeButton),
         ...(selected ? [shot] : []),
         el('label', { className: 'fb-field' }, 'Comment', comment),
+        scope,
         sendingAs, manifest, status,
         el('div', { className: 'fb-actions' }, el('small', { textContent: '⌘/Ctrl + Enter to send' }), submit));
       panel.setAttribute('role', 'dialog');
@@ -333,6 +348,7 @@ function init() {
         const data = new FormData();
         data.set('page', location.pathname + location.search);
         data.set('message', message);
+        data.set('scope', scope.querySelector<HTMLInputElement>('input:checked')?.value === 'site' ? 'site' : 'page');
         let blob: Blob | undefined;
         let screenshotFailed = false;
         try { blob = await image; } catch { screenshotFailed = Boolean(selected); }

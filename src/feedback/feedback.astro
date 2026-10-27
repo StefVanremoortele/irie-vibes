@@ -251,6 +251,8 @@ try {
   .fbx-more img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .fbx-comment { margin: 0; color: var(--ink-900); font-size: 20px; line-height: 1.45; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+  .fbx-scope { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--accent-tint); color: var(--accent-600); font-size: 11px; font-weight: 600; white-space: nowrap; }
+
   /* AI interpretation: how the developer's AI read the comment */
   .fbx-ai { padding: 12px 14px; border-left: 3px solid var(--accent-500); border-radius: 0 12px 12px 0; background: var(--accent-tint); }
   .fbx-ai__label { color: var(--ink-500); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
@@ -376,6 +378,8 @@ try {
   type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
+    /** 'site': the change concerns every page; 'page' (or missing on older entries): only `page`. */
+    scope?: 'page' | 'site';
     images: { name: string; url: string }[];
     comments?: Comment[];
     /** How the AI developer read the feedback (English), and the commit that addressed it. */
@@ -508,7 +512,7 @@ try {
       return `<button type="button" class="fbx-row${entry.id === selectedId && !addingNote ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${entry.id === selectedId && !addingNote}">
           <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
           <span class="fbx-row__text">
-            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
+            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span>${entry.scope === 'site' ? '<span class="fbx-scope">Every page</span>' : ''}<span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
             <span class="fbx-row__comment">${escapeHtml(entry.message.split('\n')[0])}</span>
           </span>
         </button>`;
@@ -544,7 +548,7 @@ try {
     const status = STATUS_KEY[entry.status] || 'new';
     const [shot, ...rest] = entry.images;
     const viewport = entry.metadata?.viewport;
-    const chips = `${entry.page ? `<span class="fbx-shot__chip">${escapeHtml(entry.page)}</span>` : ''}${viewport ? `<span class="fbx-shot__chip">${viewport.width}×${viewport.height}</span>` : ''}`;
+    const chips = `${entry.page ? `<span class="fbx-shot__chip">${escapeHtml(entry.page)}</span>` : ''}${entry.scope === 'site' ? '<span class="fbx-shot__chip">Every page</span>' : ''}${viewport ? `<span class="fbx-shot__chip">${viewport.width}×${viewport.height}</span>` : ''}`;
     const openPage = entry.page && safeHref(entry.page) ? `<a class="fbx-shot__link" href="${safeHref(entry.page)}" target="_blank" rel="noreferrer">Open page ${ICON.open}</a>` : '';
     detailHead.innerHTML = `
       <button type="button" class="fbx-back" data-back aria-label="Back to the list">${ICON.back}</button>
@@ -552,6 +556,7 @@ try {
       <span class="fbx-detail__meta">
         <span>${nameButton()} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
         ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('')}
+        ${entry.scope === 'site' ? '<span class="fbx-scope" title="This feedback applies to every page, not just the one it was sent from">Applies to every page</span>' : ''}
         ${entry.metadata?.screenshotFailed ? '<span class="fbx-pill fbx-pill--danger">Screenshot failed</span>' : ''}
       </span>
       <span class="fbx-detail__actions">

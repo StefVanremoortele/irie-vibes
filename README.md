@@ -116,7 +116,10 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press
 **Shift+F**, drag over the area in question (or click for the whole screen,
-or skip the screenshot), and type a comment. The screenshot of the visible
+or skip the screenshot), and type a comment. An *Applies to* toggle (*This
+page* / *Every page*, default *This page*) says whether the change concerns
+only that page or every page (header, footer, shared layout); it is stored as
+`scope` (`page` / `site`) and *Every page* items are tagged in the inbox. The screenshot of the visible
 screen renders in the background while they draw, and is stored with the page
 URL, viewport size, scroll position, selected region and browser. Embedded
 iframes (YouTube, maps) can't be rendered into the screenshot: YouTube videos

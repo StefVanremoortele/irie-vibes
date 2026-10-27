@@ -289,7 +289,7 @@ async function regenerateIndex(dir) {
   if (!entries.length) lines.push('No feedback yet.');
   for (const entry of entries) {
     lines.push(`## ${entry.status} — ${PSEUDONYM} — ${entry.createdAt}`);
-    if (entry.page) lines.push(`Page: ${entry.page}`);
+    if (entry.page) lines.push(`Page: ${entry.page}${entry.scope === 'site' ? ' (applies to every page)' : ''}`);
     lines.push('', entry.message, '');
     if (entry.interpretation?.text) {
       lines.push(`> **AI interpretation** (${entry.interpretation.by || 'AI'}${entry.interpretation.commit ? `, fixed in ${entry.interpretation.commit}` : ''}):`, ...entry.interpretation.text.split('\n').map((line) => `> ${line}`), '');
@@ -377,6 +377,7 @@ async function createEntry(req, dir) {
     id,
     name: PSEUDONYM,
     page: fields.page?.trim().slice(0, 500) || '',
+    ...(fields.scope === 'site' || fields.scope === 'page' ? { scope: fields.scope } : {}),
     message,
     status: 'New',
     createdAt: new Date().toISOString(),
