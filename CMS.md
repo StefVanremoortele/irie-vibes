@@ -23,7 +23,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Content pages | one file per page (below) | one entry per page, in the order of the site menu; every page has an optional **Hero image** + **Show hero image** switch (empty or off: no banner) |
 | Content pages → Home | `content/home.json` | dates label, countdown (switch + date), intro, aftermovie |
 | Content pages → Line-up | `content/lineup.json` | stages, days, custom HTML; act pages' hero |
-| Content pages → Tickets & fees, When, Where, Parking & camping, Drinks, Kids, Volunteer | `content/pages/*.json` | title + content blocks (heading/paragraph; prices are written as text). Where: also the circulation plan |
+| Content pages → Tickets, When, Where, Parking & camping, Drinks, Kids, Volunteer | `content/pages/*.json` | title + content blocks (heading/paragraph; prices are written as text). Where: also the circulation plan |
 | Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches, optional text; sorted newest first after each save by `.github/workflows/sort-editions.yml`), shop, band (text + photos & videos) |
 | Content pages → Regulations | `content/regulations.json` | regulation sections |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |

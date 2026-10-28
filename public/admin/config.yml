@@ -47,7 +47,6 @@ collections:
       - name: home
         label: "Home"
         file: "content/home.json"
-        icon: home
         fields:
           - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
           - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
@@ -66,7 +65,6 @@ collections:
       - name: lineup
         label: "Line-up"
         file: "content/lineup.json"
-        icon: music_note
         description: "The acts themselves are edited under Line-up — acts."
         fields:
           - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
@@ -95,9 +93,8 @@ collections:
           - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed line-up grid." }
           - { name: customHtml, label: "Custom HTML", widget: text, required: false }
       - name: tickets
-        label: "Tickets & fees"
+        label: "Tickets"
         file: "content/pages/tickets.json"
-        icon: local_activity
         fields: &contentPageFields
           - { name: slug, label: "Slug", widget: hidden }
           - { name: title, label: "Title", widget: string }
@@ -136,7 +133,6 @@ collections:
       - name: camping
         label: "Parking & camping"
         file: "content/pages/camping.json"
-        icon: camping
         fields: *contentPageFields
       - name: drinks
         label: "Drinks, food & market"
@@ -153,7 +149,6 @@ collections:
       - name: about
         label: "All about Irie Vibes"
         file: "content/about.json"
-        icon: info
         description: "One block per category (accordion) on the page, each with its own title, show switch and content."
         fields:
           - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
@@ -270,7 +265,6 @@ collections:
       - name: regulations
         label: "Regulations"
         file: "content/regulations.json"
-        icon: gavel
         fields:
           - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
           - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
