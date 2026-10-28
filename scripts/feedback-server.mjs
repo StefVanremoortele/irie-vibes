@@ -452,15 +452,20 @@ async function acceptChange(dir, id) {
 
 // The tester picks which of the AI's proposed interpretations (entry.proposals,
 // written by the feedback-triage skill) matches what they meant. Can be changed
-// until work starts (status New).
+// or cleared (`option: null`) until work starts (status New).
 async function chooseProposal(req, dir, id) {
   const { option } = await readJson(req);
   return updateEntry(dir, id, (entry) => {
     const options = Array.isArray(entry.proposals?.options) ? entry.proposals.options : [];
-    if (!options.some((item) => item.key === option)) throw new HttpError(400, 'Unknown option.');
+    if (!options.length) throw new HttpError(400, 'This feedback has no proposals.');
+    if (option !== null && !options.some((item) => item.key === option)) throw new HttpError(400, 'Unknown option.');
     if (entry.status !== 'New') throw new HttpError(409, 'Work on this item has started; the choice can no longer change.');
+    if (option === null) {
+      const { chosen, chosenAt, ...proposals } = entry.proposals || {};
+      return { ...entry, proposals };
+    }
     return { ...entry, proposals: { ...entry.proposals, chosen: option, chosenAt: now() } };
-  }, `Choose interpretation ${option} for feedback: ${id}`);
+  }, option === null ? `Clear interpretation choice for feedback: ${id}` : `Choose interpretation ${option} for feedback: ${id}`);
 }
 
 async function handleApi(req, res, path) {

@@ -22,7 +22,8 @@ try {
   a dark scrim). The dialog is a tester tool with its own design tokens (Pane,
   scoped to .fbx) and deliberately does NOT follow the festival design system;
   see README "Feedback tool". Tabs: Feedback (inbox split: list + detail),
-  Changelog (timeline) and Developer notes.
+  Changelog (timeline) and Developer notes. Layout and states follow the
+  "Feedback inbox redesign" handoff (2026-10-28).
 -->
 <Base title="Testing" description="Website feedback, changelog and developer notes for testers" noIndex>
   <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
@@ -42,7 +43,7 @@ try {
         </nav>
         <div class="fbx-head__end">
           <span class="fbx-updated"><span class="fbx-dot" aria-hidden="true"></span><span>Site updated <time id="last-updated" datetime={lastUpdated}>{new Date(lastUpdated).toUTCString()}</time></span></span>
-          <button type="button" class="fbx-key" data-close title="Close (Esc)" aria-label="Close">Esc</button>
+          <button type="button" class="fbx-close" data-close title="Close (Esc)">Close <kbd>Esc</kbd></button>
         </div>
       </header>
 
@@ -50,16 +51,17 @@ try {
       <div id="feedback-view" class="fbx-view fbx-split">
         <aside class="fbx-list" aria-label="Feedback list">
           <div class="fbx-chips" role="group" aria-label="Filter by status">
-            <button type="button" class="fbx-chip" data-filter="new">New <span data-count="New"></span></button>
+            <button type="button" class="fbx-chip" data-filter="new">Triage <span data-count="New"></span></button>
             <button type="button" class="fbx-chip" data-filter="in_progress">In progress <span data-count="In progress"></span></button>
-            <button type="button" class="fbx-chip" data-filter="done">Done <span data-count="Done"></span></button>
-            <button type="button" class="fbx-chip" data-filter="all">All <span data-count="All"></span></button>
+            <button type="button" class="fbx-chip" data-filter="done">Processed <span data-count="Done"></span></button>
           </div>
           <div id="entries" class="fbx-rows" aria-live="polite"><p class="fbx-empty">Loading feedback…</p></div>
-          <button type="button" class="fbx-addnote" data-add-note>
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
-            Add a note without a screenshot
-          </button>
+          <div class="fbx-addnote-wrap">
+            <button type="button" class="fbx-addnote" data-add-note>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+              Add a note without a screenshot
+            </button>
+          </div>
         </aside>
 
         <div class="fbx-detail">
@@ -67,7 +69,7 @@ try {
             <header class="fbx-detail__head" id="detail-head"></header>
             <div class="fbx-detail__body" id="detail-body"><p class="fbx-empty">Select feedback on the left.</p></div>
             <form class="fbx-composer" id="composer" hidden>
-              <textarea name="message" rows="1" maxlength="5000" required placeholder="Reply to the developer…" aria-label="Reply"></textarea>
+              <textarea name="message" rows="1" maxlength="5000" required placeholder="Reply to the developer…" aria-label="Reply to the developer"></textarea>
               <button type="submit" class="fbx-btn fbx-btn--dark">Send</button>
               <p class="fbx-composer__status" role="status"></p>
             </form>
@@ -117,10 +119,14 @@ try {
     --accent-500: #7c5cff; --accent-600: #6b49f0; --accent-400: #9d82ff; --accent-100: #ece6ff; --accent-tint: rgba(124, 92, 255, 0.12);
     --success-500: #10b981; --success-100: #d1fae5; --success-700: #047857;
     --warn-500: #f59e0b; --warn-100: #fef3c7; --warn-700: #92600a;
-    --info-500: #3b82f6; --info-100: #dbeafe;
+    --info-500: #3b82f6; --info-100: #dbeafe; --info-700: #1d4ed8;
+    --warn-800: #92400e;
+    --glass-tint-high: rgba(255, 255, 255, 0.72); --glass-tint-med: rgba(255, 255, 255, 0.55); --glass-tint-low: rgba(255, 255, 255, 0.38);
+    --glass-border: rgba(255, 255, 255, 0.65); --glass-edge-dark: rgba(26, 27, 38, 0.08);
     --danger-500: #ef4444; --danger-100: #fee2e2;
     --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px; --radius-lg: 20px; --radius-pill: 999px;
     --shadow-sm: 0 1px 2px rgba(26, 27, 38, 0.04), 0 2px 8px rgba(26, 27, 38, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    --shadow-md: 0 2px 4px rgba(26, 27, 38, 0.04), 0 8px 24px rgba(26, 27, 38, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
     --shadow-xl: 0 8px 16px rgba(26, 27, 38, 0.06), 0 40px 80px rgba(26, 27, 38, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
     --shadow-focus: 0 0 0 3px rgba(124, 92, 255, 0.35);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
@@ -144,8 +150,8 @@ try {
   /* ---- Shell: scrim + panel over the inert homepage ----------------------- */
   html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
-  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
-  .fbx-panel { position: fixed; inset: 40px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.65); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
+  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: radial-gradient(120% 90% at 0% 0%, #fde2e4 0%, transparent 55%), radial-gradient(100% 80% at 100% 0%, #bae6fd 0%, transparent 60%), radial-gradient(120% 100% at 100% 100%, #e9d5ff 0%, transparent 55%), radial-gradient(100% 90% at 0% 100%, #fef3c7 0%, transparent 55%), linear-gradient(180deg, rgba(250, 250, 255, 0.92) 0%, rgba(243, 241, 255, 0.92) 100%); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
+  .fbx-panel { position: fixed; inset: 24px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: var(--glass-tint-high); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); border: 1px solid var(--glass-border); border-bottom-color: var(--glass-edge-dark); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
   .fbx.is-closing .fbx-panel { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
   .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
   @keyframes fbx-fade { from { opacity: 0; } }
@@ -158,7 +164,7 @@ try {
   }
 
   /* Header: tabs left, "site updated" + Esc right */
-  .fbx-head { display: flex; align-items: stretch; justify-content: space-between; gap: 16px; min-height: 60px; padding: 0 28px 0 16px; border-bottom: 1px solid var(--divider); }
+  .fbx-head { display: flex; align-items: stretch; justify-content: space-between; gap: 24px; min-height: 60px; padding: 0 24px; border-bottom: 1px solid var(--divider); }
   .fbx-tabs { display: flex; align-items: stretch; }
   .fbx a.fbx-tab { display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; color: var(--ink-500); font-size: 15px; font-weight: 500; text-decoration: none; transition: color var(--dur-fast); }
   .fbx a.fbx-tab:hover { color: var(--ink-900); }
@@ -167,11 +173,21 @@ try {
   .fbx-count { padding: 1px 7px; border-radius: var(--radius-pill); background: var(--ink-200); color: var(--ink-700); font-size: 12px; font-weight: 600; line-height: 1.4; }
   .fbx-count--accent, .fbx-count.has-unseen { background: var(--accent-500); color: #fff; }
   .fbx-count:empty { display: none; }
-  .fbx-head__end { display: flex; align-items: center; gap: 16px; }
+  .fbx-head__end { display: flex; align-items: center; gap: 24px; }
   .fbx-updated { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-500); font-size: 13px; white-space: nowrap; }
   .fbx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success-500); }
-  .fbx-key { padding: 3px 6px; border: 0; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.05); color: var(--ink-500); font: 500 11px/1.2 var(--font-mono); cursor: pointer; transition: background var(--dur-fast); }
-  .fbx-key:hover { background: rgba(26, 27, 38, 0.1); }
+  .fbx-close { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: var(--glass-tint-med); color: var(--ink-500); font-size: 12px; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
+  .fbx-close:hover { background: var(--glass-tint-high); color: var(--ink-900); }
+  .fbx-close kbd { font: inherit; font-family: var(--font-mono); }
+
+  /* Background-runner indicator (handoff runner-frame.css): shown while runners work */
+  @property --runner-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+  @keyframes runner-spin { to { --runner-angle: 360deg; } }
+  @keyframes runner-breathe { 0%, 100% { opacity: 0.3; } 45% { opacity: 1; } }
+  .runner-frame { position: absolute; inset: 0; z-index: 5; border-radius: inherit; pointer-events: none; }
+  .runner-frame--aurora { padding: 2px; background: conic-gradient(from var(--runner-angle), #f9a8d4, #c4b5fd, #a5b4fc, #7dd3fc, #fcd34d, #f9a8d4); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); animation: runner-spin 16s linear infinite, runner-breathe 5s ease-in-out infinite; }
+  .runner-frame--halo { box-shadow: inset 0 0 0 1.5px rgba(124, 92, 255, 0.55), inset 0 0 40px rgba(124, 92, 255, 0.18); animation: runner-breathe 5s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .runner-frame { animation: runner-breathe 5s ease-in-out infinite !important; } }
 
   .fbx-view { min-height: 0; }
   .fbx-view[hidden] { display: none; }
@@ -179,105 +195,132 @@ try {
   .fbx-empty { margin: 0; padding: 24px; color: var(--ink-400); font-size: 14px; text-align: center; }
 
   /* ---- Feedback: inbox split ---------------------------------------------- */
-  .fbx-split { display: grid; grid-template-columns: 340px minmax(0, 1fr); }
-  .fbx-list { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; background: rgba(26, 27, 38, 0.025); border-right: 1px solid var(--divider); }
-  .fbx-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 20px 20px 12px; }
-  .fbx-chip { padding: 4px 10px; border: 1px solid var(--divider); border-radius: var(--radius-pill); background: none; color: var(--ink-500); font-size: 12px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-chip:hover { background: rgba(26, 27, 38, 0.04); }
-  .fbx-chip:active { transform: scale(0.97); }
-  .fbx-chip.is-active { border-color: transparent; background: var(--accent-tint); color: var(--accent-600); font-weight: 600; }
+  .fbx-split { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); }
+  .fbx-list { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; background: var(--glass-tint-low); border-right: 1px solid var(--divider); }
+  .fbx-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 16px 16px 12px; }
+  .fbx-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border: 1px solid var(--divider); border-radius: var(--radius-pill); background: transparent; color: var(--ink-500); font-size: 13px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast); }
+  .fbx-chip:hover { color: var(--ink-900); }
+  .fbx-chip.is-active { border-color: rgba(124, 92, 255, 0.35); background: var(--accent-tint); color: var(--accent-600); }
+  .fbx-chip span { opacity: 0.7; }
   .fbx-chip span:empty { display: none; }
-  .fbx-rows { display: grid; align-content: start; gap: 2px; padding: 0 8px 8px; overflow-y: auto; overscroll-behavior: contain; }
-  .fbx-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; padding: 12px; border: 0; border-radius: var(--radius-sm); background: none; text-align: left; cursor: pointer; transition: background var(--dur-fast), box-shadow var(--dur-fast); }
-  .fbx-row:hover { background: rgba(26, 27, 38, 0.04); }
-  .fbx-row.is-selected { background: #fff; box-shadow: var(--shadow-sm); }
+  .fbx-rows { display: flex; flex-direction: column; gap: 4px; padding: 0 10px 10px; overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-row { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 12px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; text-align: left; cursor: pointer; transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast); }
+  .fbx-row:hover { background: var(--glass-tint-high); }
+  .fbx-row.is-selected { border-color: var(--accent-500); background: var(--glass-tint-high); box-shadow: var(--shadow-sm); }
   .fbx-row.is-selected:focus-visible { box-shadow: var(--shadow-sm), var(--shadow-focus); }
   .fbx-row.is-leaving { animation: fbx-leave var(--dur-med) var(--ease-smooth) forwards; }
   @keyframes fbx-leave { to { opacity: 0; transform: translateX(-12px); } }
-  .fbx-row__thumb { width: 56px; height: 42px; overflow: hidden; border-radius: 8px; background: rgba(26, 27, 38, 0.06); }
+  .fbx-row__thumb { width: 48px; height: 40px; flex: none; overflow: hidden; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: var(--glass-tint-high); }
   .fbx-row__thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
-  .fbx-row__text { display: grid; gap: 2px; min-width: 0; }
+  .fbx-row__text { display: flex; flex: 1; flex-direction: column; gap: 5px; min-width: 0; }
+  .fbx-row__comment { display: -webkit-box; overflow: hidden; color: var(--ink-900); font-size: 13px; font-weight: 500; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+  .fbx-row--new .fbx-row__comment { font-weight: 600; }
   .fbx-row__meta { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--ink-400); font-size: 12px; }
-  .fbx-row__path { overflow: hidden; font-family: var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
-  .fbx-row__time { margin-left: auto; white-space: nowrap; }
-  .fbx-row__comment { overflow: hidden; color: var(--ink-900); font-size: 14px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
-  .fbx-sdot { width: 6px; height: 6px; flex: none; border-radius: 50%; }
+  .fbx-row__path { min-width: 0; overflow: hidden; font-family: var(--font-mono); text-overflow: ellipsis; white-space: nowrap; }
+  .fbx-row__time { flex: none; white-space: nowrap; }
+  .fbx-sdot { flex: none; width: 6px; height: 6px; margin: 0 2px; border-radius: 50%; background: var(--ink-300); }
   .fbx-sdot--new { background: var(--accent-500); }
-  .fbx-sdot--in_progress { background: var(--warn-500); }
-  .fbx-sdot--done { background: var(--success-500); }
-  .fbx-addnote { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; margin: 8px 16px 16px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); background: none; color: var(--ink-500); font-size: 14px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
-  .fbx-addnote:hover, .fbx-addnote.is-active { background: rgba(26, 27, 38, 0.04); color: var(--ink-900); }
+  .fbx-sdot--choice { width: 10px; height: 10px; background: var(--accent-500); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.22); }
+  .fbx-addnote-wrap { padding: 12px 16px 16px; border-top: 1px solid var(--divider); }
+  .fbx-addnote { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px; border: 1px dashed var(--ink-300); border-radius: var(--radius-sm); background: transparent; color: var(--ink-500); font-size: 13px; font-weight: 500; cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast); }
+  .fbx-addnote:hover, .fbx-addnote.is-active { background: var(--glass-tint-med); color: var(--ink-900); }
+  .fbx-addnote svg { stroke-width: 1.5; }
 
-  .fbx-detail { min-height: 0; }
+  .fbx-detail { min-height: 0; min-width: 0; }
   .fbx-detail__item { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; min-height: 0; }
   .fbx-detail__item[hidden] { display: none; }
-  .fbx-detail__head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; min-height: 67px; padding: 16px 24px; border-bottom: 1px solid var(--divider); }
+  .fbx-detail__head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 14px 32px; border-bottom: 1px solid var(--divider); }
   .fbx-detail__head:empty { display: none; }
-  .fbx-detail__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; color: var(--ink-500); font-size: 13px; }
-  .fbx-detail__meta a { font-weight: 500; }
+  .fbx-detail__meta { min-width: 0; color: var(--ink-500); font-size: 13px; }
+  .fbx-detail__meta .fbx-jah { color: var(--accent-500); text-decoration: none; }
+  .fbx-detail__meta .fbx-jah:hover, .fbx-detail__meta .fbx-jah[aria-expanded="true"] { color: var(--accent-600); text-decoration: underline; }
   .fbx-detail__title { margin: 0; color: var(--ink-900); font: 600 15px/1.3 var(--font-body); }
   .fbx-detail__actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-  .fbx-detail__body { display: grid; align-content: start; gap: 20px; padding: 24px; overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-detail__body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+  .fbx-detail__inner { display: flex; flex-direction: column; gap: 32px; max-width: 880px; margin: 0 auto; padding: 28px 32px 40px; }
+  .fbx-noteform.fbx-detail__body { display: grid; align-content: start; padding: 28px 32px; }
   .fbx-back { display: none; }
+  .fbx-section { display: flex; flex-direction: column; gap: 14px; }
+  .fbx-eyebrow { color: var(--ink-400); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  .fbx-pill { padding: 2px 9px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+  .fbx-pill { padding: 3px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
   .fbx-pill--new { background: var(--accent-tint); color: var(--accent-600); }
-  .fbx-pill--in_progress, .fbx-pill--warn { background: var(--warn-100); color: var(--warn-700); }
+  .fbx-pill--in_progress { background: var(--info-100); color: var(--info-700); }
+  .fbx-pill--warn { background: var(--warn-100); color: var(--warn-700); }
   .fbx-pill--done { background: var(--success-100); color: var(--success-700); }
-  .fbx-pill--danger { background: var(--danger-100); color: #b91c1c; }
 
-  .fbx-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background var(--dur-fast), filter var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
-  .fbx-btn:hover { background: rgba(26, 27, 38, 0.04); }
+  .fbx-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--glass-tint-high); color: var(--ink-900); font-size: 13px; font-weight: 500; white-space: nowrap; cursor: pointer; box-shadow: var(--shadow-sm); transition: background var(--dur-fast), filter var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-btn:hover { background: #fff; }
   .fbx-btn:active { transform: scale(0.97); }
   .fbx-btn:disabled { opacity: 0.55; cursor: progress; }
   .fbx-btn--primary { border-color: transparent; background: var(--accent-500); color: #fff; font-weight: 600; }
   .fbx-btn--primary:hover { background: var(--accent-500); filter: brightness(1.08); }
-  .fbx-btn--dark { height: 42px; border-color: transparent; background: var(--ink-900); color: #fff; font-size: 14px; font-weight: 600; }
+  .fbx-btn--dark { padding: 0 20px; border: 0; background: var(--ink-900); color: #fff; font-size: 15px; font-weight: 600; box-shadow: none; }
   .fbx-btn--dark:hover { background: var(--ink-900); filter: brightness(1.25); }
-  .fbx-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink-500); cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-icon-btn { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--ink-500); cursor: pointer; transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
   .fbx-icon-btn:hover { background: var(--danger-100); color: var(--danger-500); }
   .fbx-icon-btn:active { transform: scale(0.97); }
+  .fbx-icon-btn svg { stroke-width: 1.5; }
 
-  .fbx-shot { position: relative; height: 300px; overflow: hidden; border-radius: var(--radius-md); background: rgba(26, 27, 38, 0.06); }
-  .fbx-shot__open { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
-  .fbx-shot__open img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
-  .fbx-shot--none { display: grid; place-items: center; height: 120px; color: var(--ink-400); font-size: 13px; }
-  .fbx-shot__chips { position: absolute; left: 12px; bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
-  .fbx-shot__chip { padding: 2px 7px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: #fff; font: 500 11px/1.5 var(--font-mono); }
-  .fbx-shot--none .fbx-shot__chip { background: rgba(26, 27, 38, 0.06); color: var(--ink-500); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .fbx a.fbx-shot__link { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--radius-xs); background: #fff; color: var(--ink-900); font-size: 12px; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-sm); }
-  .fbx-more { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -8px; }
-  .fbx-more button { width: 72px; height: 52px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: 8px; background: none; cursor: zoom-in; }
+  /* Feedback: the text (the only serif on the view), meta chips, screenshots */
+  .fbx-comment { margin: 0; color: var(--ink-900); font: 400 26px/1.3 var(--font-display); font-variation-settings: 'opsz' 36; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-metachips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--ink-500); font-size: 12px; }
+  .fbx-metachip { padding: 3px 8px; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: var(--glass-tint-med); font-family: var(--font-mono); }
+  .fbx-metachip--plain { font-family: var(--font-body); }
+  .fbx-metachip--danger { border-color: transparent; background: var(--danger-100); color: #b91c1c; font-family: var(--font-body); }
+  .fbx a.fbx-metalink { display: inline-flex; align-items: center; gap: 4px; color: var(--accent-500); font-weight: 500; text-decoration: none; }
+  .fbx a.fbx-metalink:hover { color: var(--accent-600); text-decoration: underline; }
+  .fbx-metalink svg { stroke-width: 1.5; }
+  .fbx-shot { display: block; width: 100%; max-height: 360px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: var(--radius-md); background: var(--glass-tint-med); cursor: zoom-in; }
+  .fbx-shot img { width: 100%; height: 100%; max-height: 360px; object-fit: cover; object-position: top left; display: block; }
+  .fbx-more { display: flex; flex-wrap: wrap; gap: 8px; }
+  .fbx-more button { width: 72px; height: 52px; padding: 0; overflow: hidden; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: none; cursor: zoom-in; }
   .fbx-more img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .fbx-comment { margin: 0; color: var(--ink-900); font-size: 20px; line-height: 1.45; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-  .fbx-scope { display: inline-flex; align-items: center; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--accent-tint); color: var(--accent-600); font-size: 11px; font-weight: 600; white-space: nowrap; }
-
-  /* AI interpretation: how the developer's AI read the comment */
+  /* AI interpretation: how the developer's AI read the comment (after work started) */
   .fbx-ai { padding: 12px 14px; border-left: 3px solid var(--accent-500); border-radius: 0 12px 12px 0; background: var(--accent-tint); }
   .fbx-ai__label { color: var(--ink-500); font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
   .fbx-ai__text { margin: 4px 0 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-  /* Proposed interpretations: the tester picks the one they meant */
-  .fbx-props { display: grid; gap: 10px; }
-  .fbx-props__intro { margin: 0; color: var(--ink-500); font-size: 14px; }
-  .fbx-props__option { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--divider); border-radius: 12px; background: #fff; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
-  .fbx-props__option.is-chosen { border-color: var(--accent-500); box-shadow: 0 0 0 3px var(--accent-tint); }
-  .fbx-props__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; color: var(--ink-900); font-size: 15px; }
-  .fbx-props__key { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-100); color: var(--accent-600); font-size: 12px; font-weight: 700; }
-  .fbx-props__chip { padding: 1px 8px; border-radius: var(--radius-pill); background: rgba(26, 27, 38, 0.05); color: var(--ink-500); font-size: 11px; font-weight: 600; }
-  .fbx-props__chip--rec { background: var(--accent-tint); color: var(--accent-600); }
-  .fbx-props__text { margin: 0; color: var(--ink-900); font-size: 15px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .fbx-props__how summary { color: var(--ink-500); font-size: 13px; cursor: pointer; }
-  .fbx-props__how p { margin: 6px 0 0; color: var(--ink-700); font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .fbx-props__action { display: flex; justify-content: flex-end; min-height: 18px; }
-  .fbx-props__option.is-choosable { cursor: pointer; }
-  .fbx-props__option.is-choosable:hover, .fbx-props__option.is-choosable:focus-visible { border-color: var(--accent-400); background: var(--accent-tint); outline: none; }
-  .fbx-props__option.is-choosable:focus-visible { box-shadow: 0 0 0 3px var(--accent-tint); }
-  .fbx-props__hint { color: var(--accent-600); font-size: 13px; font-weight: 600; opacity: 0; transition: opacity var(--dur-fast); }
-  .fbx-props__option.is-choosable:hover .fbx-props__hint, .fbx-props__option.is-choosable:focus-visible .fbx-props__hint { opacity: 1; }
-  @media (hover: none) { .fbx-props__hint { opacity: 1; } }
-  .fbx-props__chosen { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-600); font-size: 13px; font-weight: 600; }
+  /* Proposals: the tester picks the card that matches what they meant */
+  .fbx-props__title { margin: 4px 0 0; color: var(--ink-900); font: 600 20px/1.25 var(--font-body); letter-spacing: -0.01em; }
+  .fbx-banner { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; }
+  .fbx-banner strong { font-weight: 600; }
+  .fbx-banner > span { flex: 1; }
+  .fbx-banner--pending { background: var(--warn-100); color: var(--warn-800); }
+  .fbx-banner--chosen { background: var(--success-100); color: var(--success-700); }
+  .fbx-banner button { padding: 0; border: 0; background: none; color: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; }
+  .fbx-cards { display: flex; flex-direction: column; gap: 12px; }
+  .fbx-card { position: relative; display: flex; gap: 14px; padding: 18px 20px; border: 2px solid var(--glass-border); border-radius: var(--radius-md); background: var(--glass-tint-med); box-shadow: var(--shadow-sm); cursor: pointer; transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast), opacity var(--dur-fast); }
+  .fbx-card[aria-disabled="true"] { cursor: default; }
+  .fbx-card.is-selected { border-color: var(--accent-500); background: #fff; box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.14), var(--shadow-md); }
+  .fbx-cards.has-choice .fbx-card:not(.is-selected) { opacity: 0.6; }
+  .fbx-cards.has-choice .fbx-card:not(.is-selected):hover, .fbx-cards.has-choice .fbx-card:not(.is-selected):focus-visible { opacity: 1; }
+  .fbx .fbx-card:focus-visible { box-shadow: var(--shadow-focus), var(--shadow-sm); }
+  .fbx .fbx-card.is-selected:focus-visible { box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.35), var(--shadow-md); }
+  .fbx-radio { display: grid; place-items: center; flex: none; width: 22px; height: 22px; margin-top: 1px; border: 1.5px solid var(--ink-300); border-radius: 50%; background: #fff; color: #fff; transition: all var(--dur-fast); }
+  .fbx-card.is-selected .fbx-radio { border: 2px solid var(--accent-500); background: var(--accent-500); }
+  .fbx-radio svg { stroke-width: 3; }
+  .fbx-card__main { display: flex; flex: 1; flex-direction: column; gap: 8px; min-width: 0; }
+  .fbx-card__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .fbx-card__key { color: var(--ink-400); font: 500 12px var(--font-mono); }
+  .fbx-card__title { color: var(--ink-900); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .fbx-card__pill { padding: 2px 8px; border-radius: var(--radius-pill); background: var(--divider); color: var(--ink-500); font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .fbx-card__pill--rec { background: var(--accent-tint); color: var(--accent-600); font-weight: 600; }
+  .fbx-card__body { margin: 0; color: var(--ink-700); font-size: 15px; line-height: 1.5; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .fbx-card__note { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+  .fbx-card__note svg { margin-top: 2px; stroke-width: 2; }
+  .fbx-card__note--good { color: var(--success-700); }
+  .fbx-card__note--warn { color: var(--warn-800); }
+  .fbx-card__how { display: flex; align-self: flex-start; align-items: center; gap: 6px; margin-top: 2px; padding: 0; border: 0; background: none; color: var(--ink-500); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .fbx-card__how:hover { color: var(--ink-900); }
+  .fbx-card__how svg { transition: transform var(--dur-med); }
+  .fbx-card__how[aria-expanded="true"] svg { transform: rotate(90deg); }
+  .fbx-card__steps { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 12px 14px 12px 30px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--glass-tint-low); color: var(--ink-700); font-size: 13px; overflow-wrap: anywhere; }
+  .fbx-noprops { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 32px; border: 1px dashed var(--ink-300); border-radius: var(--radius-md); text-align: center; }
+  .fbx-noprops svg { color: var(--ink-400); stroke-width: 1.5; }
+  .fbx-noprops strong { color: var(--ink-900); font-size: 15px; font-weight: 600; }
+  .fbx-noprops span { color: var(--ink-500); font-size: 13px; }
 
   /* Thread: developer bubbles left, tester replies right */
   .fbx-thread { display: grid; gap: 10px; }
@@ -292,10 +335,10 @@ try {
   .fbx-bubble__body img { display: block; max-width: 100%; max-height: 260px; border-radius: 8px; cursor: zoom-in; }
   .fbx-bubble__body code { padding: 1px 5px; border-radius: var(--radius-xs); background: rgba(26, 27, 38, 0.06); font: 13px var(--font-mono); }
 
-  .fbx-composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; padding: 16px 24px; border-top: 1px solid var(--divider); }
+  .fbx-composer { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: stretch; padding: 14px 32px 18px; border-top: 1px solid var(--divider); }
   .fbx-composer[hidden] { display: none; }
-  .fbx-composer textarea, .fbx-field input, .fbx-field textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-900); font-size: 14px; line-height: 1.45; resize: none; transition: box-shadow var(--dur-fast), border-color var(--dur-fast); }
-  .fbx-composer textarea { min-height: 42px; max-height: 140px; }
+  .fbx-composer textarea, .fbx-field input, .fbx-field textarea { width: 100%; padding: 11px 14px; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: var(--glass-tint-high); color: var(--ink-900); font-size: 15px; line-height: 1.45; resize: none; transition: box-shadow var(--dur-fast), border-color var(--dur-fast); }
+  .fbx-composer textarea { min-height: 44px; max-height: 140px; }
   .fbx-composer textarea::placeholder, .fbx-field ::placeholder { color: var(--ink-400); }
   .fbx-composer textarea:focus, .fbx-field input:focus, .fbx-field textarea:focus { outline: none; border-color: var(--accent-400); box-shadow: var(--shadow-focus); }
   .fbx-composer__status { grid-column: 1 / -1; margin: 0; color: #b91c1c; font-size: 13px; }
@@ -368,16 +411,17 @@ try {
   /* ---- Smaller screens: list → detail ------------------------------------- */
   @media (max-width: 900px) {
     .fbx-panel { inset: 12px; }
+    .fbx-detail__inner { padding: 20px 16px 32px; gap: 24px; }
+    .fbx-noteform.fbx-detail__body { padding: 16px; }
+    .fbx-card { padding: 14px 16px; gap: 12px; }
     .fbx-split { grid-template-columns: minmax(0, 1fr); }
     .fbx-split:not(.is-detail) .fbx-detail { display: none; }
     .fbx-split.is-detail .fbx-list { display: none; }
     .fbx-back { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid var(--divider); border-radius: var(--radius-sm); background: #fff; color: var(--ink-700); cursor: pointer; }
     .fbx-detail__head { padding: 12px 16px; }
     .fbx-detail__actions { margin-left: 0; width: 100%; }
-    .fbx-detail__body { padding: 16px; }
     .fbx-composer { padding: 12px 16px; }
-    .fbx-shot { height: 200px; }
-    .fbx-comment { font-size: 18px; }
+    .fbx-comment { font-size: 21px; }
     .fbx-bubble { max-width: 88%; }
     .fbx-timeline { padding: 24px 16px 32px; }
     .fbx-entry { grid-template-columns: 56px 16px minmax(0, 1fr); gap: 12px; }
@@ -416,22 +460,28 @@ try {
       screenshotFailed?: boolean;
     };
   };
-  type Filter = 'new' | 'in_progress' | 'done' | 'all';
+  type Filter = 'new' | 'in_progress' | 'done';
   type View = 'feedback' | 'changelog' | 'notes';
 
   const API = '/__feedback/api/entries';
   // Feedback is anonymous (PSEUDONYM); older entries may still carry a name, never shown.
   const STATUS_KEY: Record<string, Filter> = { New: 'new', 'In progress': 'in_progress', Done: 'done' };
-  const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done', all: 'All' };
+  const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done' };
   // Old links (#new, #in-progress, …) still open the Feedback tab with that filter.
-  const LEGACY_HASH: Record<string, Filter> = { '#new': 'new', '#in-progress': 'in_progress', '#done': 'done', '#all': 'all' };
+  const LEGACY_HASH: Record<string, Filter> = { '#new': 'new', '#in-progress': 'in_progress', '#done': 'done', '#all': 'new' };
   const EMBED_LABELS: Record<string, string> = { youtube: '▶ YouTube video', map: 'Map', iframe: 'Embed' };
   const FILTER_KEY = 'feedback-status-filter';
   const ICON = {
     check: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
     trash: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
     back: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>',
-    open: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>',
+    open: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>',
+    tick: '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    info: '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>',
+    good: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>',
+    chevron: '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   };
 
   const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
@@ -474,7 +524,9 @@ try {
   let entries: Entry[] = [];
   let loaded = false;
   let lastPayload = '';
-  let statusFilter: Filter = (['new', 'in_progress', 'done', 'all'] as const).find((f) => f === readStorage(FILTER_KEY)) || 'new';
+  let statusFilter: Filter = (['new', 'in_progress', 'done'] as const).find((f) => f === readStorage(FILTER_KEY)) || 'new';
+  /** Proposals whose "How it would be built" is open, as `${entryId}:${key}`. */
+  const buildDetailsOpen = new Set<string>();
   let selectedId = '';
   let addingNote = false;
   const replyDraft = new Map<string, string>();
@@ -488,8 +540,11 @@ try {
     statusFilter = LEGACY_HASH[location.hash];
     history.replaceState(null, '', '#feedback');
   }
-  const visibleEntries = () => (statusFilter === 'all' ? entries : entries.filter((entry) => STATUS_KEY[entry.status] === statusFilter));
+  const visibleEntries = () => entries.filter((entry) => STATUS_KEY[entry.status] === statusFilter);
   const selectedEntry = () => entries.find((entry) => entry.id === selectedId);
+  const proposalOptions = (entry: Entry) => (entry.proposals?.options || []).filter((option) => option && option.key && option.interpretation);
+  /** Proposals are waiting for the tester: there are some and none is chosen yet. */
+  const needsChoice = (entry: Entry) => entry.status === 'New' && proposalOptions(entry).length > 0 && !entry.proposals?.chosen;
   const isNarrow = () => matchMedia('(max-width: 900px)').matches;
 
   // ---- Rendering --------------------------------------------------------------
@@ -509,7 +564,7 @@ try {
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((count) => {
       const status = count.dataset.count!;
       if (status === 'Notes') { count.textContent = notesLoaded && notes.length ? String(notes.length) : ''; return; }
-      const n = status === 'All' ? entries.length : entries.filter((entry) => entry.status === status).length;
+      const n = entries.filter((entry) => entry.status === status).length;
       count.textContent = loaded && n ? String(n) : '';
     });
     renderNotes();
@@ -529,17 +584,20 @@ try {
     }
     const hadFocus = list.contains(document.activeElement);
     if (!visible.length) {
-      list.innerHTML = `<p class="fbx-empty">${statusFilter === 'new' ? 'No new feedback. 🎉' : 'Nothing here.'}</p>`;
+      list.innerHTML = '<p class="fbx-empty">Nothing waiting on you. Take a breath.</p>';
       return;
     }
     list.innerHTML = visible.map((entry) => {
       const shot = entry.images[0];
-      const status = STATUS_KEY[entry.status] || 'new';
-      return `<button type="button" class="fbx-row${entry.id === selectedId && !addingNote ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${entry.id === selectedId && !addingNote}">
+      const isNew = entry.status === 'New';
+      // Dot: big ringed violet = proposals wait for a choice; small violet = new; grey otherwise.
+      const [dot, dotTitle] = needsChoice(entry) ? ['choice', 'Needs your choice'] : isNew ? ['new', 'New'] : ['', entry.status];
+      const selected = entry.id === selectedId && !addingNote;
+      return `<button type="button" class="fbx-row${isNew ? ' fbx-row--new' : ''}${selected ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${selected}">
           <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
           <span class="fbx-row__text">
-            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span>${entry.scope === 'site' ? '<span class="fbx-scope">Every page</span>' : ''}<span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
-            <span class="fbx-row__comment">${escapeHtml(entry.message.split('\n')[0])}</span>
+            <span class="fbx-row__comment">${escapeHtml(entry.message)}</span>
+            <span class="fbx-row__meta"><span class="fbx-sdot${dot ? ` fbx-sdot--${dot}` : ''}" title="${dotTitle}"></span><span class="fbx-row__path">${escapeHtml(entry.scope === 'site' ? 'Every page' : entry.page || '—')}</span><span aria-hidden="true">·</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
           </span>
         </button>`;
     }).join('');
@@ -574,66 +632,96 @@ try {
     const status = STATUS_KEY[entry.status] || 'new';
     const [shot, ...rest] = entry.images;
     const viewport = entry.metadata?.viewport;
-    const chips = `${entry.page ? `<span class="fbx-shot__chip">${escapeHtml(entry.page)}</span>` : ''}${entry.scope === 'site' ? '<span class="fbx-shot__chip">Every page</span>' : ''}${viewport ? `<span class="fbx-shot__chip">${viewport.width}×${viewport.height}</span>` : ''}`;
-    const openPage = entry.page && safeHref(entry.page) ? `<a class="fbx-shot__link" href="${safeHref(entry.page)}" target="_blank" rel="noreferrer">Open page ${ICON.open}</a>` : '';
+    const chips = [
+      entry.page ? `<span class="fbx-metachip">${escapeHtml(entry.page)}</span>` : '',
+      viewport ? `<span class="fbx-metachip">${viewport.width}×${viewport.height}</span>` : '',
+      entry.scope === 'site' ? '<span class="fbx-metachip fbx-metachip--plain" title="This feedback applies to every page, not just the one it was sent from">Every page</span>' : '',
+      entry.metadata?.screenshotFailed ? '<span class="fbx-metachip fbx-metachip--danger">Screenshot failed</span>' : '',
+      shot || entry.metadata?.screenshotFailed ? '' : '<span>No screenshot attached</span>',
+      ...(entry.metadata?.embeds || []).map((embed) => `<a class="fbx-metalink" href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`),
+      entry.page && safeHref(entry.page) ? `<a class="fbx-metalink" href="${safeHref(entry.page)}" target="_blank" rel="noreferrer">Open page ${ICON.open}</a>` : '',
+    ].join('');
     detailHead.innerHTML = `
       <button type="button" class="fbx-back" data-back aria-label="Back to the list">${ICON.back}</button>
       <span class="fbx-pill fbx-pill--${status}">${entry.status}</span>
-      <span class="fbx-detail__meta">
-        <span>${nameButton()} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
-        ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('')}
-        ${entry.scope === 'site' ? '<span class="fbx-scope" title="This feedback applies to every page, not just the one it was sent from">Applies to every page</span>' : ''}
-        ${entry.metadata?.screenshotFailed ? '<span class="fbx-pill fbx-pill--danger">Screenshot failed</span>' : ''}
-      </span>
+      <span class="fbx-detail__meta">${nameButton()} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
       <span class="fbx-detail__actions">
         ${entry.status === 'New' ? '<button type="button" class="fbx-btn" data-progress>Mark in progress</button>' : ''}
         ${entry.status === 'In progress' ? `<button type="button" class="fbx-btn fbx-btn--primary" data-accept title="The change works: move this to Done">${ICON.check}Accept change</button>` : ''}
         <button type="button" class="fbx-icon-btn" data-delete aria-label="Delete" title="Delete">${ICON.trash}</button>
       </span>`;
-    detailBody.innerHTML = `
-      ${shot
-        ? `<div class="fbx-shot"><button type="button" class="fbx-shot__open" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}"></button><span class="fbx-shot__chips">${chips}</span>${openPage}</div>`
-        : `<div class="fbx-shot fbx-shot--none">No screenshot<span class="fbx-shot__chips">${chips}</span>${openPage}</div>`}
-      ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
-      <p class="fbx-comment">${escapeHtml(entry.message)}</p>
+    detailBody.innerHTML = `<div class="fbx-detail__inner">
+      <section class="fbx-section" aria-label="Feedback">
+        <div class="fbx-eyebrow">Feedback</div>
+        <p class="fbx-comment">${escapeHtml(entry.message)}</p>
+        <div class="fbx-metachips">${chips}</div>
+        ${shot ? `<button type="button" class="fbx-shot" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}"></button>` : ''}
+        ${rest.length ? `<div class="fbx-more">${rest.map((image) => `<button type="button" data-zoom="${image.url}" aria-label="Enlarge image"><img src="${image.url}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
+      </section>
       ${renderInterpretation(entry)}
       ${renderProposals(entry)}
-      ${renderThread(entry)}`;
+      ${renderThread(entry)}
+    </div>`;
   }
 
   // Proposals store effort as S / M / L; testers read it as low / medium / high effort.
   const EFFORT_LABELS: Record<string, string> = { s: 'Low', small: 'Low', low: 'Low', m: 'Medium', medium: 'Medium', l: 'High', large: 'High', high: 'High' };
   const effortLabel = (effort: string) => `${EFFORT_LABELS[effort.trim().toLowerCase()] || effort} effort`;
 
+  // The vision line ("✅ In line: …", "⚠️ …", "❌ …") becomes the card's trade-off:
+  // positive or caveat, shown with an icon instead of the emoji.
+  function tradeOff(vision: string) {
+    const kind = /^\s*✅/u.test(vision) ? 'good' : 'warn';
+    return { kind, text: vision.replace(/^[\s\p{Extended_Pictographic}️]+/u, '').trim() };
+  }
+  // "How it would be built": one step per sentence or clause of the implementation text.
+  const buildSteps = (text: string) => text.split(/(?<=[.;])\s+(?=[A-Z0-9'"‘“(])/).map((step) => step.trim()).filter(Boolean);
+
   function renderProposals(entry: Entry) {
     const proposals = entry.proposals;
-    const options = (proposals?.options || []).filter((option) => option && option.key && option.interpretation);
-    if (!proposals || !options.length) return '';
+    const options = proposalOptions(entry);
     const locked = entry.status !== 'New';
-    const intro = proposals.chosen
-      ? (locked ? 'You chose the interpretation marked below; work on it has started.' : 'Thanks! You can still change your choice until work starts.')
-      : 'The AI developer read your feedback in these ways. Click the card that matches what you meant.';
-    return `<section class="fbx-props" aria-label="Proposed interpretations">
-        <div class="fbx-ai__label">Which interpretation fits? · ${escapeHtml(proposals.by || 'AI')}</div>
-        <p class="fbx-props__intro">${intro}</p>
-        ${options.map((option) => {
-          const chosen = option.key === proposals.chosen;
-          const chips = [
-            option.key === proposals.recommended ? '<span class="fbx-props__chip fbx-props__chip--rec">Recommended</span>' : '',
-            option.effort ? `<span class="fbx-props__chip" title="Effort">${escapeHtml(effortLabel(option.effort))}</span>` : '',
-            option.vision ? `<span class="fbx-props__chip" title="Fit with the site vision">${escapeHtml(option.vision)}</span>` : '',
-          ].join('');
-          // The whole card is the choice: hover highlights it, click (or Enter/Space) picks it.
-          const choosable = !locked && !chosen;
-          const action = chosen ? `<span class="fbx-props__chosen">${ICON.check}Chosen</span>` : choosable ? '<span class="fbx-props__hint">Click to choose</span>' : '';
-          const attrs = choosable ? ` data-choose="${escapeHtml(option.key)}" role="button" tabindex="0" aria-label="Choose option ${escapeHtml(option.key)}: ${escapeHtml(option.title || '')}"` : '';
-          return `<article class="fbx-props__option${chosen ? ' is-chosen' : ''}${choosable ? ' is-choosable' : ''}"${attrs}>
-              <div class="fbx-props__head"><span class="fbx-props__key">${escapeHtml(option.key)}</span><strong>${escapeHtml(option.title || '')}</strong>${chips}</div>
-              <p class="fbx-props__text">${escapeHtml(option.interpretation)}</p>
-              ${option.implementation ? `<details class="fbx-props__how"><summary>How we'd build it</summary><p>${escapeHtml(option.implementation)}</p></details>` : ''}
-              ${action ? `<div class="fbx-props__action">${action}</div>` : ''}
-            </article>`;
-        }).join('')}
+    if (!proposals || !options.length) {
+      // Only new feedback waits for proposals; older items simply never had them.
+      return locked ? '' : `<section class="fbx-section" aria-label="Proposals"><div class="fbx-noprops">${ICON.clock}<strong>No proposals yet</strong><span>You'll be asked to choose once the developer has read this.</span></div></section>`;
+    }
+    const chosen = options.find((option) => option.key === proposals.chosen);
+    const by = (proposals.by || 'the developer').replace(/\s*\(AI\)\s*$/, '');
+    const banner = chosen
+      ? `<div class="fbx-banner fbx-banner--chosen" role="status">${ICON.check}<span><strong>You chose ${escapeHtml(chosen.key)}.</strong> ${locked ? 'Work on it has started.' : 'Sent to the developer. Pick another card to change it.'}</span>${locked ? '' : '<button type="button" data-clear-choice>Undo</button>'}</div>`
+      : locked ? '' : `<div class="fbx-banner fbx-banner--pending" role="status">${ICON.info}<span><strong>No choice yet.</strong> The developer waits for your pick before building.</span></div>`;
+    return `<section class="fbx-section" aria-labelledby="props-title">
+        <div>
+          <div class="fbx-eyebrow">Proposals · from ${escapeHtml(by)}</div>
+          <h3 class="fbx-props__title" id="props-title">Which one matches what you meant?</h3>
+        </div>
+        ${banner}
+        <div class="fbx-cards${chosen ? ' has-choice' : ''}" role="radiogroup" aria-labelledby="props-title">
+          ${options.map((option, index) => {
+            const selected = option === chosen;
+            const openKey = `${entry.id}:${option.key}`;
+            const open = buildDetailsOpen.has(openKey);
+            const note = option.vision ? tradeOff(option.vision) : undefined;
+            const steps = option.implementation ? buildSteps(option.implementation) : [];
+            // The whole card is the radio: click or Enter/Space picks it, clicking the chosen card clears it.
+            const focusable = chosen ? selected : index === 0;
+            return `<div class="fbx-card${selected ? ' is-selected' : ''}" role="radio" aria-checked="${selected}" tabindex="${focusable ? 0 : -1}" data-choose="${escapeHtml(option.key)}"${locked ? ' aria-disabled="true"' : ''}>
+                <span class="fbx-radio" aria-hidden="true">${selected ? ICON.tick : ''}</span>
+                <div class="fbx-card__main">
+                  <div class="fbx-card__head">
+                    <span class="fbx-card__key">${escapeHtml(option.key)}</span>
+                    <span class="fbx-card__title">${escapeHtml(option.title || '')}</span>
+                    ${option.key === proposals.recommended ? '<span class="fbx-card__pill fbx-card__pill--rec">Recommended</span>' : ''}
+                    ${option.effort ? `<span class="fbx-card__pill">${escapeHtml(effortLabel(option.effort))}</span>` : ''}
+                  </div>
+                  <p class="fbx-card__body">${escapeHtml(option.interpretation)}</p>
+                  ${note?.text ? `<div class="fbx-card__note fbx-card__note--${note.kind}">${note.kind === 'good' ? ICON.good : ICON.warn}<span>${escapeHtml(note.text)}</span></div>` : ''}
+                  ${steps.length ? `<button type="button" class="fbx-card__how" data-build="${escapeHtml(openKey)}" aria-expanded="${open}">${ICON.chevron}How it would be built</button>
+                  ${open ? `<ul class="fbx-card__steps">${steps.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}</ul>` : ''}` : ''}
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
       </section>`;
   }
 
@@ -738,32 +826,57 @@ try {
     notePane.querySelector('textarea')?.focus();
   });
 
-  // Picking a proposed interpretation: the card itself is the control.
-  async function chooseOption(option: string) {
+  // Picking a proposed interpretation: the card itself is the control. Picking the
+  // chosen card again (or Undo) clears the choice (option null).
+  async function chooseOption(option: string | null) {
     const entry = selectedEntry();
     const proposals = entry?.proposals;
-    if (!entry || !proposals) return;
+    if (!entry || !proposals || entry.status !== 'New') return;
     const before = { chosen: proposals.chosen, chosenAt: proposals.chosenAt };
     await mutate(
       () => fetch(`${API}/${entry.id}/choose`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ option }) }),
-      () => { proposals.chosen = option; proposals.chosenAt = new Date().toISOString(); },
+      () => { proposals.chosen = option ?? undefined; proposals.chosenAt = option ? new Date().toISOString() : undefined; },
       () => { proposals.chosen = before.chosen; proposals.chosenAt = before.chosenAt; },
-      'Could not save your choice.',
+      option ? 'Could not save your choice.' : 'Could not undo your choice.',
     );
+    $<HTMLElement>(`.fbx-card[data-choose="${CSS.escape(option ?? before.chosen ?? '')}"]`)?.focus();
   }
-  const choosableCard = (target: Element) =>
-    target.closest('.fbx-props__how') ? null : target.closest<HTMLElement>('.fbx-props__option[data-choose]');
+  const toggleOption = (key: string) => chooseOption(selectedEntry()?.proposals?.chosen === key ? null : key);
+  const cardFor = (target: EventTarget | null) =>
+    target instanceof Element && !target.closest('.fbx-card__how, .fbx-card__steps') ? target.closest<HTMLElement>('.fbx-card[data-choose]:not([aria-disabled="true"])') : null;
   $('.fbx-detail').addEventListener('keydown', (event) => {
-    const card = event.target instanceof HTMLElement && event.target.matches('.fbx-props__option[data-choose]') ? event.target : null;
-    if (!card || (event.key !== 'Enter' && event.key !== ' ')) return;
+    const card = event.target instanceof HTMLElement && event.target.matches('.fbx-card[data-choose]') ? event.target : null;
+    if (!card) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      if (card.getAttribute('aria-disabled') !== 'true') void toggleOption(card.dataset.choose!);
+      return;
+    }
+    // Arrow keys move between the cards (radio group), without choosing.
+    const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[event.key];
+    if (!step) return;
     event.preventDefault();
-    void chooseOption(card.dataset.choose!);
+    const cards = [...card.parentElement!.querySelectorAll<HTMLElement>('.fbx-card')];
+    const next = cards[(cards.indexOf(card) + step + cards.length) % cards.length];
+    cards.forEach((item) => { item.tabIndex = item === next ? 0 : -1; });
+    next.focus();
   });
 
   $('.fbx-detail').addEventListener('click', async (event) => {
     const target = event.target as Element;
-    const card = choosableCard(target);
-    if (card) return chooseOption(card.dataset.choose!);
+    const how = target.closest<HTMLButtonElement>('[data-build]');
+    if (how) {
+      const key = how.dataset.build!;
+      if (!buildDetailsOpen.delete(key)) buildDetailsOpen.add(key);
+      const scroll = detailBody.scrollTop;
+      renderDetail();
+      detailBody.scrollTop = scroll;
+      $<HTMLElement>(`[data-build="${CSS.escape(key)}"]`)?.focus();
+      return;
+    }
+    if (target.closest('[data-clear-choice]')) return chooseOption(null);
+    const card = cardFor(target);
+    if (card) return toggleOption(card.dataset.choose!);
     const bubbleImage = target.closest<HTMLImageElement>('.fbx-bubble__body img');
     if (bubbleImage) return openLightbox(bubbleImage.src);
     const button = target.closest<HTMLButtonElement>('button');
@@ -785,7 +898,7 @@ try {
       if (accepting && !confirm('Accept this change? It moves to Done.')) return;
       const next = accepting ? 'Done' : 'In progress';
       const before = entry.status;
-      const leaves = statusFilter !== 'all' && FILTER_STATUS[statusFilter] !== next;
+      const leaves = FILTER_STATUS[statusFilter] !== next;
       const nextId = leaves ? await leaveRow(id) : id;
       await mutate(
         () => fetch(`${API}/${id}/${accepting ? 'accept' : 'progress'}`, { method: 'POST' }),
