@@ -137,7 +137,10 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > `/feedback` is a dialog over the real homepage
 > (`src/components/HomeContent.astro`, shown inert behind a dark blurred
 > scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
-> came from.
+> came from after the SVR Productions exit sting (zoom, staggered title, white fade).
+> Reduced motion uses opacity-only fades. `data-exit-speed` on the dialog root
+> controls playback speed; `src/feedback/svr-transition.ts` returns a disposer
+> to cancel animations when navigating away.
 
 Testers can send feedback from any page (except `/admin`), on both the dev
 server and production: click the **Feedback** button (bottom left) or press

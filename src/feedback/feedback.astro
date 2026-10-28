@@ -31,7 +31,8 @@ try {
 
   <div class="inbox-behind" inert aria-hidden="true"><HomeContent /></div>
 
-  <div class="fbx">
+  <div class="fbx-exit-white" aria-hidden="true"></div>
+  <div class="fbx" data-exit-speed="1">
     <div class="fbx-scrim" data-close aria-hidden="true"></div>
     <section class="fbx-panel" role="dialog" aria-modal="true" aria-labelledby="fbx-title">
       <h1 id="fbx-title" class="fbx-sr">Testing</h1>
@@ -105,6 +106,7 @@ try {
         <div id="notes-list" class="fbx-timeline" aria-live="polite"><p class="fbx-empty">Loading notes…</p></div>
       </div>
     </section>
+    <div class="fbx-exit-title" aria-hidden="true"></div>
     <div id="jah-manifest" class="fbx-manifest" role="tooltip" hidden><strong>{MANIFEST_TITLE}</strong><p>{MANIFEST_TEXT}</p></div>
   </div>
 
@@ -151,15 +153,19 @@ try {
   html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
   .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: radial-gradient(120% 90% at 0% 0%, #fde2e4 0%, transparent 55%), radial-gradient(100% 80% at 100% 0%, #bae6fd 0%, transparent 60%), radial-gradient(120% 100% at 100% 100%, #e9d5ff 0%, transparent 55%), radial-gradient(100% 90% at 0% 100%, #fef3c7 0%, transparent 55%), linear-gradient(180deg, rgba(250, 250, 255, 0.92) 0%, rgba(243, 241, 255, 0.92) 100%); opacity: 0.85; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
-  .fbx-panel { position: fixed; inset: 24px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: var(--glass-tint-high); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); border: 1px solid var(--glass-border); border-bottom-color: var(--glass-edge-dark); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
-  .fbx.is-closing .fbx-panel { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
-  .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
+  .fbx-panel { position: fixed; inset: 24px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: var(--glass-tint-high); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--glass-border); border-bottom-color: var(--glass-edge-dark); border-radius: 14px; will-change: transform, opacity, filter; box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
+  .fbx-exit-white { display: none; position: fixed; inset: 0; z-index: 9499; background: white; }
+  body:has(.fbx.is-closing) .fbx-exit-white { display: block; }
+  .fbx.is-closing { position: fixed; inset: 0; z-index: 9500; overflow: hidden; background: radial-gradient(120% 90% at 0% 0%, #fde2e4 0%, transparent 55%), radial-gradient(100% 80% at 100% 0%, #bae6fd 0%, transparent 60%), radial-gradient(120% 100% at 100% 100%, #e9d5ff 0%, transparent 55%), radial-gradient(100% 90% at 0% 100%, #fef3c7 0%, transparent 55%), linear-gradient(180deg, #fafaff 0%, #f3f1ff 100%); }
+  .fbx.is-closing .fbx-panel { animation: none; pointer-events: none; }
+  .fbx.is-closing .fbx-scrim { animation: none; background: rgba(26,27,38,0.12); opacity: 1; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .fbx-exit-title { display: none; position: absolute; inset: 0; z-index: 9700; align-items: center; justify-content: center; pointer-events: none; font-family: 'Fraunces', Georgia, serif; font-weight: 400; font-size: clamp(36px, 7vw, 104px); letter-spacing: 0.08em; color: #1a1b26; white-space: nowrap; }
+  .fbx.is-closing .fbx-exit-title { display: flex; }
+  @media (max-width: 600px) { .fbx-exit-title { font-size: 6vw; } }
   @keyframes fbx-fade { from { opacity: 0; } }
   @keyframes fbx-enter { from { opacity: 0; transform: translateY(8px); } }
-  @keyframes fbx-exit { to { opacity: 0; transform: scale(0.98); } }
   @media (prefers-reduced-motion: reduce) {
     .fbx-panel { animation-name: fbx-fade; }
-    .fbx.is-closing .fbx-panel { animation-name: fbx-fade; animation-direction: reverse; }
     .fbx *, .fbx *::before, .fbx *::after { transition-duration: 0s !important; }
   }
 
@@ -439,6 +445,7 @@ try {
 </style>
 
 <script>
+  import { svrTransition } from './svr-transition';
   import { PSEUDONYM } from './manifest';
 
   type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
@@ -989,19 +996,30 @@ try {
   lightbox.addEventListener('click', (event) => { if (event.target === lightbox) lightbox.close(); });
 
   // ---- Close: Esc, the scrim or the Esc chip go back to the site --------------------
+  let cancelExit: (() => void) | undefined;
   function close() {
     if (root.classList.contains('is-closing')) return;
+    hideManifest();
     root.classList.add('is-closing');
     const fromSite = document.referrer.startsWith(location.origin) && !new URL(document.referrer).pathname.startsWith('/feedback');
-    setTimeout(() => { if (fromSite && history.length > 1) history.back(); else location.href = '/'; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 240);
+    cancelExit = svrTransition({
+      root, modal: $('.fbx-panel'), scrim: $('.fbx-scrim'), title: $('.fbx-exit-title'),
+      speed: Number(root.dataset.exitSpeed),
+      onDone: () => { if (fromSite && history.length > 1) history.back(); else location.href = '/'; },
+    });
   }
+  function resetExit() {
+    cancelExit?.();
+    cancelExit = undefined;
+    root.classList.remove('is-closing');
+  }
+  window.addEventListener('pagehide', resetExit);
+  document.addEventListener('astro:before-swap', resetExit);
+  $('.fbx-panel').addEventListener('click', (event) => event.stopPropagation());
   document.querySelectorAll('[data-close]').forEach((element) => element.addEventListener('click', close));
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || lightbox.open || event.defaultPrevented) return;
     if (!manifest.hidden) { hideManifest(); return; }
-    const field = document.activeElement;
-    // Esc in a text field first leaves the field.
-    if (field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) { field.blur(); return; }
     close();
   });
 
