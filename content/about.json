@@ -156,7 +156,7 @@
     "title": "Previous editions",
     "visible": true,
     "minYear": 2002,
-    "maxYear": 2025,
+    "maxYear": 2026,
     "defaultText": "Throwback text for this edition is on its way.",
     "items": [
       {
@@ -225,17 +225,6 @@
         "showPhoto": false,
         "paragraphs": [
           "zie 2007"
-        ]
-      },
-      {
-        "year": 2026,
-        "poster": "/assets/WhatsApp Image 2026-10-27 at 13.20.47.jpeg",
-        "video": "https://www.youtube.com/watch?v=knswTYKdwh0",
-        "showVideo": true,
-        "photo": "",
-        "showPhoto": true,
-        "paragraphs": [
-          "it was Iwesome"
         ]
       },
       {
@@ -392,6 +381,15 @@
         "year": 2025,
         "poster": "/assets/2025.webp",
         "video": "https://www.youtube.com/watch?v=knswTYKdwh0&t=3s",
+        "showVideo": true,
+        "photo": "",
+        "showPhoto": false,
+        "paragraphs": []
+      },
+      {
+        "year": 2026,
+        "poster": "/assets/Irie vibes 26 DigiRelease met vibewinnaar 1080x1350.webp",
+        "video": "https://www.youtube.com/watch?v=knswTYKdwh0",
         "showVideo": true,
         "photo": "",
         "showPhoto": false,
