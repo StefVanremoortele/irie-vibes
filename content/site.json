@@ -9,7 +9,7 @@
   "ticketUrl": "https://irie-vibes.eventsquare.store/nl/6tkhqowc5ovk/ldpytyyieckh",
   "volunteerUrl": "mailto:info@irievibes.be",
   "menuAnimation": true,
-  "themeColor": "#0080ff",
+  "themeColor": "",
   "assets": {
     "headerBanner": "/assets/header-banner.png",
     "footerBg": "/assets/footer.png",
@@ -20,43 +20,53 @@
   "nav": [
     {
       "label": "Home",
-      "href": "/"
+      "href": "/",
+      "showInMenu": true
     },
     {
       "label": "Tickets",
-      "href": "/tickets"
+      "href": "/tickets",
+      "showInMenu": true
     },
     {
       "label": "Line up",
-      "href": "/lineup"
+      "href": "/lineup",
+      "showInMenu": true
     },
     {
       "label": "When",
-      "href": "/when"
+      "href": "/when",
+      "showInMenu": true
     },
     {
       "label": "Where",
-      "href": "/where"
+      "href": "/where",
+      "showInMenu": true
     },
     {
       "label": "Parking & Camping",
-      "href": "/camping"
+      "href": "/camping",
+      "showInMenu": true
     },
     {
       "label": "Drinks, Foods & Market",
-      "href": "/drinks"
+      "href": "/drinks",
+      "showInMenu": true
     },
     {
       "label": "Kids Corner",
-      "href": "/kids"
+      "href": "/kids",
+      "showInMenu": true
     },
     {
       "label": "Volunteer",
-      "href": "/volunteer"
+      "href": "/volunteer",
+      "showInMenu": true
     },
     {
       "label": "All About Irie Vibes",
-      "href": "/about"
+      "href": "/about",
+      "showInMenu": true
     }
   ],
   "socials": [
