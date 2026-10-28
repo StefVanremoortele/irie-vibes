@@ -27,7 +27,7 @@ export function svrTransition({ root, modal, scrim, title, speed = 1, onDone }: 
       .map(element => ({ element, size: parseFloat(getComputedStyle(element).fontSize) }));
     for (const { element, size } of text) {
       const lead = element.closest('.fbx-chips') ? 160 : element.closest('.fbx-tabs, .fbx-detail__title') ? 0 : 60;
-      animate(element, [{ fontSize: `${size}px` }, { fontSize: `${size * 1.15}px` }], 320, lead, 'cubic-bezier(0.4,0,0.2,1)');
+      animate(element, [{ fontSize: `${size}px` }, { fontSize: `${size * 1.35}px` }], 220, lead, 'cubic-bezier(0.22,1,0.36,1)');
     }
   }
   if (!reduce) {
