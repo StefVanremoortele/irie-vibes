@@ -39,6 +39,7 @@ collections:
       - { label: "Status", field: status }
     fields:
       - { name: status, label: "Status", widget: select, options: ["New", "In progress", "Done"], default: "New" }
+      - { name: title, label: "Title", widget: string, required: false, hint: "The goal of the request in a few words, written by the AI triage. Shown in the /feedback list instead of the message." }
       - { name: message, label: "Message", widget: text, readonly: true }
       - name: comments
         label: "Developer comments"

@@ -166,7 +166,8 @@ date of the latest commit outside the CMS-owned `content/` and `public/assets/`
 (read at build time), so CMS edits don't count. The *Feedback* tab is an inbox
 split: a list on the left with status filters (*Triage* = New, *In progress*,
 *Processed* = Done; the last choice is remembered per browser; ↑/↓ move the
-selection; a large ringed dot marks items whose proposals still need a choice) and
+selection; a large ringed dot marks items whose proposals still need a choice; rows show the optional `title`,
+the goal in a few words written by the AI triage, else the message) and
 the selected item on the right, with the comment, its page/viewport chips and
 screenshot (click to enlarge), the AI interpretation (when an AI developer picked it up: an optional
 `interpretation` object `{ text, by, date, commit }` in the entry JSON, showing

@@ -263,6 +263,7 @@ try {
   .fbx-icon-btn svg { stroke-width: 1.5; }
 
   /* Feedback: the text (the only serif on the view), meta chips, screenshots */
+  .fbx-goal { margin: -6px 0 0; color: var(--accent-600); font: 600 17px/1.35 var(--font-body); letter-spacing: -0.01em; }
   .fbx-comment { margin: 0; color: var(--ink-900); font: 400 26px/1.3 var(--font-display); font-variation-settings: 'opsz' 36; text-wrap: pretty; white-space: pre-wrap; overflow-wrap: anywhere; }
   .fbx-metachips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--ink-500); font-size: 12px; }
   .fbx-metachip { padding: 3px 8px; border: 1px solid var(--divider); border-radius: var(--radius-xs); background: var(--glass-tint-med); font-family: var(--font-mono); }
@@ -443,6 +444,8 @@ try {
   type Comment = { date: string; author?: string; message: string; html?: string; pending?: boolean };
   type Entry = {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
+    /** The goal of the request in a few words, written by the AI triage (optional). */
+    title?: string;
     /** 'site': the change concerns every page; 'page' (or missing on older entries): only `page`. */
     scope?: 'page' | 'site';
     images: { name: string; url: string }[];
@@ -596,7 +599,7 @@ try {
       return `<button type="button" class="fbx-row${isNew ? ' fbx-row--new' : ''}${selected ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${selected}">
           <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
           <span class="fbx-row__text">
-            <span class="fbx-row__comment">${escapeHtml(entry.message)}</span>
+            <span class="fbx-row__comment">${escapeHtml(entry.title?.trim() || entry.message)}</span>
             <span class="fbx-row__meta"><span class="fbx-sdot${dot ? ` fbx-sdot--${dot}` : ''}" title="${dotTitle}"></span><span class="fbx-row__path">${escapeHtml(entry.scope === 'site' ? 'Every page' : entry.page || '—')}</span><span aria-hidden="true">·</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
           </span>
         </button>`;
@@ -653,6 +656,7 @@ try {
     detailBody.innerHTML = `<div class="fbx-detail__inner">
       <section class="fbx-section" aria-label="Feedback">
         <div class="fbx-eyebrow">Feedback</div>
+        ${entry.title?.trim() ? `<h2 class="fbx-goal" title="The goal of this request, as summarised by the AI triage">${escapeHtml(entry.title.trim())}</h2>` : ''}
         <p class="fbx-comment">${escapeHtml(entry.message)}</p>
         <div class="fbx-metachips">${chips}</div>
         ${shot ? `<button type="button" class="fbx-shot" data-zoom="${shot.url}" aria-label="Enlarge screenshot"><img src="${shot.url}" alt="Screenshot of ${escapeHtml(entry.page || 'the page')}"></button>` : ''}
