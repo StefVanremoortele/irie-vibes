@@ -253,9 +253,9 @@
         "year": 2008,
         "poster": "/assets/2008.webp",
         "video": "",
-        "showVideo": true,
+        "showVideo": false,
         "photo": "",
-        "showPhoto": true,
+        "showPhoto": false,
         "paragraphs": [
           "zie 2007"
         ]
