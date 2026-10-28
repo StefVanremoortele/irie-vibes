@@ -28,7 +28,7 @@ export function svrTransition({ root, modal, scrim, title, speed = 1, onDone }: 
   animate(scrim, [{ opacity: 1 }, { opacity: 0 }], 450, 110, 'ease-out');
   zoom.onfinish = () => {
     if (cancelled) return;
-    const letters = [...'SVR PRODUCTIONS'];
+    const letters = [...'SVR'];
     title.replaceChildren(...letters.map((letter, index) => {
       const span = document.createElement('span');
       span.textContent = letter === ' ' ? '\u00a0' : letter;
