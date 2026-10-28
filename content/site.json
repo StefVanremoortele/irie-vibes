@@ -3,15 +3,18 @@
   "organisation": "VZW Greenforward",
   "location": {
     "label": "Koekelarestraat 16, 8610 Kortemark, Belgium",
-    "query": "Koekelarestraat 16, 8610 Kortemark, Belgium"
+    "query": "Overvloedstraat 3, 8400 Oostende"
   },
   "email": "info@irievibes.be",
   "ticketUrl": "https://irie-vibes.eventsquare.store/nl/6tkhqowc5ovk/ldpytyyieckh",
   "volunteerUrl": "mailto:info@irievibes.be",
+  "menuAnimation": true,
   "assets": {
     "headerBanner": "/assets/header-banner.png",
     "footerBg": "/assets/footer.png",
-    "greenforward": "/assets/greenforward-transp-geen-rand.png"
+    "greenforward": "/assets/greenforward-transp-geen-rand.png",
+    "ticketButton": "",
+    "menuButton": ""
   },
   "nav": [
     {
