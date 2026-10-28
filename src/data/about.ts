@@ -18,7 +18,8 @@ export const EDITION_MAX_YEAR: number = data.editions.maxYear;
 export const defaultEditionText: string = data.editions.defaultText;
 
 /** Optional per-edition fields the CMS may or may not have written yet. */
-type EditionSource = (typeof data.editions.items)[number] & {
+type EditionSource = Omit<(typeof data.editions.items)[number], 'paragraphs'> & {
+  paragraphs?: string[];
   video?: string;
   showVideo?: boolean;
   photo?: string;
@@ -28,7 +29,8 @@ type EditionSource = (typeof data.editions.items)[number] & {
 function toEdition(edition: EditionSource): Edition {
   return {
     year: edition.year,
-    paragraphs: edition.paragraphs,
+    // Optional in the CMS: an edition without text shows none.
+    paragraphs: edition.paragraphs ?? [],
     poster: existingAssetUrl(edition.poster, `About → Editions → ${edition.year} → Poster`),
     video: edition.showVideo === false ? undefined : youtubeEmbed(edition.video),
     photo: edition.showPhoto === false ? undefined : existingAssetUrl(edition.photo, `About → Editions → ${edition.year} → Group photo`),

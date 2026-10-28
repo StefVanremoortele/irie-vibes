@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
-import { heroImages, pageImages } from '../../data/pages';
+import { heroImages } from '../../data/pages';
 import { allActs, stageByKey } from '../../data/lineup';
 import type { Act } from '../../data/types';
 
@@ -15,7 +15,8 @@ interface Props {
 const { act } = Astro.props;
 const stage = stageByKey[act.stage];
 const description = act.description?.trim();
-const poster = act.image ?? pageImages.actPoster;
+// No artist image: no picture, the text takes the full width.
+const poster = act.image;
 ---
 
 <Base title={act.name}>
@@ -35,9 +36,11 @@ const poster = act.image ?? pageImages.actPoster;
         <div class="actpage__body">
           {description && <p class="actpage__lead">{description}</p>}
         </div>
-        <div class="actpage__aside">
-          <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
-        </div>
+        {poster && (
+          <div class="actpage__aside">
+            <img class="actpage__poster" src={poster} alt={`${act.name} artwork`} />
+          </div>
+        )}
       </div>
     </div>
   </div>

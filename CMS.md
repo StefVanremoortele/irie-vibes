@@ -4,7 +4,7 @@ The site is managed with **[Sveltia CMS](https://github.com/sveltia/sveltia-cms)
 — a modern, git-based headless CMS with a friendly form-based admin, aimed at
 non-technical editors. It's already wired up:
 
-- Admin UI: `public/admin/` (vendored Sveltia bundle, pinned to v0.218.1).
+- Admin UI: `public/admin/` (vendored Sveltia bundle, pinned to v0.253.2).
 - Configuration: `public/admin/config.yml`.
 - Content: `content/*.json` — the single source of truth the site builds from.
 
@@ -22,14 +22,12 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | ------------- | ------- | ---------------- |
 | Content pages | one file per page (below) | one entry per page, in the order of the site menu; every page has an optional **Hero image** + **Show hero image** switch (empty or off: no banner) |
 | Content pages → Home | `content/home.json` | dates label, countdown (switch + date), intro, aftermovie |
-| Content pages → Line-up | `content/lineup.json` | stages, days, custom HTML; act pages' hero and default poster |
-| Content pages → Tickets & fees | `content/tickets.json` | price tables, notes, custom HTML |
-| Content pages → When, Where, Drinks, Kids, Volunteer | `content/pages/*.json` | title + text blocks (Where: also the circulation plan) |
-| Content pages → Parking & camping | `content/camping.json` | title, text above/below the fees, show fees |
-| Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches), shop, band (text + photos & videos) |
+| Content pages → Line-up | `content/lineup.json` | stages, days, custom HTML; act pages' hero |
+| Content pages → Tickets & fees, When, Where, Parking & camping, Drinks, Kids, Volunteer | `content/pages/*.json` | title + content blocks (heading/paragraph; prices are written as text). Where: also the circulation plan |
+| Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches, optional text; sorted newest first after each save by `.github/workflows/sort-editions.yml`), shop, band (text + photos & videos) |
 | Content pages → Regulations | `content/regulations.json` | regulation sections |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, nav, socials, chrome images (header banner, footer, **ticket button image**, **menu button image**) |
+| Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, **theme text colour**, nav, socials, sticky images (header banner, footer, **ticket button image**, **menu button image**) |
 | Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
 
 Feedback items (their status: New / In progress / Done), the developer notes
@@ -109,7 +107,7 @@ seed — `content/` is now the source of truth and should be edited via the CMS
 - The **English regulations** still hold the Dutch text (from the source) and
   await a translation — now editable in *Content pages → Regulations*.
 
-- Tickets and Line-up each have an opt-in custom HTML field. It is off by
+- Line-up has an opt-in custom HTML field. It is off by
   default; when enabled, the trusted administrator's HTML replaces the normal
   CMS-managed content inside the existing page shell.
 - Act names are placeholders; real artists can be added/edited in *Line-up —

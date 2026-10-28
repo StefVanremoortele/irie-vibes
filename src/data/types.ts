@@ -58,12 +58,6 @@ export interface LineupDay {
   acts: Act[];
 }
 
-/** A single label/value row in a price table. */
-export interface PriceRow {
-  label: string;
-  value: string;
-}
-
 /**
  * A block of page copy. Either a paragraph (may contain limited inline HTML
  * such as <strong>/<a>) or a heading. Rich enough to stay faithful to the
@@ -82,15 +76,6 @@ export interface ContentPage {
   /** Undefined when the page has no hero (none chosen, or switched off). */
   hero?: string;
   blocks: CopyBlock[];
-}
-
-/** The Camping & parking page: copy above and below the fee table. */
-export interface CampingPage {
-  hero?: string;
-  title: string;
-  intro: CopyBlock[];
-  showFees: boolean;
-  outro: CopyBlock[];
 }
 
 /** A sponsor logo, or a text-only sponsor when no logo asset exists. */

@@ -1,0 +1,60 @@
+{
+  "slug": "tickets",
+  "title": "Tickets",
+  "hero": "/assets/hero-tickets.png",
+  "showHero": true,
+  "blocks": [
+    {
+      "type": "p",
+      "html": "Tickets are available at <a href=\"https://irie-vibes.eventsquare.store/nl/6tkhqowc5ovk/ldpytyyieckh\" target=\"_blank\" rel=\"noopener noreferrer\">eventsquare</a>."
+    },
+    {
+      "type": "h",
+      "html": "Passes"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Thursday</strong>: Free entrance"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Friday</strong>: 50€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Saturday</strong>: 50€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Weekend</strong>: 75€"
+    },
+    {
+      "type": "p",
+      "html": "To be paid upon entry"
+    },
+    {
+      "type": "h",
+      "html": "Camping & parking"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Camping</strong>: 15€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Vehicle fee parking</strong>: 5€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Vehicle fee camping</strong>: 15€"
+    },
+    {
+      "type": "p",
+      "html": "Free entrance for children up to 14 years old."
+    },
+    {
+      "type": "p",
+      "html": "Pets are not allowed on the festival area, campings and parkings."
+    }
+  ]
+}

@@ -1,35 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import PriceTable from '../components/PriceTable.astro';
-import { site } from '../data/site';
-import { heroImages } from '../data/pages';
-import { passes, passesNote, campingParking, ticketNotes, useCustomHtml, customHtml } from '../data/tickets';
+import CopyPage from '../components/CopyPage.astro';
+import { contentPages } from '../data/pages';
+
+const page = contentPages.tickets;
 ---
 
-<Base title="Tickets">
-  <div class="tickets">
-    {!useCustomHtml && <Hero src={heroImages.tickets} alt="Festival wristbands" size="md" />}
-    <div class="section section--narrow">
-      <h1 class="title">Tickets</h1>
-      {useCustomHtml ? <div class="copy copy--center custom-html" set:html={customHtml} /> : (
-        <>
-          <p class="copy copy--center tickets__intro">
-            Tickets are available at
-            <a href={site.ticketUrl} target="_blank" rel="noopener noreferrer">eventsquare</a>.
-          </p>
-            <PriceTable rows={passes} />
-            <p class="prices__note">{passesNote}</p>
-            <PriceTable rows={campingParking} />
-            <div class="copy copy--center">{ticketNotes.map((note) => <p>{note}</p>)}</div>
-        </>
-      )}
-    </div>
-  </div>
+<Base title={page.title}>
+  <CopyPage page={page} width="narrow" />
 </Base>
-
-<style>
-  .tickets__intro {
-    margin: 0 0 28px;
-  }
-</style>

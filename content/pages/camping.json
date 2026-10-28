@@ -1,8 +1,9 @@
 {
+  "slug": "camping",
+  "title": "Camping & parking",
   "hero": "/assets/hero-camping.png",
   "showHero": true,
-  "title": "Camping & parking",
-  "intro": [
+  "blocks": [
     {
       "type": "p",
       "html": "Parking and camping open on Thursday at ??h and close on Sunday at ??h."
@@ -10,10 +11,19 @@
     {
       "type": "p",
       "html": "These are paid upon entry in cash or electronecly. Prices are:"
-    }
-  ],
-  "showFees": true,
-  "outro": [
+    },
+    {
+      "type": "p",
+      "html": "<strong>Camping</strong>: 15€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Vehicle fee parking</strong>: 5€"
+    },
+    {
+      "type": "p",
+      "html": "<strong>Vehicle fee camping</strong>: 15€"
+    },
     {
       "type": "p",
       "html": "Pets are not allowed on the festival, camping and parking."

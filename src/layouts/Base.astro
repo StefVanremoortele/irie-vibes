@@ -45,6 +45,12 @@ const path = Astro.url.pathname;
       rel="stylesheet"
       crossorigin="anonymous"
     />
+    {site.themeColor && (
+      <style
+        is:inline
+        set:html={`html:root{--secondary:${site.themeColor};--secondary-hover:color-mix(in srgb,${site.themeColor} 65%,#fff);--secondary-deep:color-mix(in srgb,${site.themeColor} 85%,#000)}`}
+      />
+    )}
     <slot name="head" />
   </head>
   <body>

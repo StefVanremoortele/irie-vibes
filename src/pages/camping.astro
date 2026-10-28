@@ -1,26 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import CopyBlocks from '../components/CopyBlocks.astro';
-import PriceTable from '../components/PriceTable.astro';
-import { campingPage } from '../data/pages';
-import { campingParking } from '../data/tickets';
+import CopyPage from '../components/CopyPage.astro';
+import { contentPages } from '../data/pages';
+
+const page = contentPages.camping;
 ---
 
-<Base title={campingPage.title}>
-  <div class="camping">
-    <Hero src={campingPage.hero} alt="Camping at the festival" size="md" />
-    <div class="section section--narrow">
-      <h1 class="title">{campingPage.title}</h1>
-      <div class="copy copy--center">
-        <CopyBlocks blocks={campingPage.intro} />
-      </div>
-
-      {campingPage.showFees && <PriceTable rows={campingParking} />}
-
-      <div class="copy copy--center">
-        <CopyBlocks blocks={campingPage.outro} />
-      </div>
-    </div>
-  </div>
+<Base title={page.title}>
+  <CopyPage page={page} width="narrow" />
 </Base>

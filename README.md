@@ -226,7 +226,7 @@ Real, SEO-friendly routes (not a single-page app):
 | Route              | Page                                                        |
 | ------------------ | ----------------------------------------------------------- |
 | `/`                | Home — hero, live countdown, intro, 2026 aftermovie         |
-| `/tickets`         | Ticket tiers + camping/parking fees                         |
+| `/tickets`         | Tickets, passes + camping/parking fees (content blocks)     |
 | `/lineup`          | Three-stage line-up grid (Thursday/Friday/Saturday)         |
 | `/lineup/[slug]`   | Per-act detail page (one route per performance)             |
 | `/when`            | Opening/closing times                                       |
@@ -246,15 +246,14 @@ footer) is applied by the `Base` layout on every page.
 ```
 irie-vibes/
 ├── content/                  # CONTENT (edited via the CMS) — source of truth
-│   ├── site.json             #   site-wide settings, nav, socials, chrome images
+│   ├── site.json             #   site-wide settings, theme colour, nav, socials, sticky images
 │   ├── home.json             #   home page (hero, dates, countdown, intro, aftermovie)
-│   ├── lineup.json           #   line-up page: hero, stages, days, act-page hero + poster
-│   ├── tickets.json          #   ticket + camping price tables
+│   ├── lineup.json           #   line-up page: hero, stages, days, act-page hero
 │   ├── sponsors.json         #   main + regular sponsor lists
 │   ├── about.json            #   about-page accordions
 │   ├── regulations.json      #   regulations sections
 │   ├── acts/*.json           #   one file per line-up act
-│   └── pages/*.json          #   When / Drinks / Kids / Volunteer copy
+│   └── pages/*.json          #   Tickets / When / Where / Camping / Drinks / Kids / Volunteer copy
 ├── public/
 │   ├── admin/                # Sveltia CMS (index.html, config.yml, bundle)
 │   └── assets/               # all images (heroes, sponsors, socials, posters)
@@ -262,18 +261,19 @@ irie-vibes/
 │   ├── production.mjs        # self-updating production server (npm run production)
 │   ├── feedback-server.mjs   # feedback API + storage (dev and production)
 │   ├── extract-content.mjs   # one-time: export → generated/irie.json
-│   └── migrate-to-cms.mjs    # one-time: seeded content/ from the export
+│   ├── migrate-to-cms.mjs    # one-time: seeded content/ from the export
+│   └── sort-editions.mjs     # previous editions newest first (GitHub workflow after CMS saves)
 └── src/
     ├── data/                 # typed accessors: read content/*.json, apply types
     │   ├── types.ts          #   interfaces = CMS content types
-    │   ├── site.ts  lineup.ts  tickets.ts  pages.ts
+    │   ├── site.ts  lineup.ts  pages.ts
     │   ├── about.ts  sponsors.ts  regulations.ts
     │   └── generated/irie.json  # archival extract (migration input only)
     ├── integrations/         # Astro integrations: feedback tool, dev content sync
     ├── feedback/             # /feedback inbox page + capture script (Shift+F)
     ├── lib/assets.ts         # asset URL helper
     ├── styles/               # tokens.css (Roots Vanguard) + global.css
-    ├── components/           # Header, Footer, Hero, Countdown, PriceTable, CopyPage
+    ├── components/           # Header, Footer, Hero, Countdown, CopyPage
     ├── layouts/Base.astro    # HTML shell + header/footer
     └── pages/                # one file per route
 ```
@@ -284,7 +284,7 @@ Data flow: **`content/*.json` → `src/data/*.ts` (typed) → `.astro` templates
 
 Colour, type and spacing come from the "Roots Vanguard" system in the original
 `DESIGN.md`, encoded as CSS custom properties in `src/styles/tokens.css`
-(night-forest `#101510` surface, amber-gold `#fabc4d` accent, the reggae
+(night-forest `#101510` surface, amber-gold `#fabc4d` accent (overridable as Site settings → Theme text colour), the reggae
 tri-colour, `Anton` display + `Work Sans` body). Exact rendered values were
 matched against the original export for fidelity.
 

@@ -73,7 +73,6 @@ collections:
           - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
           - { name: actHero, label: "Act pages: hero image", widget: image, required: false, hint: "Banner at the top of every act's detail page. Leave empty for no banner." }
           - { name: showActHero, label: "Act pages: show hero image", widget: boolean, default: true, required: false }
-          - { name: actPoster, label: "Act pages: default poster", widget: image, required: false, hint: "Shown on an act's page when the act has no artist image." }
           - name: stages
             label: "Stages"
             widget: list
@@ -97,39 +96,8 @@ collections:
           - { name: customHtml, label: "Custom HTML", widget: text, required: false }
       - name: tickets
         label: "Tickets & fees"
-        file: "content/tickets.json"
+        file: "content/pages/tickets.json"
         icon: local_activity
-        fields:
-          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
-          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
-          - name: passes
-            label: "Passes"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - { name: passesNote, label: "Passes note", widget: string }
-          - name: campingParking
-            label: "Camping & parking fees"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - name: ticketNotes
-            label: "Notes"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            field: { name: note, label: "Note", widget: string }
-          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed ticket tables and notes." }
-          - { name: customHtml, label: "Custom HTML", widget: text, required: false }
-      - name: when
-        label: "When"
-        file: "content/pages/when.json"
         fields: &contentPageFields
           - { name: slug, label: "Slug", widget: hidden }
           - { name: title, label: "Title", widget: string }
@@ -144,6 +112,10 @@ collections:
             fields: &copyBlockFields
               - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
               - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+      - name: when
+        label: "When"
+        file: "content/pages/when.json"
+        fields: *contentPageFields
       - name: where
         label: "Where"
         file: "content/pages/where.json"
@@ -163,27 +135,9 @@ collections:
             fields: *copyBlockFields
       - name: camping
         label: "Parking & camping"
-        file: "content/camping.json"
+        file: "content/pages/camping.json"
         icon: camping
-        fields:
-          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
-          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
-          - { name: title, label: "Title", widget: string }
-          - name: intro
-            label: "Text above the fees"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
-          - { name: showFees, label: "Show fee table", widget: boolean, default: true, hint: "The fees themselves are edited under Tickets & fees → Camping & parking fees." }
-          - name: outro
-            label: "Text below the fees"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
+        fields: *contentPageFields
       - name: drinks
         label: "Drinks, food & market"
         file: "content/pages/drinks.json"
@@ -209,7 +163,7 @@ collections:
             widget: list
             collapsed: true
             minimize_collapsed: true
-            hint: "Drag to reorder the categories on the page."
+            hint: "Top to bottom as on the page. Reorder with the drag handle or the arrow buttons of each row."
             field: { name: key, label: "Category", widget: select, options: [{ label: "VZW Greenforward", value: "greenforward" }, { label: "Initiatives & partnerships", value: "initiatives" }, { label: "Previous editions", value: "editions" }, { label: "Irie shop", value: "shop" }, { label: "The Irie Vibes band", value: "band" }] }
           - name: greenforward
             label: "VZW Greenforward"
@@ -256,6 +210,7 @@ collections:
               - name: items
                 label: "Editions"
                 widget: list
+                hint: "Put in year order (newest first) automatically shortly after saving."
                 collapsed: true
                 minimize_collapsed: true
                 summary: "{{fields.year}}"
@@ -269,6 +224,8 @@ collections:
                   - name: paragraphs
                     label: "Paragraphs"
                     widget: list
+                    required: false
+                    hint: "Optional. Leave empty to show no text for this year."
                     collapsed: true
                     minimize_collapsed: true
                     field: { name: paragraph, label: "Paragraph", widget: text }
@@ -393,8 +350,9 @@ collections:
           - { name: ticketUrl, label: "Ticket shop URL", widget: string }
           - { name: volunteerUrl, label: "Volunteer link", widget: string }
           - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
+          - { name: themeColor, label: "Theme text colour", widget: color, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
           - name: assets
-            label: "Chrome images"
+            label: "Sticky images"
             widget: object
             collapsed: true
             fields:
