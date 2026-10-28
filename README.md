@@ -137,9 +137,9 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > `/feedback` is a dialog over the real homepage
 > (`src/components/HomeContent.astro`, shown inert behind a dark blurred
 > scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
-> came from after the SVR exit sting: the visible dialog breaks into Tetris-like
-> cutouts that fly past the viewer in a fresh random order, then the title fades
-> to white. At most 12 pieces animate, with a bounded 260 ms stagger window.
+> came from after the SVR exit sting: the intact dialog zooms toward the viewer,
+> with text growing 15% during the zoom (tabs and filters start slightly earlier),
+> followed by the title and white fade. Filter buttons use larger type and tighter spacing.
 > Reduced motion uses opacity-only fades. `data-exit-speed` on the dialog root
 > controls playback speed; `src/feedback/svr-transition.ts` returns a disposer
 > to cancel animations when navigating away.
