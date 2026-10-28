@@ -1,5 +1,6 @@
 import type { NavItem, Social } from './types';
 import siteData from '../../content/site.json';
+import homeData from '../../content/home.json';
 import { assetUrl } from '../lib/assets';
 
 /**
@@ -9,18 +10,12 @@ import { assetUrl } from '../lib/assets';
 export const site = {
   name: siteData.name,
   organisation: siteData.organisation,
-  datesLabel: siteData.datesLabel,
-  festivalDate: siteData.festivalDate,
   location: siteData.location,
   email: siteData.email,
   ticketUrl: siteData.ticketUrl,
   volunteerUrl: siteData.volunteerUrl,
-  intro: siteData.intro,
-  showCountdown: siteData.showCountdown,
-  showAftermovie: siteData.showAftermovie,
   // Menu button record animation; on unless switched off in the CMS (still respects reduced motion).
   menuAnimation: (siteData as { menuAnimation?: boolean }).menuAnimation !== false,
-  aftermovie: siteData.aftermovie,
   assets: {
     headerBanner: assetUrl(siteData.assets.headerBanner),
     footerBg: assetUrl(siteData.assets.footerBg),
@@ -41,3 +36,13 @@ export const socials: Social[] = siteData.socials.map((s) => ({
   href: s.href,
   icon: assetUrl(s.icon),
 }));
+
+/** Home page content — content/home.json ("Home" under Content pages in the CMS). */
+export const home = {
+  datesLabel: homeData.datesLabel,
+  festivalDate: homeData.festivalDate,
+  intro: homeData.intro,
+  showCountdown: homeData.showCountdown,
+  showAftermovie: homeData.showAftermovie,
+  aftermovie: homeData.aftermovie,
+};

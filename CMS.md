@@ -20,13 +20,17 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 
 | Admin section | File(s) | What it controls |
 | ------------- | ------- | ---------------- |
-| Settings → Site settings | `content/site.json` | dates, countdown, ticket/volunteer links, home intro, toggles (countdown, aftermovie, **menu button animation**), nav, socials, chrome images (header banner, footer, **ticket button image**, **menu button image**) |
-| Settings → Hero images | `content/media.json` | hero image per bespoke page + shared images |
-| Settings → Line-up settings | `content/lineup.json` | stages and days |
-| Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
-| Settings → About page | `content/about.json` | Greenforward, initiatives, shop, editions (poster, YouTube video, group photo, show video/photo switches), band (text + photos & videos) |
+| Content pages | one file per page (below) | one entry per page, in the order of the site menu; every page has an optional **Hero image** + **Show hero image** switch (empty or off: no banner) |
+| Content pages → Home | `content/home.json` | dates label, countdown (switch + date), intro, aftermovie |
+| Content pages → Line-up | `content/lineup.json` | stages, days, custom HTML; act pages' hero and default poster |
+| Content pages → Tickets & fees | `content/tickets.json` | price tables, notes, custom HTML |
+| Content pages → When, Where, Drinks, Kids, Volunteer | `content/pages/*.json` | title + text blocks (Where: also the circulation plan) |
+| Content pages → Parking & camping | `content/camping.json` | title, text above/below the fees, show fees |
+| Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches), shop, band (text + photos & videos) |
+| Content pages → Regulations | `content/regulations.json` | regulation sections |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Content pages | `content/pages/*.json`, `content/camping.json`, `content/tickets.json`, `content/regulations.json` | When, Where, Drinks, Kids, Volunteer, Camping & parking (hero, title, text above/below the fees, show fees), Tickets & fees, Regulations |
+| Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, nav, socials, chrome images (header banner, footer, **ticket button image**, **menu button image**) |
+| Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
 
 Feedback items (their status: New / In progress / Done), the developer notes
 shown on `/feedback`, and the changelog (one dated post per change, the *Changelog* tab of `/feedback`) are managed in a separate admin, `/admin/feedback/`,

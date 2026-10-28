@@ -21,8 +21,6 @@ const thisYear = new Date().getFullYear();
 const pastIndexes = editionOptions.flatMap((edition, i) => (edition.year <= thisYear ? [i] : []));
 const startIndex = pastIndexes.length ? pastIndexes[pastIndexes.length - 1] : editionOptions.length - 1;
 const startEdition = editionOptions[startIndex];
-const sectionConfig = (key: string) => aboutSections.find((section) => section.key === key);
-const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
 ---
 
 <Base title="All about Irie Vibes">
@@ -32,9 +30,9 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
       <h1 class="title">All about Irie Vibes</h1>
 
       <div class="accs accordions">
-        <details name="about" class="acc" style={`order:${sectionConfig('greenforward')?.order ?? 0}`} hidden={sectionHidden('greenforward')}>
+        <details name="about" class="acc" style={`order:${aboutSections.greenforward.order}`} hidden={!aboutSections.greenforward.visible}>
           <summary class="acc__head">
-            <span class="acc__title">VZW Greenforward</span>
+            <span class="acc__title">{aboutSections.greenforward.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
@@ -46,9 +44,9 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           </div>
         </details>
 
-        <details name="about" class="acc" style={`order:${sectionConfig('initiatives')?.order ?? 1}`} hidden={sectionHidden('initiatives')}>
+        <details name="about" class="acc" style={`order:${aboutSections.initiatives.order}`} hidden={!aboutSections.initiatives.visible}>
           <summary class="acc__head">
-            <span class="acc__title">Socio-environmental initiatives &amp; partnerships</span>
+            <span class="acc__title">{aboutSections.initiatives.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
@@ -60,9 +58,9 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           </div>
         </details>
 
-        <details name="about" class="acc" style={`order:${sectionConfig('editions')?.order ?? 2}`} hidden={sectionHidden('editions')}>
+        <details name="about" class="acc" style={`order:${aboutSections.editions.order}`} hidden={!aboutSections.editions.visible}>
           <summary class="acc__head">
-            <span class="acc__title">Previous editions</span>
+            <span class="acc__title">{aboutSections.editions.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
@@ -88,9 +86,9 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           </div>
         </details>
 
-        <details name="about" class="acc" style={`order:${sectionConfig('shop')?.order ?? 3}`} hidden={sectionHidden('shop')}>
+        <details name="about" class="acc" style={`order:${aboutSections.shop.order}`} hidden={!aboutSections.shop.visible}>
           <summary class="acc__head">
-            <span class="acc__title">Irie shop</span>
+            <span class="acc__title">{aboutSections.shop.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">
@@ -109,9 +107,9 @@ const sectionHidden = (key: string) => sectionConfig(key)?.visible === false;
           </div>
         </details>
 
-        <details name="about" class="acc" style={`order:${sectionConfig('band')?.order ?? 4}`} hidden={sectionHidden('band')}>
+        <details name="about" class="acc" style={`order:${aboutSections.band.order}`} hidden={!aboutSections.band.visible}>
           <summary class="acc__head">
-            <span class="acc__title">The Irie Vibes band</span>
+            <span class="acc__title">{aboutSections.band.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel">

@@ -1,10 +1,11 @@
 ---
 interface Props {
-  src: string;
+  /** Empty when the page has no hero image: nothing is rendered. */
+  src?: string;
   alt: string;
   size?: 'sm' | 'md' | 'lg';
 }
 const { src, alt, size = 'md' } = Astro.props;
 ---
 
-<img class={`hero hero--${size}`} src={src} alt={alt} />
+{src && <img class={`hero hero--${size}`} src={src} alt={alt} />}

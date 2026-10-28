@@ -1,5 +1,6 @@
 {
   "hero": "/assets/hero-camping.png",
+  "showHero": true,
   "title": "Camping & parking",
   "intro": [
     {

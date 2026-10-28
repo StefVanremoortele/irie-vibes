@@ -65,9 +65,12 @@ Settled through tester feedback; they apply to new work too.
 
 - **Banners:** every page except home shows its banner in one shape (the Where
   banner, 512:67), 4/5 of the page width, centred. The home hero is full width.
-- **Header:** the menu button is sized relative to the text (`rem`), so it stays
-  modest on small screens. Its record animation, its image and the ticket button
-  image are Site settings.
+- **Header:** the menu and ticket buttons are the same size on every screen,
+  growing with the screen between 3.25rem (phones) and 7rem. The record animation,
+  the menu button image and the ticket button image are Site settings.
+- **CMS layout:** every page has its own entry under Content pages, in the order of
+  the site menu, with its own optional hero image (empty or switched off: no banner).
+  Settings holds only what applies to the whole site.
 - **Shop:** on wide screens text left, images in one column against the right
   edge; on small screens title, image, text.
 - **Previous editions:** open on the most recent past edition, newest first; per

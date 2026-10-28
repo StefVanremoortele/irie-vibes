@@ -2,7 +2,7 @@
   "slug": "when",
   "title": "When",
   "hero": "/assets/hero-where.png",
-  "heroSize": "md",
+  "showHero": true,
   "blocks": [
     {
       "type": "p",

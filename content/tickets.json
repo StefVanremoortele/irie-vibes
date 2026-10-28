@@ -1,4 +1,6 @@
 {
+  "hero": "/assets/hero-tickets.png",
+  "showHero": true,
   "passes": [
     {
       "label": "Thursday",

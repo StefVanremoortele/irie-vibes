@@ -38,33 +38,24 @@ media_libraries:
         webp: { format: webp, quality: 85, width: 2000, height: 2000 }
 
 collections:
-  # ---- Singletons (one file each) --------------------------------------
-  - name: settings
-    label: "Settings"
+  # ---- Content pages: one entry per page, in the order of the site menu ----
+  - name: pages
+    label: "Content pages"
+    create: false
+    icon: description
     files:
-      - name: site
-        label: "Site settings"
-        file: "content/site.json"
-        icon: settings
+      - name: home
+        label: "Home"
+        file: "content/home.json"
+        icon: home
         fields:
-          - { name: name, label: "Festival name", widget: string }
-          - { name: organisation, label: "Organisation", widget: string }
-          - { name: datesLabel, label: "Dates label (home)", widget: string }
-          - { name: festivalDate, label: "Gates open (countdown target)", widget: datetime, format: "YYYY-MM-DDTHH:mm:ss" }
-          - name: location
-            label: "Location"
-            widget: object
-            collapsed: true
-            fields:
-              - { name: label, label: "Address label", widget: string }
-              - { name: query, label: "Map search query", widget: string }
-          - { name: email, label: "Contact email", widget: string }
-          - { name: ticketUrl, label: "Ticket shop URL", widget: string }
-          - { name: volunteerUrl, label: "Volunteer link", widget: string }
-          - { name: intro, label: "Home intro text", widget: text }
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - { name: datesLabel, label: "Dates label", widget: string }
           - { name: showCountdown, label: "Show countdown", widget: boolean, default: true }
+          - { name: festivalDate, label: "Gates open (countdown target)", widget: datetime, format: "YYYY-MM-DDTHH:mm:ss" }
+          - { name: intro, label: "Intro text", widget: text }
           - { name: showAftermovie, label: "Show aftermovie", widget: boolean, default: true }
-          - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
           - name: aftermovie
             label: "Aftermovie"
             widget: object
@@ -72,62 +63,17 @@ collections:
             fields:
               - { name: title, label: "Title", widget: string }
               - { name: embedUrl, label: "YouTube embed URL", widget: string }
-          - name: assets
-            label: "Chrome images"
-            widget: object
-            collapsed: true
-            fields:
-              - { name: headerBanner, label: "Header banner", widget: image }
-              - { name: footerBg, label: "Footer background", widget: image }
-              - { name: greenforward, label: "Greenforward logo", widget: image }
-              - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
-              - { name: menuButton, label: "Menu button image", widget: image, required: false, hint: "Optional. Replaces the record icon of the round menu button (top left); a square image works best. Leave empty for the animated record." }
-          - name: nav
-            label: "Navigation"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: href, label: "Link", widget: string }
-          - name: socials
-            label: "Social links"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: href, label: "URL", widget: string }
-              - { name: icon, label: "Icon", widget: image }
-
-      - name: media
-        label: "Hero images"
-        file: "content/media.json"
-        icon: image
-        fields:
-          - name: heroes
-            label: "Page heroes"
-            widget: object
-            collapsed: true
-            fields:
-              - { name: home, label: "Home", widget: image }
-              - { name: tickets, label: "Tickets", widget: image }
-              - { name: lineup, label: "Line-up", widget: image }
-              - { name: act, label: "Act detail", widget: image }
-              - { name: about, label: "About", widget: image }
-          - name: images
-            label: "Shared images"
-            widget: object
-            collapsed: true
-            fields:
-              - { name: circulatieplan, label: "Circulation plan", widget: image }
-              - { name: actPoster, label: "Default act poster", widget: image }
-
       - name: lineup
-        label: "Line-up settings"
+        label: "Line-up"
         file: "content/lineup.json"
-        icon: tune
+        icon: music_note
+        description: "The acts themselves are edited under Line-up — acts."
         fields:
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - { name: actHero, label: "Act pages: hero image", widget: image, required: false, hint: "Banner at the top of every act's detail page. Leave empty for no banner." }
+          - { name: showActHero, label: "Act pages: show hero image", widget: boolean, default: true, required: false }
+          - { name: actPoster, label: "Act pages: default poster", widget: image, required: false, hint: "Shown on an act's page when the act has no artist image." }
           - name: stages
             label: "Stages"
             widget: list
@@ -149,113 +95,250 @@ collections:
               - { name: order, label: "Order", widget: number, value_type: int }
           - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed line-up grid." }
           - { name: customHtml, label: "Custom HTML", widget: text, required: false }
-      - name: sponsors
-        label: "Sponsors"
-        file: "content/sponsors.json"
-        icon: handshake
+      - name: tickets
+        label: "Tickets & fees"
+        file: "content/tickets.json"
+        icon: local_activity
         fields:
-          - name: main
-            label: "Main partners"
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - name: passes
+            label: "Passes"
             widget: list
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.alt}}{{fields.label}}"
             fields:
-              - { name: image, label: "Logo", widget: image, required: false }
-              - { name: alt, label: "Name (alt text)", widget: string, required: false }
-              - { name: label, label: "Text label (no logo)", widget: string, required: false }
-              - { name: sub, label: "Text sub-label", widget: string, required: false }
-          - name: regular
-            label: "Regular sponsors"
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - { name: passesNote, label: "Passes note", widget: string }
+          - name: campingParking
+            label: "Camping & parking fees"
             widget: list
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.alt}}{{fields.label}}"
             fields:
-              - { name: image, label: "Logo", widget: image, required: false }
-              - { name: alt, label: "Name (alt text)", widget: string, required: false }
-              - { name: label, label: "Text label (no logo)", widget: string, required: false }
-              - { name: sub, label: "Text sub-label", widget: string, required: false }
-
+              - { name: label, label: "Label", widget: string }
+              - { name: value, label: "Price", widget: string }
+          - name: ticketNotes
+            label: "Notes"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            field: { name: note, label: "Note", widget: string }
+          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed ticket tables and notes." }
+          - { name: customHtml, label: "Custom HTML", widget: text, required: false }
+      - name: when
+        label: "When"
+        file: "content/pages/when.json"
+        fields: &contentPageFields
+          - { name: slug, label: "Slug", widget: hidden }
+          - { name: title, label: "Title", widget: string }
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - name: blocks
+            label: "Content blocks"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: &copyBlockFields
+              - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
+              - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+      - name: where
+        label: "Where"
+        file: "content/pages/where.json"
+        description: "The Google Maps tile uses the location in Site settings."
+        fields:
+          - { name: slug, label: "Slug", widget: hidden }
+          - { name: title, label: "Title", widget: string }
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - { name: circulatieplan, label: "Circulation plan", widget: image, required: false, hint: "Shown next to the map. Leave empty to show only the map." }
+          - name: blocks
+            label: "Content blocks"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
+      - name: camping
+        label: "Parking & camping"
+        file: "content/camping.json"
+        icon: camping
+        fields:
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - { name: title, label: "Title", widget: string }
+          - name: intro
+            label: "Text above the fees"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
+          - { name: showFees, label: "Show fee table", widget: boolean, default: true, hint: "The fees themselves are edited under Tickets & fees → Camping & parking fees." }
+          - name: outro
+            label: "Text below the fees"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
+      - name: drinks
+        label: "Drinks, food & market"
+        file: "content/pages/drinks.json"
+        fields: *contentPageFields
+      - name: kids
+        label: "Kids corner"
+        file: "content/pages/kids.json"
+        fields: *contentPageFields
+      - name: volunteer
+        label: "Volunteer"
+        file: "content/pages/volunteer.json"
+        fields: *contentPageFields
       - name: about
-        label: "About page"
+        label: "All about Irie Vibes"
         file: "content/about.json"
         icon: info
+        description: "One block per category (accordion) on the page, each with its own title, show switch and content."
         fields:
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - name: order
+            label: "Category order"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            hint: "Drag to reorder the categories on the page."
+            field: { name: key, label: "Category", widget: select, options: [{ label: "VZW Greenforward", value: "greenforward" }, { label: "Initiatives & partnerships", value: "initiatives" }, { label: "Previous editions", value: "editions" }, { label: "Irie shop", value: "shop" }, { label: "The Irie Vibes band", value: "band" }] }
           - name: greenforward
             label: "VZW Greenforward"
-            widget: list
+            widget: object
             collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.text}}"
             fields:
-              - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
-              - { name: text, label: "Text", widget: text }
-          - name: initiatives
-            label: "Initiatives & partnerships"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.text}}"
-            fields:
-              - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
-              - { name: text, label: "Text", widget: text }
-          - { name: shopIntro, label: "Shop intro", widget: text }
-          - name: shop
-            label: "Shop items"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.name}}"
-            fields:
-              - { name: name, label: "Name", widget: string }
-              - { name: description, label: "Description", widget: text }
-              - { name: image, label: "Product image", widget: image, required: false }
-          - { name: band, label: "Band text", widget: string }
-          - name: bandMedia
-            label: "Band photos & videos"
-            widget: list
-            required: false
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.caption}}"
-            hint: "Shown right of the band text on wide screens, below it on small screens. Fill in a photo or a YouTube URL per item."
-            fields:
-              - { name: photo, label: "Photo", widget: image, required: false }
-              - { name: video, label: "YouTube video URL", widget: string, required: false }
-              - { name: caption, label: "Description (alt text)", widget: string, required: false }
-          - { name: editionMinYear, label: "Earliest edition year", widget: number, value_type: int }
-          - { name: editionMaxYear, label: "Latest edition year", widget: number, value_type: int }
-          - { name: defaultEditionText, label: "Default edition text", widget: string }
-          - name: sections
-            label: "About categories (drag to reorder; toggle visibility)"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.label}}"
-            fields:
-              - { name: key, label: "Key", widget: string, hint: "Keep the existing key unless adding a new template-backed category." }
-              - { name: label, label: "Label", widget: string }
-              - { name: visible, label: "Visible", widget: boolean, default: true }
-          - name: editions
-            label: "Editions (throwbacks)"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.year}}"
-            fields:
-              - { name: year, label: "Year", widget: number, value_type: int }
-              - { name: poster, label: "Poster", widget: image, required: false }
-              - { name: video, label: "YouTube video URL", widget: string, required: false, hint: "Aftermovie, shown under the poster." }
-              - { name: showVideo, label: "Show video", widget: boolean, default: true, required: false }
-              - { name: photo, label: "Group photo", widget: image, required: false, hint: "Crew group photo, shown under the poster (and video)." }
-              - { name: showPhoto, label: "Show group photo", widget: boolean, default: true, required: false }
-              - name: paragraphs
-                label: "Paragraphs"
+              - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
+              - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - name: blocks
+                label: "Text"
                 widget: list
                 collapsed: true
                 minimize_collapsed: true
-                field: { name: paragraph, label: "Paragraph", widget: text }
+                summary: "{{fields.text}}"
+                fields:
+                  - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
+                  - { name: text, label: "Text", widget: text }
+          - name: initiatives
+            label: "Initiatives & partnerships"
+            widget: object
+            collapsed: true
+            fields:
+              - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
+              - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - name: blocks
+                label: "Text"
+                widget: list
+                collapsed: true
+                minimize_collapsed: true
+                summary: "{{fields.text}}"
+                fields:
+                  - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
+                  - { name: text, label: "Text", widget: text }
+          - name: editions
+            label: "Previous editions"
+            widget: object
+            collapsed: true
+            fields:
+              - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
+              - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - { name: minYear, label: "Earliest edition year", widget: number, value_type: int }
+              - { name: maxYear, label: "Latest edition year", widget: number, value_type: int }
+              - { name: defaultText, label: "Text for years without an edition", widget: string }
+              - name: items
+                label: "Editions"
+                widget: list
+                collapsed: true
+                minimize_collapsed: true
+                summary: "{{fields.year}}"
+                fields:
+                  - { name: year, label: "Year", widget: number, value_type: int }
+                  - { name: poster, label: "Poster", widget: image, required: false }
+                  - { name: video, label: "YouTube video URL", widget: string, required: false, hint: "Aftermovie, shown under the poster." }
+                  - { name: showVideo, label: "Show video", widget: boolean, default: true, required: false }
+                  - { name: photo, label: "Group photo", widget: image, required: false, hint: "Crew group photo, shown under the poster (and video)." }
+                  - { name: showPhoto, label: "Show group photo", widget: boolean, default: true, required: false }
+                  - name: paragraphs
+                    label: "Paragraphs"
+                    widget: list
+                    collapsed: true
+                    minimize_collapsed: true
+                    field: { name: paragraph, label: "Paragraph", widget: text }
+          - name: shop
+            label: "Irie shop"
+            widget: object
+            collapsed: true
+            fields:
+              - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
+              - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - { name: intro, label: "Intro", widget: text }
+              - name: items
+                label: "Items"
+                widget: list
+                collapsed: true
+                minimize_collapsed: true
+                summary: "{{fields.name}}"
+                fields:
+                  - { name: name, label: "Name", widget: string }
+                  - { name: description, label: "Description", widget: text }
+                  - { name: image, label: "Product image", widget: image, required: false }
+          - name: band
+            label: "The Irie Vibes band"
+            widget: object
+            collapsed: true
+            fields:
+              - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
+              - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - { name: text, label: "Text", widget: string }
+              - name: media
+                label: "Band photos & videos"
+                widget: list
+                required: false
+                collapsed: true
+                minimize_collapsed: true
+                summary: "{{fields.caption}}"
+                hint: "Shown right of the band text on wide screens, below it on small screens. Fill in a photo or a YouTube URL per item."
+                fields:
+                  - { name: photo, label: "Photo", widget: image, required: false }
+                  - { name: video, label: "YouTube video URL", widget: string, required: false }
+                  - { name: caption, label: "Description (alt text)", widget: string, required: false }
+      - name: regulations
+        label: "Regulations"
+        file: "content/regulations.json"
+        icon: gavel
+        fields:
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - name: sections
+            label: "Sections"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: "Title", widget: string }
+              - name: items
+                label: "Items"
+                widget: list
+                collapsed: true
+                minimize_collapsed: true
+                fields:
+                  - { name: p, label: "Paragraph", widget: text, required: false }
+                  - name: ul
+                    label: "Bullet list"
+                    widget: list
+                    collapsed: true
+                    minimize_collapsed: true
+                    required: false
+                    field: { name: item, label: "Item", widget: string }
 
   # ---- Line-up acts (one file per act) ---------------------------------
   - name: acts
@@ -288,125 +371,80 @@ collections:
         hint: "Optional act bio or detail-page copy."
 
 
-  # ---- Content pages (files-based so bespoke and singleton pages share one
-  #      editor section) --------------------------------------------------
-  - name: pages
-    label: "Content pages"
-    create: false
-    icon: description
+  # ---- Settings: things that apply to the whole site ---------------------
+  - name: settings
+    label: "Settings"
     files:
-      - name: when
-        label: "When"
-        file: "content/pages/when.json"
-        fields: &contentPageFields
-          - { name: slug, label: "Slug", widget: hidden }
-          - { name: title, label: "Title", widget: string }
-          - { name: hero, label: "Hero image", widget: image }
-          # Hero size no longer has an effect (heroes keep their own proportions). Hidden, not removed,
-          # so existing values stay in the files; a readonly select broke saving in Sveltia.
-          - { name: heroSize, label: "Hero size", widget: hidden, default: "md" }
-          - name: blocks
-            label: "Content blocks"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: &copyBlockFields
-              - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
-              - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
-      - name: where
-        label: "Where"
-        file: "content/pages/where.json"
-        description: "The Google Maps tile uses the location in Site settings; the circulation plan is under Hero images → Shared images."
-        fields: *contentPageFields
-      - name: drinks
-        label: "Drinks"
-        file: "content/pages/drinks.json"
-        fields: *contentPageFields
-      - name: kids
-        label: "Kids"
-        file: "content/pages/kids.json"
-        fields: *contentPageFields
-      - name: volunteer
-        label: "Volunteer"
-        file: "content/pages/volunteer.json"
-        fields: *contentPageFields
-      - name: camping
-        label: "Camping & parking"
-        file: "content/camping.json"
-        icon: camping
+      - name: site
+        label: "Site settings"
+        file: "content/site.json"
+        icon: settings
         fields:
-          - { name: hero, label: "Hero image", widget: image, hint: "Banner at the top of the Camping & parking page." }
-          - { name: title, label: "Title", widget: string }
-          - name: intro
-            label: "Text above the fees"
-            widget: list
+          - { name: name, label: "Festival name", widget: string }
+          - { name: organisation, label: "Organisation", widget: string }
+          - name: location
+            label: "Location"
+            widget: object
             collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
-          - { name: showFees, label: "Show fee table", widget: boolean, default: true, hint: "The fees themselves are edited under Tickets & fees → Camping & parking fees." }
-          - name: outro
-            label: "Text below the fees"
-            widget: list
+            fields:
+              - { name: label, label: "Address label", widget: string }
+              - { name: query, label: "Map search query", widget: string }
+          - { name: email, label: "Contact email", widget: string }
+          - { name: ticketUrl, label: "Ticket shop URL", widget: string }
+          - { name: volunteerUrl, label: "Volunteer link", widget: string }
+          - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
+          - name: assets
+            label: "Chrome images"
+            widget: object
             collapsed: true
-            minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
-      - name: tickets
-        label: "Tickets & fees"
-        file: "content/tickets.json"
-        icon: local_activity
-        fields:
-          - name: passes
-            label: "Passes"
+            fields:
+              - { name: headerBanner, label: "Header banner", widget: image }
+              - { name: footerBg, label: "Footer background", widget: image }
+              - { name: greenforward, label: "Greenforward logo", widget: image }
+              - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
+              - { name: menuButton, label: "Menu button image", widget: image, required: false, hint: "Optional. Replaces the record icon of the round menu button (top left); a square image works best. Leave empty for the animated record." }
+          - name: nav
+            label: "Navigation"
             widget: list
             collapsed: true
             minimize_collapsed: true
             fields:
               - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - { name: passesNote, label: "Passes note", widget: string }
-          - name: campingParking
-            label: "Camping & parking fees"
+              - { name: href, label: "Link", widget: string }
+          - name: socials
+            label: "Social links"
             widget: list
             collapsed: true
             minimize_collapsed: true
             fields:
               - { name: label, label: "Label", widget: string }
-              - { name: value, label: "Price", widget: string }
-          - name: ticketNotes
-            label: "Notes"
-            widget: list
-            collapsed: true
-            minimize_collapsed: true
-            field: { name: note, label: "Note", widget: string }
-          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, hint: "When enabled, replaces the CMS-managed ticket tables and notes." }
-          - { name: customHtml, label: "Custom HTML", widget: text, required: false }
-      - name: regulations
-        label: "Regulations"
-        file: "content/regulations.json"
-        icon: gavel
+              - { name: href, label: "URL", widget: string }
+              - { name: icon, label: "Icon", widget: image }
+
+      - name: sponsors
+        label: "Sponsors"
+        file: "content/sponsors.json"
+        icon: handshake
         fields:
-          - name: sections
-            label: "Sections"
+          - name: main
+            label: "Main partners"
             widget: list
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.title}}"
+            summary: "{{fields.alt}}{{fields.label}}"
             fields:
-              - { name: title, label: "Title", widget: string }
-              - name: items
-                label: "Items"
-                widget: list
-                collapsed: true
-                minimize_collapsed: true
-                fields:
-                  - { name: p, label: "Paragraph", widget: text, required: false }
-                  - name: ul
-                    label: "Bullet list"
-                    widget: list
-                    collapsed: true
-                    minimize_collapsed: true
-                    required: false
-                    field: { name: item, label: "Item", widget: string }
+              - { name: image, label: "Logo", widget: image, required: false }
+              - { name: alt, label: "Name (alt text)", widget: string, required: false }
+              - { name: label, label: "Text label (no logo)", widget: string, required: false }
+              - { name: sub, label: "Text sub-label", widget: string, required: false }
+          - name: regular
+            label: "Regular sponsors"
+            widget: list
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.alt}}{{fields.label}}"
+            fields:
+              - { name: image, label: "Logo", widget: image, required: false }
+              - { name: alt, label: "Name (alt text)", widget: string, required: false }
+              - { name: label, label: "Text label (no logo)", widget: string, required: false }
+              - { name: sub, label: "Text sub-label", widget: string, required: false }

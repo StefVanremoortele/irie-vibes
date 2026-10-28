@@ -110,11 +110,11 @@ function canonicalHref(href: string): string {
 
 <style>
   .hdr {
-    /* Ticket button size, capped just under the header height so it never sticks out (phones). */
-    --hdr-ticket-size: min(clamp(84px, 14.25vw, 144px), calc(var(--header-h) - 4px));
-    /* Menu (record) button: sized in rem, so it follows the root font size (and the
-       visitor's text-size setting), not the screen width; steps up on wider screens. */
-    --hdr-btn-size: min(2.75rem, calc(var(--header-h) - 4px));
+    /* Menu and ticket buttons share one size: grows with the screen width between
+       3.25rem (phones) and 7rem (large screens), so it never gets as big as the old
+       144px ticket button on laptops, and is capped just under the header height. */
+    --hdr-btn-size: min(clamp(3.25rem, 8vw, 7rem), calc(var(--header-h) - 4px));
+    --hdr-ticket-size: var(--hdr-btn-size);
     position: fixed;
     top: 0;
     left: 0;
@@ -123,22 +123,6 @@ function canonicalHref(href: string): string {
     background: var(--surface);
     box-shadow: var(--shadow-header);
   }
-  @media (min-width: 768px) {
-    .hdr {
-      --hdr-btn-size: min(3.25rem, calc(var(--header-h) - 4px));
-    }
-  }
-  @media (min-width: 1200px) {
-    .hdr {
-      --hdr-btn-size: min(4rem, calc(var(--header-h) - 4px));
-    }
-  }
-  @media (min-width: 1600px) {
-    .hdr {
-      --hdr-btn-size: 4.5rem;
-    }
-  }
-
   .hdr__inner {
     position: relative;
     line-height: 0;

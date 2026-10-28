@@ -3,12 +3,12 @@
 // the testing dialog).
 import Hero from './Hero.astro';
 import Countdown from './Countdown.astro';
-import { site } from '../data/site';
+import { site, home } from '../data/site';
 import { heroImages } from '../data/pages';
 
 const aftermovieId = (() => {
   try {
-    return new URL(site.aftermovie.embedUrl).pathname.split('/').filter(Boolean).pop() ?? '';
+    return new URL(home.aftermovie.embedUrl).pathname.split('/').filter(Boolean).pop() ?? '';
   } catch {
     return '';
   }
@@ -19,18 +19,18 @@ const aftermovieId = (() => {
   <Hero src={heroImages.home} alt="Festival grounds at night" size="lg" />
   <div class="home__body">
     <h1 class="home__title">{site.name}</h1>
-    <p class="home__dates">{site.datesLabel}</p>
+    <p class="home__dates">{home.datesLabel}</p>
 
-    {site.showCountdown && <Countdown date={site.festivalDate} />}
+    {home.showCountdown && <Countdown date={home.festivalDate} />}
 
-    <p class="home__intro">{site.intro}</p>
+    <p class="home__intro">{home.intro}</p>
 
     {
-      site.showAftermovie && (
+      home.showAftermovie && (
         <div class="aftermovie">
-          <h3 class="aftermovie__title">{site.aftermovie.title}</h3>
+          <h3 class="aftermovie__title">{home.aftermovie.title}</h3>
           <div class="aftermovie__frame">
-            <iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(aftermovieId)}`} title={site.aftermovie.title} loading="lazy" allowfullscreen></iframe>
+            <iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(aftermovieId)}`} title={home.aftermovie.title} loading="lazy" allowfullscreen></iframe>
           </div>
         </div>
       )

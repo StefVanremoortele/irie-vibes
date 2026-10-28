@@ -3,19 +3,22 @@ import data from '../../content/about.json';
 import { assetUrl, existingAssetUrl } from '../lib/assets';
 import { youtubeEmbed } from '../lib/youtube';
 
-/** Accordion 1 — VZW Greenforward. */
-export const greenforward: AboutBlock[] = data.greenforward as AboutBlock[];
+// content/about.json holds one block per category (accordion), each with its own
+// title, visible switch and content; `order` lists the category keys top to bottom.
 
-/** Accordion 2 — Socio-environmental initiatives & partnerships. */
-export const initiatives: AboutBlock[] = data.initiatives as AboutBlock[];
+/** Accordion — VZW Greenforward. */
+export const greenforward: AboutBlock[] = data.greenforward.blocks as AboutBlock[];
 
-// Accordion 3 — Previous editions (year navigator).
-export const EDITION_MIN_YEAR: number = data.editionMinYear;
-export const EDITION_MAX_YEAR: number = data.editionMaxYear;
-export const defaultEditionText: string = data.defaultEditionText;
+/** Accordion — Socio-environmental initiatives & partnerships. */
+export const initiatives: AboutBlock[] = data.initiatives.blocks as AboutBlock[];
+
+// Accordion — Previous editions (year navigator).
+export const EDITION_MIN_YEAR: number = data.editions.minYear;
+export const EDITION_MAX_YEAR: number = data.editions.maxYear;
+export const defaultEditionText: string = data.editions.defaultText;
 
 /** Optional per-edition fields the CMS may or may not have written yet. */
-type EditionSource = (typeof data.editions)[number] & {
+type EditionSource = (typeof data.editions.items)[number] & {
   video?: string;
   showVideo?: boolean;
   photo?: string;
@@ -33,32 +36,38 @@ function toEdition(edition: EditionSource): Edition {
 }
 
 /** Oldest first, so ‹ / › step to the previous / next year. */
-export const editions: Edition[] = data.editions.map(toEdition).sort((a, b) => a.year - b.year);
+export const editions: Edition[] = data.editions.items.map(toEdition).sort((a, b) => a.year - b.year);
 
 /** Returns the throwback content for a given edition year. */
 export function getEdition(year: number): Edition {
-  const match = data.editions.find((e) => e.year === year);
+  const match = data.editions.items.find((e) => e.year === year);
   return match ? toEdition(match) : { year, paragraphs: [defaultEditionText] };
 }
 
-/** Accordion 4 — Irie shop (physical, on-site only). */
+/** Accordion — Irie shop (physical, on-site only). */
 export const shop = {
-  intro: data.shopIntro,
-  items: (data.shop as ShopItem[]).map((item) => ({ ...item, image: item.image ? assetUrl(item.image) : undefined })),
+  intro: data.shop.intro,
+  items: (data.shop.items as ShopItem[]).map((item) => ({ ...item, image: item.image ? assetUrl(item.image) : undefined })),
 };
 
-export const aboutSections = (data.sections ?? [
-  { key: 'greenforward', label: 'VZW Greenforward', visible: true },
-  { key: 'initiatives', label: 'Socio-environmental initiatives & partnerships', visible: true },
-  { key: 'editions', label: 'Previous editions', visible: true },
-  { key: 'shop', label: 'Irie shop', visible: true },
-  { key: 'band', label: 'The Irie Vibes band', visible: true },
-]).map((section, order) => ({ ...section, order }));
+export type AboutSectionKey = 'greenforward' | 'initiatives' | 'editions' | 'shop' | 'band';
+const SECTION_KEYS: AboutSectionKey[] = ['greenforward', 'initiatives', 'editions', 'shop', 'band'];
 
-/** Accordion 5 — The Irie Vibes band. */
+// Categories in the order the CMS lists them; unknown or repeated keys are ignored and
+// any category missing from the list goes last, so none can disappear by accident.
+const sectionOrder = [...new Set([...((data.order ?? []) as string[]), ...SECTION_KEYS])].filter(
+  (key): key is AboutSectionKey => SECTION_KEYS.includes(key as AboutSectionKey),
+);
+
+/** Title, visibility and position (0-based) of each accordion. */
+export const aboutSections = Object.fromEntries(
+  sectionOrder.map((key, order) => [key, { title: data[key].title, visible: data[key].visible !== false, order }]),
+) as Record<AboutSectionKey, { title: string; visible: boolean; order: number }>;
+
+/** Accordion — The Irie Vibes band. */
 export const band = {
-  text: data.band,
-  media: ((data as { bandMedia?: { photo?: string; video?: string; caption?: string }[] }).bandMedia ?? [])
+  text: data.band.text,
+  media: ((data.band as { media?: { photo?: string; video?: string; caption?: string }[] }).media ?? [])
     .map((item): BandMedia => ({
       image: item.photo ? assetUrl(item.photo) : undefined,
       video: youtubeEmbed(item.video),

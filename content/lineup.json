@@ -1,4 +1,9 @@
 {
+  "hero": "/assets/hero-lineup.png",
+  "showHero": true,
+  "actHero": "/assets/hero-lineup.png",
+  "showActHero": true,
+  "actPoster": "/assets/actposter.png",
   "stages": [
     {
       "key": "inner",

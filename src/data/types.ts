@@ -79,15 +79,14 @@ export interface CopyBlock {
 export interface ContentPage {
   slug: string;
   title: string;
-  hero: string;
-  /** Hero height preset. */
-  heroSize?: 'sm' | 'md' | 'lg';
+  /** Undefined when the page has no hero (none chosen, or switched off). */
+  hero?: string;
   blocks: CopyBlock[];
 }
 
 /** The Camping & parking page: copy above and below the fee table. */
 export interface CampingPage {
-  hero: string;
+  hero?: string;
   title: string;
   intro: CopyBlock[];
   showFees: boolean;

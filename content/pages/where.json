@@ -2,7 +2,8 @@
   "slug": "where",
   "title": "Where",
   "hero": "/assets/hero-where.png",
-  "heroSize": "md",
+  "showHero": true,
+  "circulatieplan": "/assets/circulatieplan.png",
   "blocks": [
     {
       "type": "p",

@@ -2,7 +2,7 @@
   "slug": "kids",
   "title": "Kids corner",
   "hero": "/assets/hero-kids.png",
-  "heroSize": "md",
+  "showHero": true,
   "blocks": [
     {
       "type": "p",

@@ -9,7 +9,7 @@ const page = contentPages.where;
 
 <Base title={page.title}>
   <div class="where">
-    <Hero src={page.hero} alt="Route to the festival" size={page.heroSize ?? 'md'} />
+    <Hero src={page.hero} alt="Route to the festival" size="md" />
     <div class="section section--page">
       <h1 class="title">{page.title}</h1>
       <div class="copy copy--center where__copy">
@@ -25,9 +25,11 @@ const page = contentPages.where;
           <iframe src={`https://www.google.com/maps?q=${encodeURIComponent(site.location.query)}&output=embed`} title="Festival location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           <a class="embed__directions" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.location.query)}`}>Open directions in Google Maps</a>
         </div>
-        <div class="where__tile">
-          <img src={pageImages.circulatieplan} alt="Irie Vibes circulation plan" loading="lazy" />
-        </div>
+        {pageImages.circulatieplan && (
+          <div class="where__tile">
+            <img src={pageImages.circulatieplan} alt="Irie Vibes circulation plan" loading="lazy" />
+          </div>
+        )}
       </div>
     </div>
   </div>

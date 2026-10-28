@@ -2,7 +2,7 @@
   "slug": "volunteer",
   "title": "Volunteer",
   "hero": "/assets/hero-volunteer.png",
-  "heroSize": "md",
+  "showHero": true,
   "blocks": [
     {
       "type": "p",

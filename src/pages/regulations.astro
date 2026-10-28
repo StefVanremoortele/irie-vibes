@@ -1,9 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
 import { regulations } from '../data/regulations';
+import { heroImages } from '../data/pages';
 ---
 
 <Base title="Festival & Camping Regulations">
+  <div class="regs-page">
+  <Hero src={heroImages.regulations} alt="Festival & Camping Regulations" size="md" />
   <div class="section section--wide regs">
     {
       regulations.map((sec) => (
@@ -20,9 +24,13 @@ import { regulations } from '../data/regulations';
       ))
     }
   </div>
+  </div>
 </Base>
 
 <style>
+  .regs-page {
+    width: 100%;
+  }
   .regs__section {
     margin-bottom: 48px;
   }
