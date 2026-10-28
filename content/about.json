@@ -157,7 +157,7 @@
     "visible": true,
     "minYear": 2002,
     "maxYear": 2026,
-    "defaultText": "Throwback text for this edition is on its way.",
+    "defaultText": "-",
     "items": [
       {
         "year": 2002,
