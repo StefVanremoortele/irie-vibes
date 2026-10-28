@@ -11,6 +11,8 @@ export interface NavItem {
   label: string;
   /** Route path, e.g. "/", "/tickets". */
   href: string;
+  /** Off: listed in Site settings but left out of the burger menu (e.g. Regulations). */
+  showInMenu?: boolean;
 }
 
 /** A social channel shown in the footer. */

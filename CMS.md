@@ -27,7 +27,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches, optional text; sorted newest first after each save by `.github/workflows/sort-editions.yml`), shop, band (text + photos & videos) |
 | Content pages → Regulations | `content/regulations.json` | regulation sections |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
-| Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, **theme text colour**, nav, socials, sticky images (header banner, footer, **ticket button image**, **menu button image**) |
+| Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, **theme text colour**, page navigation (burger menu order + **Show in burger menu** per page), socials, sticky images (header banner, footer, **ticket button image**, **menu button image**) |
 | Settings → Sponsors | `content/sponsors.json` | main + regular sponsor logos / text |
 
 Feedback items (their status: New / In progress / Done), the developer notes

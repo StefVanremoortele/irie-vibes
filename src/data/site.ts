@@ -54,8 +54,8 @@ export const site = {
   },
 };
 
-/** Header navigation (drawer). Order matters. */
-export const nav: NavItem[] = siteData.nav;
+/** Header navigation (drawer), in CMS order; pages switched off for the burger menu are left out. */
+export const nav: NavItem[] = (siteData.nav as NavItem[]).filter((item) => item.showInMenu !== false);
 
 /** Social channels (footer). */
 export const socials: Social[] = siteData.socials.map((s) => ({

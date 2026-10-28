@@ -356,13 +356,17 @@ collections:
               - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
               - { name: menuButton, label: "Menu button image", widget: image, required: false, hint: "Optional. Replaces the record icon of the round menu button (top left); a square image works best. Leave empty for the animated record." }
           - name: nav
-            label: "Navigation"
+            label: "Page navigation"
+            label_singular: "Page"
             widget: list
             collapsed: true
             minimize_collapsed: true
+            summary: "{{fields.label}}"
+            hint: "Top to bottom is the order of the burger menu. Switch off \"Show in burger menu\" to keep a page out of the menu."
             fields:
               - { name: label, label: "Label", widget: string }
               - { name: href, label: "Link", widget: string }
+              - { name: showInMenu, label: "Show in burger menu", widget: boolean, default: true, required: false }
           - name: socials
             label: "Social links"
             widget: list
@@ -384,6 +388,8 @@ collections:
             collapsed: true
             minimize_collapsed: true
             summary: "{{fields.alt}}{{fields.label}}"
+            thumbnail: image
+            hint: "Shown on the site in this order. Reorder with the drag handle or the arrow buttons of each row."
             fields:
               - { name: image, label: "Logo", widget: image, required: false }
               - { name: alt, label: "Name (alt text)", widget: string, required: false }
@@ -395,6 +401,8 @@ collections:
             collapsed: true
             minimize_collapsed: true
             summary: "{{fields.alt}}{{fields.label}}"
+            thumbnail: image
+            hint: "Shown on the site in this order. Reorder with the drag handle or the arrow buttons of each row."
             fields:
               - { name: image, label: "Logo", widget: image, required: false }
               - { name: alt, label: "Name (alt text)", widget: string, required: false }
