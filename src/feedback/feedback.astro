@@ -150,7 +150,7 @@ try {
   /* ---- Shell: scrim + panel over the inert homepage ----------------------- */
   html:has(.fbx-panel) { overflow: hidden; }
   .inbox-behind { width: 100%; }
-  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: rgba(26, 27, 38, 0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
+  .fbx-scrim { position: fixed; inset: 0; z-index: 9500; background: radial-gradient(120% 90% at 0% 0%, #fde2e4 0%, transparent 55%), radial-gradient(100% 80% at 100% 0%, #bae6fd 0%, transparent 60%), radial-gradient(120% 100% at 100% 100%, #e9d5ff 0%, transparent 55%), radial-gradient(100% 90% at 0% 100%, #fef3c7 0%, transparent 55%), linear-gradient(180deg, rgba(250, 250, 255, 0.92) 0%, rgba(243, 241, 255, 0.92) 100%); opacity: 0.85; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: fbx-fade var(--dur-slow) var(--ease-smooth); }
   .fbx-panel { position: fixed; inset: 24px; z-index: 9600; max-width: 1360px; margin: 0 auto; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; background: var(--glass-tint-high); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); border: 1px solid var(--glass-border); border-bottom-color: var(--glass-edge-dark); border-radius: var(--radius-lg); box-shadow: var(--shadow-xl); animation: fbx-enter var(--dur-slow) var(--ease-smooth); }
   .fbx.is-closing .fbx-panel { animation: fbx-exit var(--dur-med) var(--ease-smooth) forwards; }
   .fbx.is-closing .fbx-scrim { animation: fbx-fade var(--dur-med) var(--ease-smooth) reverse forwards; }
