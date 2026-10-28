@@ -161,7 +161,10 @@ collections:
             widget: list
             collapsed: true
             minimize_collapsed: true
-            hint: "Top to bottom as on the page. Reorder with the drag handle or the arrow buttons of each row."
+            allow_add: false
+            allow_remove: false
+            allow_duplicate: false
+            hint: "Top to bottom as on the page. Reorder with the drag handle or the arrow buttons of each row. To hide a category, switch off \"Show on the site\" in its own block."
             field: { name: key, label: "Category", widget: select, options: [{ label: "VZW Greenforward", value: "greenforward" }, { label: "Initiatives & partnerships", value: "initiatives" }, { label: "Previous editions", value: "editions" }, { label: "Irie shop", value: "shop" }, { label: "The Irie Vibes band", value: "band" }] }
           - name: greenforward
             label: "VZW Greenforward"
@@ -208,7 +211,8 @@ collections:
               - name: items
                 label: "Editions"
                 widget: list
-                hint: "Put in year order (newest first) automatically shortly after saving."
+                add_to_top: true
+                hint: "New editions are added at the top (newest first). The site always shows the editions in year order, whatever the order here."
                 collapsed: true
                 minimize_collapsed: true
                 summary: "{{fields.year}}"
