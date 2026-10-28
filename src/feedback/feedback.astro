@@ -1136,9 +1136,25 @@ try {
   });
   matchMedia('(max-width: 900px)').addEventListener('change', render);
 
-  const refresh = () => { void load(); void loadNotes(); void loadChangelog(); };
+  // ---- Runner indicator: an animated frame around the window while an AI works on feedback ----
+  const panel = $('.fbx-panel');
+  async function loadRunners() {
+    try {
+      const response = await fetch('/__feedback/api/runners', { cache: 'no-store' });
+      if (!response.ok) throw new Error();
+      const { runners = [] } = (await response.json()) as { runners?: unknown[] };
+      const frame = panel.querySelector(':scope > .runner-frame');
+      if (runners.length && !frame) panel.prepend(Object.assign(document.createElement('div'), { className: 'runner-frame runner-frame--aurora', ariaHidden: 'true' }));
+      if (!runners.length) frame?.remove();
+    } catch {
+      // Status unknown: keep the frame as it is.
+    }
+  }
+
+  const refresh = () => { void load(); void loadNotes(); void loadChangelog(); void loadRunners(); };
   window.addEventListener('focus', refresh);
   setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 30000);
+  setInterval(() => { if (document.visibilityState === 'visible') void loadRunners(); }, 10000);
   render();
   refresh();
 

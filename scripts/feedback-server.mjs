@@ -10,8 +10,15 @@
 // and deleted entries are committed and pushed, and CMS edits are pulled
 // before the list is served.
 //
+// Which feedback items an AI developer is working on right now ("runners") is
+// kept outside git in FEEDBACK_RUNNERS_FILE, shared by the production and dev
+// servers: { "runners": [{ "id", "items": ["<short id>"], "label", "startedAt",
+// "expiresAt" }] }. The AI writes it when it starts and empties it when done;
+// a runner past its expiresAt (or 2 hours after startedAt) no longer counts.
+//
 // Env: FEEDBACK_DIR (default ~/sources/repos/stef/irie-vibes-feedback),
-//      FEEDBACK_GIT_SYNC (1 to commit/push/pull FEEDBACK_DIR).
+//      FEEDBACK_GIT_SYNC (1 to commit/push/pull FEEDBACK_DIR),
+//      FEEDBACK_RUNNERS_FILE (default ~/.local/state/irie-vibes/runners.json).
 import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -40,6 +47,33 @@ class HttpError extends Error {
 
 function feedbackDir() {
   return resolve(process.env.FEEDBACK_DIR || join(process.env.HOME || process.cwd(), 'sources/repos/stef/irie-vibes-feedback'));
+}
+
+const RUNNER_TTL_MS = 2 * 60 * 60 * 1000;
+
+function runnersFile() {
+  return resolve(process.env.FEEDBACK_RUNNERS_FILE || join(process.env.HOME || process.cwd(), '.local/state/irie-vibes/runners.json'));
+}
+
+// AI runners still working on feedback; a missing or unreadable file means none.
+async function activeRunners() {
+  let data;
+  try {
+    data = JSON.parse(await readFile(runnersFile(), 'utf8'));
+  } catch {
+    return [];
+  }
+  const nowMs = Date.now();
+  return (Array.isArray(data?.runners) ? data.runners : [])
+    .filter((runner) => {
+      const until = Date.parse(runner?.expiresAt) || (Date.parse(runner?.startedAt) || 0) + RUNNER_TTL_MS;
+      return until > nowMs;
+    })
+    .map((runner) => ({
+      items: (Array.isArray(runner.items) ? runner.items : []).filter((item) => typeof item === 'string').map((item) => item.slice(0, 36)),
+      label: typeof runner.label === 'string' ? runner.label.slice(0, 200) : '',
+      startedAt: typeof runner.startedAt === 'string' ? runner.startedAt : '',
+    }));
 }
 
 function safeFilename(input, fallback) {
@@ -474,6 +508,10 @@ async function handleApi(req, res, path) {
     if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
     await pullIfStale(dir);
     return send(res, 200, await readChangelog(dir));
+  }
+  if (path === '/__feedback/api/runners') {
+    if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');
+    return send(res, 200, { runners: await activeRunners() });
   }
   if (path === '/__feedback/api/notes') {
     if (req.method !== 'GET') throw new HttpError(405, 'Method not allowed.');

@@ -176,7 +176,9 @@ proposed interpretations (optional `proposals` `{ by, date, recommended, options
 written by the AI triage: radio cards, the tester picks the one they meant by clicking its card
 (Enter/Space with the keyboard, arrows move between cards), via `POST /__feedback/api/entries/<id>/choose`
 `{ option }`; clicking the chosen card again or *Undo* sends `{ option: null }` to clear it; changeable while the item is
-*New*; layout and states follow the "Feedback inbox redesign" handoff of 2026-10-28), the conversation and a reply box (Enter sends, Shift+Enter adds a
+*New*; layout and states follow the "Feedback inbox redesign" handoff of 2026-10-28; while an AI developer
+works on feedback, an animated frame runs around the window, from `GET /__feedback/api/runners`, which reads
+`FEEDBACK_RUNNERS_FILE`, see `scripts/feedback-server.mjs`), the conversation and a reply box (Enter sends, Shift+Enter adds a
 line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
 items) and delete sit in its header; *Add a note without a screenshot* is at
 the bottom of the list. Under 900px wide the list and the item are shown one
