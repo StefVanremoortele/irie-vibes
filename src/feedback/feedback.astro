@@ -54,6 +54,7 @@ try {
             <button type="button" class="fbx-chip" data-filter="in_progress">In progress <span data-count="In progress"></span></button>
             <button type="button" class="fbx-chip" data-filter="done">Done <span data-count="Done"></span></button>
             <button type="button" class="fbx-chip" data-filter="all">All <span data-count="All"></span></button>
+            <button type="button" class="fbx-awaiting" data-next-choice hidden></button>
           </div>
           <div id="entries" class="fbx-rows" aria-live="polite"><p class="fbx-empty">Loading feedback…</p></div>
           <button type="button" class="fbx-addnote" data-add-note>
@@ -187,6 +188,14 @@ try {
   .fbx-chip:active { transform: scale(0.97); }
   .fbx-chip.is-active { border-color: transparent; background: var(--accent-tint); color: var(--accent-600); font-weight: 600; }
   .fbx-chip span:empty { display: none; }
+  /* Items whose proposals still wait for the tester's choice */
+  .fbx-awaiting { display: flex; align-items: center; gap: 8px; flex-basis: 100%; margin-top: 6px; padding: 8px 12px; border: 0; border-radius: var(--radius-sm); background: var(--accent-500); color: #fff; font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; transition: filter var(--dur-fast), transform var(--dur-fast) var(--ease-spring); }
+  .fbx-awaiting[hidden] { display: none; }
+  .fbx-awaiting:hover { filter: brightness(1.08); }
+  .fbx-awaiting:active { transform: scale(0.98); }
+  .fbx-awaiting__go { margin-left: auto; white-space: nowrap; }
+  .fbx-choose { flex: none; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--accent-500); color: #fff; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .fbx-pill--choose { background: var(--accent-500); color: #fff; }
   .fbx-rows { display: grid; align-content: start; gap: 2px; padding: 0 8px 8px; overflow-y: auto; overscroll-behavior: contain; }
   .fbx-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; padding: 12px; border: 0; border-radius: var(--radius-sm); background: none; text-align: left; cursor: pointer; transition: background var(--dur-fast), box-shadow var(--dur-fast); }
   .fbx-row:hover { background: rgba(26, 27, 38, 0.04); }
@@ -490,6 +499,9 @@ try {
   }
   const visibleEntries = () => (statusFilter === 'all' ? entries : entries.filter((entry) => STATUS_KEY[entry.status] === statusFilter));
   const selectedEntry = () => entries.find((entry) => entry.id === selectedId);
+  /** New items with proposed interpretations of which the tester hasn't picked one yet. */
+  const awaitingChoice = (entry: Entry) =>
+    entry.status === 'New' && !entry.proposals?.chosen && (entry.proposals?.options || []).some((option) => option && option.key && option.interpretation);
   const isNarrow = () => matchMedia('(max-width: 900px)').matches;
 
   // ---- Rendering --------------------------------------------------------------
@@ -518,7 +530,15 @@ try {
     renderDetail();
   }
 
+  function renderAwaiting() {
+    const banner = $('[data-next-choice]');
+    const n = loaded ? entries.filter(awaitingChoice).length : 0;
+    banner.hidden = !n;
+    banner.innerHTML = n ? `${n} ${n === 1 ? 'item waits' : 'items wait'} for your choice<span class="fbx-awaiting__go">Choose →</span>` : '';
+  }
+
   function renderList() {
+    renderAwaiting();
     if (!loaded) return;
     const visible = visibleEntries();
     // Keep a valid selection on wide screens (the detail pane is always shown).
@@ -538,7 +558,7 @@ try {
       return `<button type="button" class="fbx-row${entry.id === selectedId && !addingNote ? ' is-selected' : ''}" data-select="${entry.id}" aria-current="${entry.id === selectedId && !addingNote}">
           <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
           <span class="fbx-row__text">
-            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span>${entry.scope === 'site' ? '<span class="fbx-scope">Every page</span>' : ''}<span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
+            <span class="fbx-row__meta"><span class="fbx-sdot fbx-sdot--${status}" title="${entry.status}"></span><span class="fbx-row__path">${escapeHtml(entry.page || '—')}</span>${entry.scope === 'site' ? '<span class="fbx-scope">Every page</span>' : ''}${awaitingChoice(entry) ? '<span class="fbx-choose" title="Proposed interpretations wait for your choice">Pick an option</span>' : ''}<span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
             <span class="fbx-row__comment">${escapeHtml(entry.message.split('\n')[0])}</span>
           </span>
         </button>`;
@@ -579,6 +599,7 @@ try {
     detailHead.innerHTML = `
       <button type="button" class="fbx-back" data-back aria-label="Back to the list">${ICON.back}</button>
       <span class="fbx-pill fbx-pill--${status}">${entry.status}</span>
+      ${awaitingChoice(entry) ? '<span class="fbx-pill fbx-pill--choose">Waiting for your choice</span>' : ''}
       <span class="fbx-detail__meta">
         <span>${nameButton()} · <time datetime="${entry.createdAt}" title="${new Date(entry.createdAt).toLocaleString()}">${ago(entry.createdAt)}</time></span>
         ${(entry.metadata?.embeds || []).map((embed) => `<a href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`).join('')}
@@ -726,6 +747,17 @@ try {
     if (isNarrow()) { stashDraft(); selectedId = ''; }
     render();
   }));
+  // Jump to the next item that waits for a choice (after the selected one), showing New items if needed.
+  $('[data-next-choice]').addEventListener('click', () => {
+    const waiting = entries.filter(awaitingChoice);
+    if (!waiting.length) return;
+    const next = waiting[(waiting.findIndex((entry) => entry.id === selectedId) + 1) % waiting.length];
+    // Switch the filter first, or renderList would drop a selection outside it.
+    if (statusFilter !== 'new' && statusFilter !== 'all') { statusFilter = 'new'; writeStorage(FILTER_KEY, statusFilter); }
+    select(next.id);
+    render();
+    $('.fbx-props')?.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
   $('[data-add-note]').addEventListener('click', () => {
     stashDraft();
     addingNote = true;
