@@ -5,7 +5,11 @@ The site is managed with **[Sveltia CMS](https://github.com/sveltia/sveltia-cms)
 non-technical editors. It's already wired up:
 
 - Admin UI: `public/admin/` (vendored Sveltia bundle, pinned to v0.253.2).
-- Configuration: `public/admin/config.yml`.
+- Configuration: `src/cms/config.yml`, served as `/admin/config.yml` by `src/pages/admin/config.yml.ts` with
+  `backend.branch` set to the branch the site is built from (`CMS_BRANCH` overrides it).
+- **Which branch saves go to:** the production admin (https://irie-vibes.prod.vanremoortele.be/admin/) commits to
+  `main` and is live within seconds; the concept admin (https://irie-vibes.concept.vanremoortele.be/admin/) commits to
+  `dev`, so edits there are a test: they reach production only when `dev` is merged into `main`.
 - Content: `content/*.json` — the single source of truth the site builds from.
 
 Editors change content in the admin → it's committed to `content/*.json` on
@@ -73,7 +77,7 @@ server hot-reloads.
 
 The admin is configured for the GitHub repository
 `StefVanremoortele/irie-vibes` on branch `main` (`backend` in
-`public/admin/config.yml`). Open `/admin/` on the public site and sign in:
+`src/cms/config.yml`). Open `/admin/` on the public site and sign in:
 
 - **"Sign In Using Access Token"**: any editor with write access to the repo
   can use a GitHub personal access token.

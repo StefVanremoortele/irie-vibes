@@ -2,8 +2,11 @@
 # Collections map 1:1 to the JSON files in content/. Editors change content
 # here; the static site is rebuilt from those same files.
 #
-# Saving commits to `main`, which is production: the self-hosted production
-# server rebuilds and publishes within seconds (GitHub webhook). See CMS.md and README.md.
+# Served as /admin/config.yml by src/pages/admin/config.yml.ts, which sets
+# backend.branch to the branch the site is built from: the production admin
+# (main) commits to `main` and goes live within seconds; the concept admin (dev)
+# commits to `dev`, so test edits never reach production until dev is merged
+# into main. See CMS.md and README.md.
 #
 # Local editing (no cloud needed):
 #   Terminal 1:  npm run dev
@@ -15,7 +18,7 @@
 backend:
   name: github
   repo: StefVanremoortele/irie-vibes
-  branch: main
+  branch: main # replaced at build time with the branch being built
 
 # Enables the "Work with Local Repository" button when the proxy is running.
 local_backend: true

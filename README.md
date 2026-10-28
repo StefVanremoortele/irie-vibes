@@ -36,9 +36,11 @@ within seconds: GitHub sends a push webhook, the server pulls and rebuilds.
 
 - Develop on `dev` (or feature branches merged into it), check the change on the
   concept site, then merge `dev` into `main` to go live.
-- **The CMS always saves to `main`** (on both sites), so CMS edits go live at once
-  and reach `dev` only when `main` is merged back into `dev`. Merge `main` into
-  `dev` before pushing `dev` to `main`.
+- **Each site's CMS saves to its own branch** (`src/cms/config.yml`, served as
+  `/admin/config.yml` with the branch it was built from): the production admin
+  commits to `main` (live at once), the concept admin to `dev` (a test, live only
+  when `dev` is merged into `main`). Production CMS edits reach `dev` when `main`
+  is merged back into `dev`: merge `main` into `dev` before pushing `dev` to `main`.
 - The local dev server (`npm run dev`) uses port **4320**, so it can run next to both.
 
 ### How the production server works
