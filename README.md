@@ -138,8 +138,9 @@ any static host (Netlify, Vercel, Cloudflare Pages, GitHub Pages).
 > (`src/components/HomeContent.astro`, shown inert behind a dark blurred
 > scrim). Esc, a click on the scrim or the *Esc* chip go back to the page you
 > came from after the SVR exit sting: the intact dialog zooms toward the viewer,
-> with text growing 15% during the zoom (tabs and filters start slightly earlier),
-> followed by the title and white fade. Filter buttons use larger type and tighter spacing.
+> with text growing 15% during the zoom (filters start enlarging 160 ms in),
+> followed by the title and white fade. Filters retain their original resting size;
+> their padding grows and surrounding space shrinks only during the exit.
 > Reduced motion uses opacity-only fades. `data-exit-speed` on the dialog root
 > controls playback speed; `src/feedback/svr-transition.ts` returns a disposer
 > to cancel animations when navigating away.

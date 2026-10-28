@@ -26,9 +26,16 @@ export function svrTransition({ root, modal, scrim, title, speed = 1, onDone }: 
         [...element.childNodes].some(node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()))
       .map(element => ({ element, size: parseFloat(getComputedStyle(element).fontSize) }));
     for (const { element, size } of text) {
-      const lead = element.closest('.fbx-tabs, .fbx-chips, .fbx-detail__title') ? 0 : 60;
-      animate(element, [{ fontSize: `${size}px` }, { fontSize: `${size * 1.15}px` }], 320, lead, 'cubic-bezier(0.32,0.72,0,1)');
+      const lead = element.closest('.fbx-chips') ? 160 : element.closest('.fbx-tabs, .fbx-detail__title') ? 0 : 60;
+      animate(element, [{ fontSize: `${size}px` }, { fontSize: `${size * 1.15}px` }], 320, lead, 'cubic-bezier(0.4,0,0.2,1)');
     }
+  }
+  if (!reduce) {
+    for (const button of modal.querySelectorAll<HTMLElement>('.fbx-chip')) {
+      animate(button, [{ padding: '5px 11px' }, { padding: '9px 15px' }], 320, 160, 'cubic-bezier(0.4,0,0.2,1)');
+    }
+    const filters = modal.querySelector<HTMLElement>('.fbx-chips');
+    if (filters) animate(filters, [{ padding: '16px 16px 12px' }, { padding: '8px' }], 320, 160, 'cubic-bezier(0.4,0,0.2,1)');
   }
   modal.inert = true;
   modal.style.transformOrigin = '50% 50%';
