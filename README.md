@@ -164,17 +164,21 @@ and commit; the tester accepts it (*Done*).
 *Developer notes*. The top right shows when the website last changed: the
 date of the latest commit outside the CMS-owned `content/` and `public/assets/`
 (read at build time), so CMS edits don't count. The *Feedback* tab is an inbox
-split: a list on the left with status filters (*New*, *In progress*, *Done*,
-*All*; the last choice is remembered per browser; ↑/↓ move the selection) and
-the selected item on the right, with its screenshot (click to enlarge), the
-comment, the AI interpretation (when an AI developer picked it up: an optional
+split: a list on the left with status filters (*Triage* = New, *In progress*,
+*Processed* = Done; the last choice is remembered per browser; ↑/↓ move the
+selection; a large ringed dot marks items whose proposals still need a choice) and
+the selected item on the right, with the comment, its page/viewport chips and
+screenshot (click to enlarge), the AI interpretation (when an AI developer picked it up: an optional
 `interpretation` object `{ text, by, date, commit }` in the entry JSON, showing
 how the comment was read, in English, and the commit that addressed it), the
 proposed interpretations (optional `proposals` `{ by, date, recommended, options:
 [{ key, title, interpretation, implementation, effort, vision }], chosen, chosenAt }`,
-written by the AI triage: the tester picks the one they meant by clicking its card
-(highlighted on hover; Enter/Space with the keyboard), via `POST /__feedback/api/entries/<id>/choose`; changeable while the item is
-*New*), the conversation and a reply box (Enter sends, Shift+Enter adds a
+written by the AI triage: radio cards, the tester picks the one they meant by clicking its card
+(Enter/Space with the keyboard, arrows move between cards), via `POST /__feedback/api/entries/<id>/choose`
+`{ option }`; clicking the chosen card again or *Undo* sends `{ option: null }` to clear it; changeable while the item is
+*New*; layout and states follow the "Feedback inbox redesign" handoff of 2026-10-28; while an AI developer
+works on feedback, an animated frame runs around the window, from `GET /__feedback/api/runners`, which reads
+`FEEDBACK_RUNNERS_FILE`, see `scripts/feedback-server.mjs`), the conversation and a reply box (Enter sends, Shift+Enter adds a
 line). *Mark in progress* (on *New* items), *Accept change* (on *In progress*
 items) and delete sit in its header; *Add a note without a screenshot* is at
 the bottom of the list. Under 900px wide the list and the item are shown one
