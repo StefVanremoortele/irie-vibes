@@ -9,7 +9,7 @@
   "ticketUrl": "https://irie-vibes.eventsquare.store/nl/6tkhqowc5ovk/ldpytyyieckh",
   "volunteerUrl": "mailto:info@irievibes.be",
   "menuAnimation": true,
-  "themeColor": "",
+  "themeColor": "#fabc4d",
   "assets": {
     "headerBanner": "/assets/header-banner.png",
     "footerBg": "/assets/footer.png",
