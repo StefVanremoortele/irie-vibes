@@ -601,6 +601,10 @@ try {
       ${renderThread(entry)}`;
   }
 
+  // Proposals store effort as S / M / L; testers read it as low / medium / high effort.
+  const EFFORT_LABELS: Record<string, string> = { s: 'Low', small: 'Low', low: 'Low', m: 'Medium', medium: 'Medium', l: 'High', large: 'High', high: 'High' };
+  const effortLabel = (effort: string) => `${EFFORT_LABELS[effort.trim().toLowerCase()] || effort} effort`;
+
   function renderProposals(entry: Entry) {
     const proposals = entry.proposals;
     const options = (proposals?.options || []).filter((option) => option && option.key && option.interpretation);
@@ -616,7 +620,7 @@ try {
           const chosen = option.key === proposals.chosen;
           const chips = [
             option.key === proposals.recommended ? '<span class="fbx-props__chip fbx-props__chip--rec">Recommended</span>' : '',
-            option.effort ? `<span class="fbx-props__chip" title="Effort">Effort ${escapeHtml(option.effort)}</span>` : '',
+            option.effort ? `<span class="fbx-props__chip" title="Effort">${escapeHtml(effortLabel(option.effort))}</span>` : '',
             option.vision ? `<span class="fbx-props__chip" title="Fit with the site vision">${escapeHtml(option.vision)}</span>` : '',
           ].join('');
           // The whole card is the choice: hover highlights it, click (or Enter/Space) picks it.
