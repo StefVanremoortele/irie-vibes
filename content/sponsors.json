@@ -2,177 +2,263 @@
   "main": [
     {
       "image": "/assets/sponsors/main-bavik-super-pils.png",
-      "alt": "Bavik Super Pils"
+      "alt": "Bavik Super Pils",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-radio-i-r-o.jpg",
-      "alt": "Radio I.R.O."
+      "alt": "Radio I.R.O.",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-vanham-tenten-podia.jpg",
-      "alt": "Vanham Tenten & Podia"
+      "alt": "Vanham Tenten & Podia",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-ten-boogaerde.jpg",
-      "alt": "Ten Boogaerde"
+      "alt": "Ten Boogaerde",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-drank-center-rojo.jpg",
-      "alt": "Drank Center Rojo"
+      "alt": "Drank Center Rojo",
+      "label": "",
+      "sub": ""
     },
     {
+      "image": "",
+      "alt": "",
       "label": "4AD",
       "sub": ""
     },
     {
       "image": "/assets/sponsors/main-hotel-pax.png",
-      "alt": "Hotel Pax"
+      "alt": "Hotel Pax",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-desotec.png",
-      "alt": "Desotec"
+      "alt": "Desotec",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-alkover.png",
-      "alt": "Alkover"
+      "alt": "Alkover",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-twins-vervoer.jpg",
-      "alt": "Twins Vervoer"
+      "alt": "Twins Vervoer",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-ijzerweelde.jpg",
-      "alt": "IJzerweelde"
+      "alt": "IJzerweelde",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-coach-partners.jpg",
-      "alt": "Coach Partners"
+      "alt": "Coach Partners",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/main-verthus.png",
-      "alt": "Verthus"
+      "alt": "Verthus",
+      "label": "",
+      "sub": ""
     }
   ],
   "regular": [
     {
       "image": "/assets/sponsors/bakkerij-kimpe.jpg",
-      "alt": "Bakkerij Kimpe"
+      "alt": "Bakkerij Kimpe",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/cannahopper.jpg",
-      "alt": "Cannahopper"
+      "alt": "Cannahopper",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/st-georges-caf.png",
-      "alt": "St. Georges Café"
+      "alt": "St. Georges Café",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/realtime-systems.jpg",
-      "alt": "Realtime Systems"
+      "alt": "Realtime Systems",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/vrs-motors-eernegem.jpg",
-      "alt": "VRS Motors Eernegem"
+      "alt": "VRS Motors Eernegem",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/vandaele-rental.png",
-      "alt": "Vandaele Rental"
+      "alt": "Vandaele Rental",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/oerbier.png",
-      "alt": "Oerbier"
+      "alt": "Oerbier",
+      "label": "",
+      "sub": ""
     },
     {
+      "image": "",
+      "alt": "",
       "label": "WORLDWINEWEB",
       "sub": "FINE WINES"
     },
     {
       "image": "/assets/sponsors/toekoer-toilets.png",
-      "alt": "Toekoer Toilets"
+      "alt": "Toekoer Toilets",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/delbeke-apotheek.jpg",
-      "alt": "Delbeke Apotheek"
+      "alt": "Delbeke Apotheek",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/caf-de-hopbeurs.jpg",
-      "alt": "Café De Hopbeurs"
+      "alt": "Café De Hopbeurs",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/carrefour-market.png",
-      "alt": "Carrefour Market"
+      "alt": "Carrefour Market",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/proxy-zarren.png",
-      "alt": "Proxy Zarren"
+      "alt": "Proxy Zarren",
+      "label": "",
+      "sub": ""
     },
     {
+      "image": "",
+      "alt": "",
       "label": "Oxfam België",
       "sub": ""
     },
     {
       "image": "/assets/sponsors/c-hotels.png",
-      "alt": "C-Hotels"
-    },
-    {
-      "image": "/assets/sponsors/le-couvert.png",
-      "alt": "Le Couvert"
-    },
-    {
-      "image": "/assets/sponsors/t-haantje.jpg",
-      "alt": "'t Haantje"
-    },
-    {
-      "label": "Vernafix",
+      "alt": "C-Hotels",
+      "label": "",
       "sub": ""
     },
     {
-      "image": "/assets/sponsors/terrest-brewery.jpg",
-      "alt": "Terrest Brewery"
+      "image": "/assets/sponsors/le-couvert.png",
+      "alt": "Le Couvert",
+      "label": "",
+      "sub": ""
     },
     {
+      "image": "/assets/sponsors/t-haantje.jpg",
+      "alt": "'t Haantje",
+      "label": "",
+      "sub": ""
+    },
+    {
+      "image": "",
+      "alt": "",
+      "label": "Vernafix",
+      "sub": "hout"
+    },
+    {
+      "image": "/assets/sponsors/terrest-brewery.jpg",
+      "alt": "Terrest Brewery",
+      "label": "",
+      "sub": ""
+    },
+    {
+      "image": "",
+      "alt": "",
       "label": "REGGAE.FR",
       "sub": "LE SITE DU REGGAE"
     },
     {
       "image": "/assets/sponsors/ford-veys-vanclooster-bv.png",
-      "alt": "Ford Veys - Vanclooster BV"
+      "alt": "Ford Veys - Vanclooster BV",
+      "label": "",
+      "sub": ""
     },
     {
+      "image": "",
+      "alt": "",
       "label": "BEDRUKT",
       "sub": "DIRK V."
     },
     {
+      "image": "",
+      "alt": "",
       "label": "OKay Kortemark",
       "sub": ""
     },
     {
       "image": "/assets/sponsors/brood-banket-deleu.png",
-      "alt": "Brood - Banket Deleu"
+      "alt": "Brood - Banket Deleu",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/vershuis.png",
-      "alt": "Vershuis"
+      "alt": "Vershuis",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/aveve.jpg",
-      "alt": "Aveve"
+      "alt": "Aveve",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/spar-handzame.png",
-      "alt": "Spar Handzame"
+      "alt": "Spar Handzame",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/crelan.png",
-      "alt": "Crelan"
+      "alt": "Crelan",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/de-flitspaele.png",
-      "alt": "De Flitspaele"
+      "alt": "De Flitspaele",
+      "label": "",
+      "sub": ""
     },
     {
       "image": "/assets/sponsors/brukout.png",
-      "alt": "Brukout"
+      "alt": "Brukout",
+      "label": "",
+      "sub": ""
     }
   ]
 }
