@@ -6,6 +6,7 @@ import {
   greenforward,
   initiatives,
   editions,
+  editionsIntro,
   aboutSections,
   shop,
   band,
@@ -61,6 +62,7 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
           <div class="acc__panel rich">
+            {editionsIntro.length > 0 && <div class="acc__intro">{editionsIntro.map((html) => <p class="acc__p" set:html={html} />)}</div>}
             <div class="years" data-years data-archive>
               <div class="years__nav">
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
@@ -293,6 +295,9 @@ const startEdition = editionOptions[startIndex];
   .years__paras:empty {
     display: none;
   }
+  .years__main[hidden] {
+    display: none;
+  }
   .years__video {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -430,10 +435,13 @@ const startEdition = editionOptions[startIndex];
     // Wide screens (text and poster side by side): when the text is shorter than the poster, the video
     // and group photo go under the text, beside the poster, instead of under the poster.
     const placeExtras = () => {
+      mainEl.hidden = false;
       const sideBySide = mainEl.offsetTop === mediaEl.offsetTop && mediaEl.offsetLeft > mainEl.offsetLeft;
       const room = !posterEl.hidden && posterEl.offsetHeight > 0 && parasEl.offsetHeight < posterEl.offsetHeight;
       const target = sideBySide && room ? mainEl : mediaEl;
       if (extrasEl.parentElement !== target) target.append(extrasEl);
+      // No text and nothing moved next to it: drop the empty column (no gap on small screens).
+      mainEl.hidden = parasEl.childElementCount === 0 && extrasEl.parentElement !== mainEl;
     };
     let placing = 0;
     const schedulePlace = () => {

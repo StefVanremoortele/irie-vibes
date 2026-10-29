@@ -15,6 +15,9 @@ export const initiatives: AboutBlock[] = data.initiatives.blocks as AboutBlock[]
 
 // Accordion — Previous editions (year navigator).
 
+/** Optional text above the year picker (HTML paragraphs). */
+export const editionsIntro: string[] = paragraphsHtml((data.editions as { intro?: string }).intro);
+
 /** Optional per-edition fields the CMS may or may not have written yet. */
 type EditionSource = Omit<(typeof data.editions.items)[number], 'year' | 'paragraphs'> & {
   /** A 4-digit year; older saves stored it as a number. */

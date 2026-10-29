@@ -222,6 +222,7 @@ collections:
             fields:
               - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
               - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
+              - { name: intro, label: "Intro text", widget: text, required: false, hint: "Optional. Shown above the year picker, the same for every year. Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
               - name: items
                 label: "Editions"
                 widget: list
