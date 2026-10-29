@@ -296,6 +296,7 @@ try {
   .fbx-banner > span { flex: 1; }
   .fbx-banner--pending { background: var(--warn-100); color: var(--warn-800); }
   .fbx-banner--chosen { background: var(--success-100); color: var(--success-700); }
+  .fbx-banner a { color: inherit; font-weight: 600; text-decoration: underline; }
   .fbx-banner button { padding: 0; border: 0; background: none; color: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; cursor: pointer; }
   .fbx-cards { display: flex; flex-direction: column; gap: 12px; }
   .fbx-card { position: relative; display: flex; gap: 14px; padding: 18px 20px; border: 2px solid var(--glass-border); border-radius: var(--radius-md); background: var(--glass-tint-med); box-shadow: var(--shadow-sm); cursor: pointer; transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast), opacity var(--dur-fast); }
@@ -475,6 +476,8 @@ try {
 
   const API = '/__feedback/api/entries';
   // Feedback is anonymous (PSEUDONYM); older entries may still carry a name, never shown.
+  // Builds go to the dev branch first, live on the concept (test) site.
+  const CONCEPT_URL = 'https://irie-vibes.concept.vanremoortele.be';
   const STATUS_KEY: Record<string, Filter> = { New: 'new', 'In progress': 'in_progress', Done: 'done' };
   const FILTER_STATUS: Record<Filter, string> = { new: 'New', in_progress: 'In progress', done: 'Done' };
   // Old links (#new, #in-progress, …) still open the Feedback tab with that filter.
@@ -699,8 +702,16 @@ try {
     }
     const chosen = options.find((option) => option.key === proposals.chosen);
     const by = (proposals.by || 'the developer').replace(/\s*\(AI\)\s*$/, '');
+    // After the choice: started → built (a commit is recorded; it lands on the concept site first) → accepted.
+    const built = /^[0-9a-f]{7,40}$/.test(entry.interpretation?.commit || '');
+    const where = location.hostname.startsWith('irie-vibes.concept.') ? 'on this test site' : `on the <a href="${CONCEPT_URL}${entry.page?.startsWith('/') ? safeHref(entry.page) : '/'}" target="_blank" rel="noreferrer">test site</a>`;
+    const progress = entry.status === 'Done'
+      ? 'Built and accepted.'
+      : built
+        ? `Built: ready to check ${where}. Click <em>Accept change</em> when it works as you meant.`
+        : 'Work on it has started.';
     const banner = chosen
-      ? `<div class="fbx-banner fbx-banner--chosen" role="status">${ICON.check}<span><strong>You chose ${escapeHtml(chosen.key)}.</strong> ${locked ? 'Work on it has started.' : 'Sent to the developer. Pick another card to change it.'}</span>${locked ? '' : '<button type="button" data-clear-choice>Undo</button>'}</div>`
+      ? `<div class="fbx-banner fbx-banner--chosen" role="status">${ICON.check}<span><strong>You chose ${escapeHtml(chosen.key)}.</strong> ${locked ? progress : 'Sent to the developer. Pick another card to change it.'}</span>${locked ? '' : '<button type="button" data-clear-choice>Undo</button>'}</div>`
       : locked ? '' : `<div class="fbx-banner fbx-banner--pending" role="status">${ICON.info}<span><strong>No choice yet.</strong> The developer waits for your pick before building.</span></div>`;
     return `<section class="fbx-section" aria-labelledby="props-title">
         <div>
