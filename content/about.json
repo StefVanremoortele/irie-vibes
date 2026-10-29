@@ -263,9 +263,9 @@
     ]
   },
   "shop": {
-    "title": "Irie shop",
+    "title": "Irie Vibes Shop",
     "visible": true,
-    "intro": "Welcome to our physical festival shop. Here is a preview of the official merchandise and exclusive festival souvenirs available on-site at the merchandise stand during festival days. These items are available exclusively in our physical shop on the festival grounds.",
+    "intro": "Official Irie Vibes merchandise is offered at the Irie Vibes Shop, set up at the festival and and partner-events. Clothing, handcrafted gadgets, festival attributes and even Irie Vibes related vinyl records are available. A broad selection of our items is listed below.\n\nIrie Vibes does not have a real webshop. If you want to order our merch you can <a href=\"mailto:shop@irievibes.be\">mail our shop</a> or follow our <a href=\"irievibes.be/socials\">socials</a> to catch us at the next event",
     "items": [
       {
         "name": "Festival t-shirt",
