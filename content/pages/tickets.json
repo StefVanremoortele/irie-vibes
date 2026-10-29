@@ -58,6 +58,6 @@
     }
   ],
   "showSocials": false,
-  "useCustomHtml": true,
+  "useCustomHtml": false,
   "customHtml": "Available <b>SOON</b>"
 }
