@@ -77,6 +77,11 @@
       "label": "Socials",
       "href": "/socials",
       "showInMenu": false
+    },
+    {
+      "label": "evil egg",
+      "href": "evilegg/",
+      "showInMenu": false
     }
   ],
   "socials": [
