@@ -285,9 +285,14 @@
     "text": "Soon to come here. test 123",
     "media": [
       {
-        "photo": "/assets/Irie_Vibes_Band_And_Jah_Rej.webp",
+        "photo": "",
         "video": "https://www.youtube.com/watch?v=Xqpn7xvJJ1c",
         "caption": "IRIE VIBES BAND feat. TEDDY DAN @ Galder Open Air - 'Jah Day' +"
+      },
+      {
+        "photo": "/assets/Irie_Vibes_Band_And_Jah_Rej.webp",
+        "video": "",
+        "caption": "The Irie Vibes Band"
       }
     ]
   }
