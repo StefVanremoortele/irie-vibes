@@ -2,6 +2,7 @@
 import Hero from './Hero.astro';
 import CopyBlocks from './CopyBlocks.astro';
 import type { ContentPage } from '../data/types';
+import { socials } from '../data/site';
 
 interface Props {
   page: ContentPage;
@@ -17,10 +18,49 @@ const { page, width = 'narrow' } = Astro.props;
     <div class="copy copy--center">
       <CopyBlocks blocks={page.blocks} />
     </div>
+    {
+      page.showSocials && socials.length > 0 && (
+        <ul class="socials-list">
+          {socials.map((s) => (
+            <li>
+              <a class="socials-list__link" href={s.href} target="_blank" rel="noopener noreferrer">
+                <img class="socials-list__icon" src={s.icon} alt="" width="40" height="40" loading="lazy" />
+                <span>{s.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </div>
 
 <style>
+  .socials-list {
+    display: grid;
+    gap: 14px;
+    width: fit-content;
+    margin: 32px auto 0;
+    padding: 0;
+    list-style: none;
+  }
+  .socials-list__link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--on-surface-strong);
+    font-size: clamp(17px, 1.8vw, 19px);
+    font-weight: 600;
+  }
+  .socials-list__link:hover {
+    color: var(--secondary-hover);
+  }
+  .socials-list__icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex: none;
+  }
   .content-page {
     width: 100%;
   }

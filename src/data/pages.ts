@@ -4,6 +4,7 @@ import lineup from '../../content/lineup.json';
 import about from '../../content/about.json';
 import regulations from '../../content/regulations.json';
 import { existingAssetUrl } from '../lib/assets';
+import { menuPages } from './site';
 
 /**
  * A page's hero banner, set on that page's own entry under Content pages in the CMS.
@@ -14,41 +15,29 @@ export function heroUrl(page: { hero?: string; showHero?: boolean }, field: stri
   return page.showHero === false ? undefined : existingAssetUrl(page.hero, `${field} → Hero image`);
 }
 
-// Simple content pages (tickets, when, where, camping, drinks, kids, volunteer) — one JSON file each.
-const pageModules = import.meta.glob<ContentPage & { showHero?: boolean; circulatieplan?: string }>('/content/pages/*.json', {
+// Simple content pages (tickets, when, where, camping, drinks, kids, volunteer, and pages made from
+// menu links) — one JSON file each, keyed by file name (the URL).
+type PageSource = Partial<Omit<ContentPage, 'hero'>> & { hero?: string; showHero?: boolean; circulatieplan?: string };
+const pageModules = import.meta.glob<PageSource>('/content/pages/*.json', {
   eager: true,
   import: 'default',
 });
 
-export const contentPages: Record<string, ContentPage> = Object.fromEntries(
-  Object.values(pageModules).map((p) => [
-    p.slug,
-    {
-      slug: p.slug,
-      title: p.title,
-      hero: heroUrl(p, p.title),
-      blocks: p.blocks,
-    },
-  ]),
+function toContentPage(slug: string, p: PageSource, fallbackTitle = slug): ContentPage {
+  const title = p.title?.trim() || fallbackTitle;
+  return { slug, title, hero: heroUrl(p, title), blocks: p.blocks ?? [], showSocials: p.showSocials === true };
+}
+
+const pageSources: Record<string, PageSource> = Object.fromEntries(
+  Object.entries(pageModules).map(([path, p]) => [path.split('/').pop()!.replace(/\.json$/, ''), p]),
 );
 
-// Extra pages editors create themselves (CMS: Extra pages), one JSON file each; the file name is the URL.
-const extraModules = import.meta.glob<Omit<ContentPage, 'slug'> & { showHero?: boolean }>('/content/extra/*.json', {
-  eager: true,
-  import: 'default',
-});
+export const contentPages: Record<string, ContentPage> = Object.fromEntries(
+  Object.entries(pageSources).map(([slug, p]) => [slug, toContentPage(slug, p)]),
+);
 
-/** URLs the site already uses: an extra page with one of these names is skipped (the build warns). */
-const RESERVED = new Set(['index', 'tickets', 'lineup', 'when', 'where', 'camping', 'drinks', 'kids', 'volunteer', 'about', 'regulations', 'admin', 'feedback', 'changelog', 'assets', '404']);
-
-export const extraPages: ContentPage[] = Object.entries(extraModules).flatMap(([path, p]) => {
-  const slug = path.split('/').pop()!.replace(/\.json$/, '');
-  if (RESERVED.has(slug)) {
-    console.warn(`[pages] Extra page "${slug}" is skipped: /${slug} is already a page of the site. Rename it in the CMS.`);
-    return [];
-  }
-  return [{ slug, title: p.title, hero: heroUrl(p, p.title), blocks: p.blocks ?? [] }];
-});
+/** Pages made from menu links (see menuPages): empty, titled after the menu label, until edited in the CMS. */
+export const menuContentPages: ContentPage[] = menuPages.map(({ slug, label }) => toContentPage(slug, pageSources[slug] ?? {}, label));
 
 /** Hero images for the bespoke pages (home, line-up, act, about, regulations). */
 export const heroImages = {

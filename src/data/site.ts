@@ -54,15 +54,25 @@ export const site = {
   },
 };
 
-// A menu entry in the CMS is a site page (href), an extra page (slug of content/extra/<slug>.json)
-// or another link (href); entries saved before the types existed only have href.
-type NavSource = { type?: 'page' | 'extra' | 'link'; label: string; href?: string; page?: string; showInMenu?: boolean };
-
 /** Header navigation (drawer), in CMS order; pages switched off for the burger menu are left out. */
-export const nav: NavItem[] = (siteData.nav as NavSource[])
-  .filter((item) => item.showInMenu !== false)
-  .map((item) => ({ label: item.label, href: item.type === 'extra' ? (item.page ? `/${item.page}` : '') : (item.href ?? '') }))
-  .filter((item) => item.href);
+export const nav: NavItem[] = (siteData.nav as NavItem[]).filter((item) => item.showInMenu !== false);
+
+/** Paths with a page of their own (src/pages, the feedback tool, built files). */
+const BUILT_IN = new Set(['tickets', 'lineup', 'when', 'where', 'camping', 'drinks', 'kids', 'volunteer', 'about', 'regulations', 'admin', 'feedback', 'changelog', 'assets', '404']);
+
+/**
+ * Menu links (in menu order, also those hidden from the burger menu) to a page the site doesn't
+ * have yet, e.g. "/socials": each becomes a content page (content/pages/<slug>.json, may not exist
+ * yet), built by src/pages/[page].astro and listed under Content pages by src/pages/admin/config.yml.ts.
+ */
+export const menuPages: { slug: string; label: string }[] = [
+  ...new Map(
+    (siteData.nav as NavItem[]).flatMap((item) => {
+      const slug = /^\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/.exec(item.href?.trim() ?? '')?.[1];
+      return slug && !BUILT_IN.has(slug) ? [[slug, { slug, label: item.label }] as const] : [];
+    }),
+  ).values(),
+];
 
 /** Social channels (footer). */
 export const socials: Social[] = siteData.socials.map((s) => ({

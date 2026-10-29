@@ -1,12 +1,14 @@
 ---
-// Extra pages (CMS: Extra pages, content/extra/<slug>.json): title, optional banner and content blocks.
+// Content pages made from menu links (Site settings → Page navigation, e.g. /socials): see menuPages
+// in data/site.ts. The text lives in content/pages/<slug>.json (Content pages in the CMS); until it's
+// edited the page shows only the menu label as title.
 import Base from '../layouts/Base.astro';
 import CopyPage from '../components/CopyPage.astro';
-import { extraPages } from '../data/pages';
+import { menuContentPages } from '../data/pages';
 import type { ContentPage } from '../data/types';
 
 export function getStaticPaths() {
-  return extraPages.map((page) => ({ params: { page: page.slug }, props: { page } }));
+  return menuContentPages.map((page) => ({ params: { page: page.slug }, props: { page } }));
 }
 
 const { page } = Astro.props as { page: ContentPage };

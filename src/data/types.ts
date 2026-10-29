@@ -78,6 +78,8 @@ export interface ContentPage {
   /** Undefined when the page has no hero (none chosen, or switched off). */
   hero?: string;
   blocks: CopyBlock[];
+  /** Lists the site's social links under the blocks (CMS: Show social links). */
+  showSocials?: boolean;
 }
 
 /** A sponsor logo, or a text-only sponsor when no logo asset exists. */
