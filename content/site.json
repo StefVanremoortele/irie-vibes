@@ -79,8 +79,8 @@
       "showInMenu": false
     },
     {
-      "label": "evil egg",
-      "href": "evilegg/",
+      "label": "Evil Egg",
+      "href": "/evilegg",
       "showInMenu": false
     }
   ],
