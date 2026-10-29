@@ -40,6 +40,6 @@
       "order": 2
     }
   ],
-  "useCustomHtml": false,
+  "useCustomHtml": true,
   "customHtml": "Soon to be announced."
 }
