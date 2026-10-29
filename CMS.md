@@ -28,7 +28,7 @@ files within seconds (triggered by a GitHub webhook). No content lives in the te
 | Content pages → Home | `content/home.json` | dates label, countdown (switch + date), intro, aftermovie |
 | Content pages → Line-up | `content/lineup.json` | stages, days, custom HTML; act pages' hero |
 | Content pages → Tickets, When, Where, Parking & camping, Drinks, Kids, Volunteer | `content/pages/*.json` | title + content blocks (heading/paragraph; prices are written as text). Where: also the circulation plan |
-| Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches, optional text; new editions are added at the top; the site sorts by year. `scripts/sort-editions.mjs` can sort the list in the content file, run by a GitHub workflow once one is added), shop, band (text + photos & videos) |
+| Content pages → All about Irie Vibes | `content/about.json` | category order, then one block per accordion (title, show switch, content): Greenforward, initiatives, previous editions (poster, video, group photo + switches, optional text; new editions are added at the top; the site sorts by year. `scripts/sort-editions.mjs` can sort the list in the content file, run by a GitHub workflow once one is added), shop, band (text + photos & videos: each item is a photo, caption below, or a video, caption above) |
 | Content pages → Regulations | `content/regulations.json` | regulation sections |
 | Line-up — acts | `content/acts/*.json` | one entry per performance (add/edit/remove) |
 | Settings → Site settings | `content/site.json` | site-wide only: name, organisation, address, contact, ticket/volunteer links, **menu button animation**, **theme text colour**, page navigation (burger menu order + **Show in burger menu** per page), socials, sticky images (header banner, footer, **ticket button image**, **menu button image**) |
@@ -38,6 +38,15 @@ Feedback items (their status: New / In progress / Done), the developer notes
 shown on `/feedback`, and the changelog (one dated post per change, the *Changelog* tab of `/feedback`) are managed in a separate admin, `/admin/feedback/`,
 which edits the private repo
 `StefVanremoortele/irie-vibes-feedback`; see the README's *Feedback tool*.
+
+## Text fields
+
+Multi-line texts (paragraphs, intros, descriptions, act bios): **Enter** gives a
+new line, an **empty line** starts a new paragraph. You can type
+`<strong>bold</strong>` and `<a href="…">link</a>` (also `<em>`); any other tag
+shows as typed. Links to other sites open in a new tab, and a link without
+`https://` (e.g. `irievibes.be/socials`) gets it added. Headings and short
+one-line fields allow the same tags, no line breaks. (`src/lib/richtext.ts`)
 
 ## Images and uploads
 

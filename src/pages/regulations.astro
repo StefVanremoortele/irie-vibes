@@ -1,4 +1,5 @@
 ---
+import { inlineHtml, paragraphsHtml } from '../lib/richtext';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import { regulations } from '../data/regulations';
@@ -8,16 +9,16 @@ import { heroImages } from '../data/pages';
 <Base title="Festival & Camping Regulations">
   <div class="regs-page">
   <Hero src={heroImages.regulations} alt="Festival & Camping Regulations" size="md" />
-  <div class="section section--wide regs">
+  <div class="section section--wide regs rich">
     {
       regulations.map((sec) => (
         <div class="regs__section">
           <h2 class="regs__title">{sec.title}</h2>
           {sec.items.map((it) =>
             it.p ? (
-              <p class="regs__p">{it.p}</p>
+              paragraphsHtml(it.p).map((html) => <p class="regs__p" set:html={html} />)
             ) : (
-              <ul class="regs__ul">{it.ul?.map((li) => <li>{li}</li>)}</ul>
+              <ul class="regs__ul">{it.ul?.map((li) => <li set:html={inlineHtml(li)} />)}</ul>
             ),
           )}
         </div>

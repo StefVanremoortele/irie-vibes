@@ -2,6 +2,7 @@ import type { AboutBlock, BandMedia, Edition, ShopItem } from './types';
 import data from '../../content/about.json';
 import { assetUrl, existingAssetUrl } from '../lib/assets';
 import { youtubeEmbed } from '../lib/youtube';
+import { paragraphsHtml } from '../lib/richtext';
 
 // content/about.json holds one block per category (accordion), each with its own
 // title, visible switch and content; `order` lists the category keys top to bottom.
@@ -13,12 +14,11 @@ export const greenforward: AboutBlock[] = data.greenforward.blocks as AboutBlock
 export const initiatives: AboutBlock[] = data.initiatives.blocks as AboutBlock[];
 
 // Accordion — Previous editions (year navigator).
-export const EDITION_MIN_YEAR: number = data.editions.minYear;
-export const EDITION_MAX_YEAR: number = data.editions.maxYear;
-export const defaultEditionText: string = data.editions.defaultText;
 
 /** Optional per-edition fields the CMS may or may not have written yet. */
-type EditionSource = Omit<(typeof data.editions.items)[number], 'paragraphs'> & {
+type EditionSource = Omit<(typeof data.editions.items)[number], 'year' | 'paragraphs'> & {
+  /** A 4-digit year; older saves stored it as a number. */
+  year: string | number;
   paragraphs?: string[];
   video?: string;
   showVideo?: boolean;
@@ -28,9 +28,9 @@ type EditionSource = Omit<(typeof data.editions.items)[number], 'paragraphs'> & 
 
 function toEdition(edition: EditionSource): Edition {
   return {
-    year: edition.year,
-    // Optional in the CMS: an edition without text shows none.
-    paragraphs: edition.paragraphs ?? [],
+    year: Number(edition.year),
+    // Optional in the CMS: an edition without text shows none. Each entry may hold several paragraphs (HTML).
+    paragraphs: (edition.paragraphs ?? []).flatMap(paragraphsHtml),
     poster: existingAssetUrl(edition.poster, `About → Editions → ${edition.year} → Poster`),
     video: edition.showVideo === false ? undefined : youtubeEmbed(edition.video),
     photo: edition.showPhoto === false ? undefined : existingAssetUrl(edition.photo, `About → Editions → ${edition.year} → Group photo`),
@@ -38,18 +38,19 @@ function toEdition(edition: EditionSource): Edition {
 }
 
 /** Oldest first, so ‹ / › step to the previous / next year. */
-export const editions: Edition[] = data.editions.items.map(toEdition).sort((a, b) => a.year - b.year);
-
-/** Returns the throwback content for a given edition year. */
-export function getEdition(year: number): Edition {
-  const match = data.editions.items.find((e) => e.year === year);
-  return match ? toEdition(match) : { year, paragraphs: [defaultEditionText] };
-}
+export const editions: Edition[] = (data.editions.items as EditionSource[])
+  .map(toEdition)
+  .filter((edition) => Number.isInteger(edition.year))
+  .sort((a, b) => a.year - b.year);
 
 /** Accordion — Irie shop (physical, on-site only). */
 export const shop = {
-  intro: data.shop.intro,
-  items: (data.shop.items as ShopItem[]).map((item) => ({ ...item, image: item.image ? assetUrl(item.image) : undefined })),
+  intro: paragraphsHtml(data.shop.intro),
+  items: (data.shop.items as ShopItem[]).map((item) => ({
+    ...item,
+    description: paragraphsHtml(item.description),
+    image: item.image ? assetUrl(item.image) : undefined,
+  })),
 };
 
 export type AboutSectionKey = 'greenforward' | 'initiatives' | 'editions' | 'shop' | 'band';
@@ -67,13 +68,19 @@ export const aboutSections = Object.fromEntries(
 ) as Record<AboutSectionKey, { title: string; visible: boolean; order: number }>;
 
 /** Accordion — The Irie Vibes band. */
+// Each media item is a photo or a video (the CMS asks which when it's added).
+type BandMediaSource = { type?: 'photo' | 'video'; photo?: string; video?: string; caption?: string };
+
 export const band = {
-  text: data.band.text,
-  media: ((data.band as { media?: { photo?: string; video?: string; caption?: string }[] }).media ?? [])
-    .map((item): BandMedia => ({
-      image: item.photo ? assetUrl(item.photo) : undefined,
-      video: youtubeEmbed(item.video),
-      alt: item.caption || 'The Irie Vibes band',
-    }))
+  text: paragraphsHtml(data.band.text),
+  media: ((data.band as { media?: BandMediaSource[] }).media ?? [])
+    .map((item): BandMedia => {
+      const isVideo = item.type ? item.type === 'video' : !item.photo;
+      return {
+        image: isVideo ? undefined : item.photo ? assetUrl(item.photo) : undefined,
+        video: isVideo ? youtubeEmbed(item.video) : undefined,
+        caption: item.caption?.trim() || undefined,
+      };
+    })
     .filter((item) => item.image || item.video),
 };

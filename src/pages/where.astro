@@ -1,4 +1,5 @@
 ---
+import { inlineHtml, paragraphsHtml } from '../lib/richtext';
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import { site } from '../data/site';
@@ -15,7 +16,7 @@ const page = contentPages.where;
       <div class="copy copy--center where__copy">
         {
           page.blocks.map((b) =>
-            b.type === 'h' ? <h2 class="where__h" set:html={b.html} /> : <p set:html={b.html} />,
+            b.type === 'h' ? <h2 class="where__h" set:html={inlineHtml(b.html)} /> : paragraphsHtml(b.html).map((html) => <p set:html={html} />),
           )
         }
       </div>

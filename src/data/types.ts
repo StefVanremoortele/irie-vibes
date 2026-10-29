@@ -107,6 +107,7 @@ export interface AboutBlock {
 /** A previous-edition throwback (keyed by year). */
 export interface Edition {
   year: number;
+  /** Paragraphs as HTML (see lib/richtext). */
   paragraphs: string[];
   poster?: string;
   /** YouTube embed URL (aftermovie); omitted when empty or switched off. */
@@ -120,7 +121,8 @@ export interface BandMedia {
   image?: string;
   /** YouTube embed URL. */
   video?: string;
-  alt?: string;
+  /** Shown below a photo, above a video. */
+  caption?: string;
 }
 
 /** A merchandise item in the festival shop preview. */

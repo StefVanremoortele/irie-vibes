@@ -178,6 +178,19 @@ button {
 .copy a:hover {
   color: var(--secondary-hover);
 }
+/* Bold and links typed in admin texts (lib/richtext) outside .copy. */
+.rich strong {
+  color: var(--on-surface-strong);
+  font-weight: 700;
+}
+.rich a {
+  color: var(--secondary);
+  text-decoration: underline;
+  font-weight: 700;
+}
+.rich a:hover {
+  color: var(--secondary-hover);
+}
 
 /* Price tables ------------------------------------------------------------ */
 .prices {

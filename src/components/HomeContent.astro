@@ -2,6 +2,7 @@
 // Homepage content, shared by / and the /feedback page (shown dimmed behind
 // the testing dialog).
 import Hero from './Hero.astro';
+import { paragraphsHtml } from '../lib/richtext';
 import Countdown from './Countdown.astro';
 import { site, home } from '../data/site';
 import { heroImages } from '../data/pages';
@@ -23,7 +24,7 @@ const aftermovieId = (() => {
 
     {home.showCountdown && <Countdown date={home.festivalDate} />}
 
-    <p class="home__intro">{home.intro}</p>
+    <div class="home__intro rich">{paragraphsHtml(home.intro).map((html) => <p set:html={html} />)}</div>
 
     {
       home.showAftermovie && (
@@ -76,6 +77,12 @@ const aftermovieId = (() => {
     max-width: 760px;
     margin: 0 0 40px;
     text-wrap: pretty;
+  }
+  .home__intro p {
+    margin: 0 0 1em;
+  }
+  .home__intro p:last-child {
+    margin-bottom: 0;
   }
 
   .aftermovie {

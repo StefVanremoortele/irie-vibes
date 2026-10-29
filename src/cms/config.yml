@@ -56,7 +56,7 @@ collections:
           - { name: datesLabel, label: "Dates label", widget: string }
           - { name: showCountdown, label: "Show countdown", widget: boolean, default: true }
           - { name: festivalDate, label: "Gates open (countdown target)", widget: datetime, format: "YYYY-MM-DDTHH:mm:ss" }
-          - { name: intro, label: "Intro text", widget: text }
+          - { name: intro, label: "Intro text", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
           - { name: showAftermovie, label: "Show aftermovie", widget: boolean, default: true }
           - name: aftermovie
             label: "Aftermovie"
@@ -111,7 +111,7 @@ collections:
             summary: "{{fields.html}}"
             fields: &copyBlockFields
               - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
-              - { name: html, label: "Text (allows <strong>, <a>)", widget: text }
+              - { name: html, label: "Text", widget: text, hint: "Paragraph: Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>` (also in headings)." }
       - name: when
         label: "When"
         file: "content/pages/when.json"
@@ -181,7 +181,7 @@ collections:
                 summary: "{{fields.text}}"
                 fields:
                   - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
-                  - { name: text, label: "Text", widget: text }
+                  - { name: text, label: "Text", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
           - name: initiatives
             label: "Initiatives & partnerships"
             widget: object
@@ -197,7 +197,7 @@ collections:
                 summary: "{{fields.text}}"
                 fields:
                   - { name: type, label: "Type", widget: select, options: [{ label: "Heading", value: "h" }, { label: "Paragraph", value: "p" }], default: "p" }
-                  - { name: text, label: "Text", widget: text }
+                  - { name: text, label: "Text", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
           - name: editions
             label: "Previous editions"
             widget: object
@@ -205,9 +205,6 @@ collections:
             fields:
               - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
               - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
-              - { name: minYear, label: "Earliest edition year", widget: number, value_type: int }
-              - { name: maxYear, label: "Latest edition year", widget: number, value_type: int }
-              - { name: defaultText, label: "Text for years without an edition", widget: string }
               - name: items
                 label: "Editions"
                 widget: list
@@ -217,7 +214,7 @@ collections:
                 minimize_collapsed: true
                 summary: "{{fields.year}}"
                 fields:
-                  - { name: year, label: "Year", widget: number, value_type: int }
+                  - { name: year, label: "Year", widget: string, pattern: ["^[0-9]{4}$", "A 4-digit year, e.g. 2002"] }
                   - { name: poster, label: "Poster", widget: image, required: false }
                   - { name: video, label: "YouTube video URL", widget: string, required: false, hint: "Aftermovie, shown under the poster." }
                   - { name: showVideo, label: "Show video", widget: boolean, default: true, required: false }
@@ -230,7 +227,7 @@ collections:
                     hint: "Optional. Leave empty to show no text for this year."
                     collapsed: true
                     minimize_collapsed: true
-                    field: { name: paragraph, label: "Paragraph", widget: text }
+                    field: { name: paragraph, label: "Paragraph", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
           - name: shop
             label: "Irie shop"
             widget: object
@@ -238,7 +235,7 @@ collections:
             fields:
               - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
               - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
-              - { name: intro, label: "Intro", widget: text }
+              - { name: intro, label: "Intro", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
               - name: items
                 label: "Items"
                 widget: list
@@ -247,7 +244,7 @@ collections:
                 summary: "{{fields.name}}"
                 fields:
                   - { name: name, label: "Name", widget: string }
-                  - { name: description, label: "Description", widget: text }
+                  - { name: description, label: "Description", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
                   - { name: image, label: "Product image", widget: image, required: false }
           - name: band
             label: "The Irie Vibes band"
@@ -256,7 +253,7 @@ collections:
             fields:
               - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
               - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
-              - { name: text, label: "Text", widget: string }
+              - { name: text, label: "Text", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
               - name: media
                 label: "Band photos & videos"
                 widget: list
@@ -264,11 +261,20 @@ collections:
                 collapsed: true
                 minimize_collapsed: true
                 summary: "{{fields.caption}}"
-                hint: "Shown right of the band text on wide screens, below it on small screens. Fill in a photo or a YouTube URL per item."
-                fields:
-                  - { name: photo, label: "Photo", widget: image, required: false }
-                  - { name: video, label: "YouTube video URL", widget: string, required: false }
-                  - { name: caption, label: "Description (alt text)", widget: string, required: false }
+                hint: "Shown right of the band text on wide screens, below it on small screens. Add a photo or a video; the description shows below a photo and above a video."
+                types:
+                  - name: photo
+                    label: "Photo"
+                    summary: "Photo: {{fields.caption}}"
+                    fields:
+                      - { name: photo, label: "Photo", widget: image }
+                      - { name: caption, label: "Description", widget: string, required: false, hint: "Shown below the photo (also its alt text)." }
+                  - name: video
+                    label: "Video"
+                    summary: "Video: {{fields.caption}}"
+                    fields:
+                      - { name: video, label: "YouTube video URL", widget: string }
+                      - { name: caption, label: "Description", widget: string, required: false, hint: "Shown above the video." }
       - name: regulations
         label: "Regulations"
         file: "content/regulations.json"
@@ -289,14 +295,14 @@ collections:
                 collapsed: true
                 minimize_collapsed: true
                 fields:
-                  - { name: p, label: "Paragraph", widget: text, required: false }
+                  - { name: p, label: "Paragraph", widget: text, required: false, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
                   - name: ul
                     label: "Bullet list"
                     widget: list
                     collapsed: true
                     minimize_collapsed: true
                     required: false
-                    field: { name: item, label: "Item", widget: string }
+                    field: { name: item, label: "Item", widget: string, hint: "Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
 
   # ---- Line-up acts (one file per act) ---------------------------------
   - name: acts
@@ -326,7 +332,7 @@ collections:
         label: "Description (detail page)"
         widget: text
         required: false
-        hint: "Optional act bio or detail-page copy."
+        hint: "Optional act bio or detail-page copy. Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`."
 
 
   # ---- Settings: things that apply to the whole site ---------------------

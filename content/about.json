@@ -155,12 +155,9 @@
   "editions": {
     "title": "Previous editions",
     "visible": true,
-    "minYear": 2002,
-    "maxYear": 2026,
-    "defaultText": "-",
     "items": [
       {
-        "year": 2009,
+        "year": "2009",
         "poster": "/assets/2009.webp",
         "video": "",
         "showVideo": false,
@@ -171,7 +168,7 @@
         ]
       },
       {
-        "year": 2002,
+        "year": "2002",
         "poster": "/assets/poster2002.jpg",
         "video": "",
         "showVideo": false,
@@ -184,7 +181,7 @@
         ]
       },
       {
-        "year": 2003,
+        "year": "2003",
         "poster": "/assets/2003.webp",
         "video": "",
         "showVideo": false,
@@ -195,7 +192,7 @@
         ]
       },
       {
-        "year": 2004,
+        "year": "2004",
         "poster": "/assets/2004.webp",
         "video": "https://www.youtube.com/watch?v=lYCrzG_migQ",
         "showVideo": true,
@@ -206,7 +203,7 @@
         ]
       },
       {
-        "year": 2005,
+        "year": "2005",
         "poster": "/assets/2005.webp",
         "video": "",
         "showVideo": false,
@@ -217,7 +214,7 @@
         ]
       },
       {
-        "year": 2007,
+        "year": "2007",
         "poster": "/assets/2007.webp",
         "video": "",
         "showVideo": false,
@@ -228,7 +225,7 @@
         ]
       },
       {
-        "year": 2008,
+        "year": "2008",
         "poster": "/assets/2008.webp",
         "video": "",
         "showVideo": false,
@@ -239,7 +236,7 @@
         ]
       },
       {
-        "year": 2009,
+        "year": "2009",
         "poster": "/assets/2009.webp",
         "video": "",
         "showVideo": false,
@@ -250,7 +247,7 @@
         ]
       },
       {
-        "year": 2010,
+        "year": "2010",
         "poster": "/assets/2010.webp",
         "video": "",
         "showVideo": false,
@@ -261,7 +258,7 @@
         ]
       },
       {
-        "year": 2011,
+        "year": "2011",
         "poster": "/assets/2011.webp",
         "video": "",
         "showVideo": false,
@@ -272,7 +269,7 @@
         ]
       },
       {
-        "year": 2012,
+        "year": "2012",
         "poster": "/assets/2012.webp",
         "video": "",
         "showVideo": false,
@@ -283,7 +280,7 @@
         ]
       },
       {
-        "year": 2013,
+        "year": "2013",
         "poster": "/assets/2013.webp",
         "video": "",
         "showVideo": false,
@@ -294,7 +291,7 @@
         ]
       },
       {
-        "year": 2014,
+        "year": "2014",
         "poster": "/assets/2014.webp",
         "video": "",
         "showVideo": false,
@@ -305,7 +302,7 @@
         ]
       },
       {
-        "year": 2015,
+        "year": "2015",
         "poster": "/assets/2015.webp",
         "video": "",
         "showVideo": false,
@@ -316,7 +313,7 @@
         ]
       },
       {
-        "year": 2016,
+        "year": "2016",
         "poster": "/assets/2016.webp",
         "video": "",
         "showVideo": false,
@@ -327,7 +324,7 @@
         ]
       },
       {
-        "year": 2017,
+        "year": "2017",
         "poster": "/assets/2017.webp",
         "video": "https://www.youtube.com/watch?v=3N87dntyQbY",
         "showVideo": true,
@@ -338,7 +335,7 @@
         ]
       },
       {
-        "year": 2018,
+        "year": "2018",
         "poster": "/assets/2018.webp",
         "video": "",
         "showVideo": false,
@@ -349,7 +346,7 @@
         ]
       },
       {
-        "year": 2019,
+        "year": "2019",
         "poster": "/assets/2019.webp",
         "video": "https://www.youtube.com/watch?v=iwGpNoRK_sw",
         "showVideo": true,
@@ -358,7 +355,7 @@
         "paragraphs": []
       },
       {
-        "year": 2022,
+        "year": "2022",
         "poster": "/assets/2022.webp",
         "video": "",
         "showVideo": false,
@@ -369,7 +366,7 @@
         ]
       },
       {
-        "year": 2023,
+        "year": "2023",
         "poster": "/assets/2023.webp",
         "video": "https://www.youtube.com/watch?v=JI1EagfujOk",
         "showVideo": true,
@@ -380,7 +377,7 @@
         ]
       },
       {
-        "year": 2024,
+        "year": "2024",
         "poster": "/assets/2024.webp",
         "video": "https://www.youtube.com/watch?v=-wymjGPnSZM&t=1s",
         "showVideo": true,
@@ -389,7 +386,7 @@
         "paragraphs": []
       },
       {
-        "year": 2025,
+        "year": "2025",
         "poster": "/assets/2025.webp",
         "video": "https://www.youtube.com/watch?v=knswTYKdwh0&t=3s",
         "showVideo": true,
@@ -398,7 +395,7 @@
         "paragraphs": []
       },
       {
-        "year": 2026,
+        "year": "2026",
         "poster": "/assets/Irie vibes 26 DigiRelease met vibewinnaar 1080x1350.webp",
         "video": "https://www.youtube.com/watch?v=knswTYKdwh0",
         "showVideo": true,
@@ -431,13 +428,13 @@
     "text": "Soon to come here. test 123",
     "media": [
       {
-        "photo": "",
+        "type": "video",
         "video": "https://www.youtube.com/watch?v=Xqpn7xvJJ1c",
         "caption": "IRIE VIBES BAND feat. TEDDY DAN @ Galder Open Air - 'Jah Day' +"
       },
       {
+        "type": "photo",
         "photo": "/assets/Irie_Vibes_Band_And_Jah_Rej.webp",
-        "video": "",
         "caption": "The Irie Vibes Band"
       }
     ]

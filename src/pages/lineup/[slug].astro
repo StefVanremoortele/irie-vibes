@@ -1,4 +1,5 @@
 ---
+import { paragraphsHtml } from '../../lib/richtext';
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
 import { heroImages } from '../../data/pages';
@@ -14,7 +15,7 @@ interface Props {
 }
 const { act } = Astro.props;
 const stage = stageByKey[act.stage];
-const description = act.description?.trim();
+const description = paragraphsHtml(act.description);
 // No artist image: no picture, the text takes the full width.
 const poster = act.image;
 ---
@@ -34,7 +35,7 @@ const poster = act.image;
 
       <div class="actpage__grid">
         <div class="actpage__body">
-          {description && <p class="actpage__lead">{description}</p>}
+          {description.length > 0 && <div class="actpage__lead rich">{description.map((html) => <p set:html={html} />)}</div>}
         </div>
         {poster && (
           <div class="actpage__aside">
@@ -107,6 +108,12 @@ const poster = act.image;
     font-weight: 600;
     margin: 0 0 18px;
     text-wrap: pretty;
+  }
+  .actpage__lead p {
+    margin: 0 0 1em;
+  }
+  .actpage__lead p:last-child {
+    margin-bottom: 0;
   }
   .actpage__para {
     color: var(--on-surface);

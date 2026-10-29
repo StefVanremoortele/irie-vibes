@@ -5,19 +5,16 @@ import { heroImages } from '../data/pages';
 import {
   greenforward,
   initiatives,
-  getEdition,
-  EDITION_MIN_YEAR,
-  EDITION_MAX_YEAR,
-  defaultEditionText,
   editions,
   aboutSections,
   shop,
   band,
 } from '../data/about';
+import { inlineHtml, paragraphsHtml } from '../lib/richtext';
 
-const editionOptions = editions.length > 0 ? editions : [getEdition(2002)];
 // Open on the most recent edition that already took place (future years stay reachable via ›).
 const thisYear = new Date().getFullYear();
+const editionOptions = editions.length > 0 ? editions : [{ year: thisYear, paragraphs: [] }];
 const pastIndexes = editionOptions.flatMap((edition, i) => (edition.year <= thisYear ? [i] : []));
 const startIndex = pastIndexes.length ? pastIndexes[pastIndexes.length - 1] : editionOptions.length - 1;
 const startEdition = editionOptions[startIndex];
@@ -35,10 +32,10 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__title">{aboutSections.greenforward.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
-          <div class="acc__panel">
+          <div class="acc__panel rich">
             {
               greenforward.map((b) =>
-                b.type === 'h' ? <h4 class="acc__h">{b.text}</h4> : <p class="acc__p">{b.text}</p>,
+                b.type === 'h' ? <h4 class="acc__h" set:html={inlineHtml(b.text)} /> : paragraphsHtml(b.text).map((html) => <p class="acc__p" set:html={html} />),
               )
             }
           </div>
@@ -49,10 +46,10 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__title">{aboutSections.initiatives.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
-          <div class="acc__panel">
+          <div class="acc__panel rich">
             {
               initiatives.map((b) =>
-                b.type === 'h' ? <h4 class="acc__h">{b.text}</h4> : <p class="acc__p">{b.text}</p>,
+                b.type === 'h' ? <h4 class="acc__h" set:html={inlineHtml(b.text)} /> : paragraphsHtml(b.text).map((html) => <p class="acc__p" set:html={html} />),
               )
             }
           </div>
@@ -63,8 +60,8 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__title">{aboutSections.editions.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
-          <div class="acc__panel">
-            <div class="years" data-years data-archive data-min={EDITION_MIN_YEAR} data-max={EDITION_MAX_YEAR}>
+          <div class="acc__panel rich">
+            <div class="years" data-years data-archive>
               <div class="years__nav">
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
                 <select id="edition-year" class="years__select" data-year aria-label="Edition year">
@@ -74,7 +71,7 @@ const startEdition = editionOptions[startIndex];
               </div>
               <div class="years__content">
                 <div class="years__paras" data-year-paras>
-                  {startEdition.paragraphs.map((p) => <p class="acc__p">{p}</p>)}
+                  {startEdition.paragraphs.map((html) => <p class="acc__p" set:html={html} />)}
                 </div>
                 <div class="years__media">
                   <img class="years__poster" data-year-poster src={startEdition.poster} alt="Festival poster" hidden={!startEdition.poster} />
@@ -91,15 +88,15 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__title">{aboutSections.shop.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
-          <div class="acc__panel">
-            <p class="acc__p acc__p--intro">{shop.intro}</p>
+          <div class="acc__panel rich">
+            {shop.intro.length > 0 && <div class="acc__intro">{shop.intro.map((html) => <p class="acc__p" set:html={html} />)}</div>}
             <div class="shop">
               {
                 shop.items.map((item) => (
                   <div class="shop__item">
                     <h3 class="shop__name">{item.name}</h3>
                     {item.image && <img class="shop__image" src={item.image} alt={item.name} />}
-                    <div class="shop__desc">{item.description}</div>
+                    <div class="shop__desc">{item.description.map((html) => <p class="acc__p" set:html={html} />)}</div>
                   </div>
                 ))
               }
@@ -112,17 +109,23 @@ const startEdition = editionOptions[startIndex];
             <span class="acc__title">{aboutSections.band.title}</span>
             <span class="acc__chev" aria-hidden="true">▾</span>
           </summary>
-          <div class="acc__panel">
+          <div class="acc__panel rich">
             <div class={band.media.length ? 'band band--media' : 'band'}>
-              <p class="acc__p">{band.text}</p>
+              <div class="band__text">{band.text.map((html) => <p class="acc__p" set:html={html} />)}</div>
               {
                 band.media.length > 0 && (
                   <div class="band__media">
                     {band.media.map((item) =>
                       item.video ? (
-                        <iframe class="band__video" src={item.video} title={item.alt} loading="lazy" allowfullscreen />
+                        <figure class="band__item">
+                          {item.caption && <figcaption class="band__caption">{item.caption}</figcaption>}
+                          <iframe class="band__video" src={item.video} title={item.caption || 'The Irie Vibes band'} loading="lazy" allowfullscreen />
+                        </figure>
                       ) : (
-                        <img class="band__photo" src={item.image} alt={item.alt} loading="lazy" />
+                        <figure class="band__item">
+                          <img class="band__photo" src={item.image} alt={item.caption || 'The Irie Vibes band'} loading="lazy" />
+                          {item.caption && <figcaption class="band__caption">{item.caption}</figcaption>}
+                        </figure>
                       ),
                     )}
                   </div>
@@ -211,7 +214,18 @@ const startEdition = editionOptions[startIndex];
   .acc__p:last-child {
     margin-bottom: 0;
   }
-  .acc__p--intro {
+  /* Year paragraphs are re-rendered by the script below, outside Astro's scoped styles. */
+  .years__paras :global(p) {
+    color: var(--on-surface);
+    font-size: 15px;
+    line-height: 1.75;
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+  .years__paras :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .acc__intro {
     margin-bottom: 20px;
   }
 
@@ -303,6 +317,16 @@ const startEdition = editionOptions[startIndex];
     display: grid;
     gap: 16px;
   }
+  .band__item {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+  .band__caption {
+    color: var(--on-surface);
+    font-size: 14px;
+    line-height: 1.5;
+  }
   .band__photo,
   .band__video {
     width: 100%;
@@ -375,7 +399,7 @@ const startEdition = editionOptions[startIndex];
   initAboutAccordions();
 </script>
 
-<script define:vars={{ editionsData: editionOptions, defaultEditionText, startIndex }}>
+<script define:vars={{ editionsData: editionOptions, startIndex }}>
   function initYears() {
     const root = document.querySelector('[data-years]');
     if (!root) return;
@@ -397,12 +421,13 @@ const startEdition = editionOptions[startIndex];
         const step = Number(button.dataset.yearStep);
         button.toggleAttribute('disabled', (index === 0 && step < 0) || (index === editionsData.length - 1 && step > 0));
       });
-      const paras = edition?.paragraphs ?? [defaultEditionText];
+      // Paragraphs are HTML made safe at build time (lib/richtext).
+      const paras = edition?.paragraphs ?? [];
       parasEl.replaceChildren(
-        ...paras.map((text) => {
+        ...paras.map((html) => {
           const p = document.createElement('p');
           p.className = 'acc__p';
-          p.textContent = text;
+          p.innerHTML = html;
           return p;
         }),
       );
