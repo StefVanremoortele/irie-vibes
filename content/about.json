@@ -350,8 +350,8 @@
         "poster": "/assets/2019.webp",
         "video": "https://www.youtube.com/watch?v=iwGpNoRK_sw",
         "showVideo": true,
-        "photo": "",
-        "showPhoto": false,
+        "photo": "/assets/2019-1.webp",
+        "showPhoto": true,
         "paragraphs": []
       },
       {
@@ -370,8 +370,8 @@
         "poster": "/assets/2023.webp",
         "video": "https://www.youtube.com/watch?v=JI1EagfujOk",
         "showVideo": true,
-        "photo": "",
-        "showPhoto": false,
+        "photo": "/assets/team 2023.webp",
+        "showPhoto": true,
         "paragraphs": [
           "2023...\n\n20 years of irie vibes!"
         ]
@@ -381,8 +381,8 @@
         "poster": "/assets/2024.webp",
         "video": "https://www.youtube.com/watch?v=-wymjGPnSZM&t=1s",
         "showVideo": true,
-        "photo": "",
-        "showPhoto": false,
+        "photo": "/assets/2024-1.webp",
+        "showPhoto": true,
         "paragraphs": []
       },
       {
@@ -429,8 +429,8 @@
     "media": [
       {
         "type": "video",
-        "video": "https://www.youtube.com/watch?v=Xqpn7xvJJ1c",
-        "caption": "IRIE VIBES BAND feat. TEDDY DAN @ Galder Open Air - 'Jah Day' +"
+        "caption": "IRIE VIBES BAND feat. TEDDY DAN @ Galder Open Air - 'Jah Day' +",
+        "video": "https://www.youtube.com/watch?v=Xqpn7xvJJ1c"
       },
       {
         "type": "photo",
