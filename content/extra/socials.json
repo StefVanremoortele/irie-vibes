@@ -1,5 +1,11 @@
 {
   "title": "Socials",
+  "hero": "",
   "showHero": true,
-  "blocks": []
+  "blocks": [
+    {
+      "type": "p",
+      "html": "Follow the Irie Vibes Socials for the latest news, upcoming events and movies and pictures from previous editions."
+    }
+  ]
 }
