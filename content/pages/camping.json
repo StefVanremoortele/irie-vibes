@@ -16,15 +16,15 @@
       "type": "cols",
       "rows": [
         {
-          "left": "<strong>Camping</strong>",
+          "left": "<strong>Camping per person</strong>",
           "right": "20€"
         },
         {
-          "left": "<strong>Vehicle fee parking</strong>",
+          "left": "<strong>Parking vehicle</strong>",
           "right": "15€"
         },
         {
-          "left": "<strong>Vehicle fee camping</strong>",
+          "left": "<strong>Camping vehicle</strong>",
           "right": "15€"
         }
       ]
