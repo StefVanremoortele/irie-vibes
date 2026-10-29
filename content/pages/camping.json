@@ -6,7 +6,7 @@
   "blocks": [
     {
       "type": "p",
-      "html": "Parking and camping open on Thursday at ??h and close on Sunday at ??h."
+      "html": "Parking and camping open on Thursday at 12h and close on Sunday at 11h."
     },
     {
       "type": "p",
@@ -32,5 +32,6 @@
       "type": "p",
       "html": "For specific rules and regulations, please check our <a href=\"/regulations\">Festival and Camping Regulations</a>."
     }
-  ]
+  ],
+  "showSocials": false
 }
