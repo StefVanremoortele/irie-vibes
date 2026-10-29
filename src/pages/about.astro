@@ -364,11 +364,14 @@ const startEdition = editionOptions[startIndex];
     font-weight: 700;
     color: var(--secondary);
   }
+  /* The whole product, in its own proportions (never cropped); very tall images are scaled down. */
   .shop__image {
     grid-area: image;
     width: min(100%, 220px);
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+    object-position: top;
     border-radius: var(--radius);
   }
   .shop__desc {
