@@ -357,8 +357,8 @@
       {
         "year": "2022",
         "poster": "/assets/2022.webp",
-        "video": "",
-        "showVideo": false,
+        "video": "https://www.youtube.com/watch?v=6-ulVOmKp0Q",
+        "showVideo": true,
         "photo": "",
         "showPhoto": false,
         "paragraphs": [
