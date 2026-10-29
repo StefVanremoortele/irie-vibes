@@ -56,5 +56,7 @@
       "type": "p",
       "html": "Pets are not allowed on the festival area, campings and parkings."
     }
-  ]
+  ],
+  "useCustomHtml": false,
+  "customHtml": "Available <b>SOON</b>"
 }

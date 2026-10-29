@@ -98,7 +98,7 @@ collections:
       - name: tickets
         label: "Tickets"
         file: "content/pages/tickets.json"
-        fields: &contentPageFields
+        fields:
           - { name: slug, label: "Slug", widget: hidden }
           - { name: title, label: "Title", widget: string }
           - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
@@ -114,10 +114,25 @@ collections:
               - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
               - { name: html, label: "Text", widget: text, hint: "Paragraph: Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>` (also in headings)." }
           - { name: showSocials, label: "Show social links", widget: boolean, default: false, required: false, hint: "Lists the Social links of Site settings (icon + name) under the content blocks." }
+          - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, required: false, hint: "When on, the Custom HTML below is shown instead of the content blocks (and social links)." }
+          - { name: customHtml, label: "Custom HTML", widget: text, required: false, hint: "Shown as-is (no line-break handling): use `<p>`, `<br>`, `<strong>`, `<a href=\"…\">` etc." }
       - name: when
         label: "When"
         file: "content/pages/when.json"
-        fields: *contentPageFields
+        fields: &contentPageFields
+          - { name: slug, label: "Slug", widget: hidden }
+          - { name: title, label: "Title", widget: string }
+          - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+          - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+          - name: blocks
+            label: "Content blocks"
+            widget: list
+            required: false
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.html}}"
+            fields: *copyBlockFields
+          - { name: showSocials, label: "Show social links", widget: boolean, default: false, required: false, hint: "Lists the Social links of Site settings (icon + name) under the content blocks." }
       - name: where
         label: "Where"
         file: "content/pages/where.json"

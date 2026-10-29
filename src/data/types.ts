@@ -80,6 +80,8 @@ export interface ContentPage {
   blocks: CopyBlock[];
   /** Lists the site's social links under the blocks (CMS: Show social links). */
   showSocials?: boolean;
+  /** Raw HTML shown instead of the blocks (Tickets: Use custom HTML). */
+  customHtml?: string;
 }
 
 /** A sponsor logo, or a text-only sponsor when no logo asset exists. */

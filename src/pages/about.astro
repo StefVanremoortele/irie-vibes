@@ -70,13 +70,18 @@ const startEdition = editionOptions[startIndex];
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
               </div>
               <div class="years__content">
-                <div class="years__paras" data-year-paras>
-                  {startEdition.paragraphs.map((html) => <p class="acc__p" set:html={html} />)}
+                <div class="years__main" data-year-main>
+                  <div class="years__paras" data-year-paras>
+                    {startEdition.paragraphs.map((html) => <p class="acc__p" set:html={html} />)}
+                  </div>
                 </div>
-                <div class="years__media">
+                <div class="years__media" data-year-media>
                   <img class="years__poster" data-year-poster src={startEdition.poster} alt="Festival poster" hidden={!startEdition.poster} />
-                  <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden allowfullscreen></iframe>
-                  <img class="years__photo" data-year-photo src={undefined} alt="Festival crew group photo" hidden />
+                  <!-- Video + group photo: under the poster, or under the text when that leaves room (see placeExtras). -->
+                  <div class="years__extras" data-year-extras>
+                    <iframe class="years__video" data-year-video title="Previous edition video" src={undefined} hidden allowfullscreen></iframe>
+                    <img class="years__photo" data-year-photo src={undefined} alt="Festival crew group photo" hidden />
+                  </div>
                 </div>
               </div>
             </div>
@@ -278,9 +283,15 @@ const startEdition = editionOptions[startIndex];
     display: block;
     border: 1px solid var(--border-hairline);
   }
-  .years__media {
+  .years__main,
+  .years__media,
+  .years__extras {
     display: grid;
     gap: 16px;
+    align-content: start;
+  }
+  .years__paras:empty {
+    display: none;
   }
   .years__video {
     width: 100%;
@@ -409,7 +420,26 @@ const startEdition = editionOptions[startIndex];
     const posterEl = root.querySelector('[data-year-poster]');
     const videoEl = root.querySelector('[data-year-video]');
     const photoEl = root.querySelector('[data-year-photo]');
-    if (!selectEl || !parasEl || !posterEl || !videoEl || !photoEl) return;
+    const mainEl = root.querySelector('[data-year-main]');
+    const mediaEl = root.querySelector('[data-year-media]');
+    const extrasEl = root.querySelector('[data-year-extras]');
+    if (!selectEl || !parasEl || !posterEl || !videoEl || !photoEl || !mainEl || !mediaEl || !extrasEl) return;
+    // Wide screens (text and poster side by side): when the text is shorter than the poster, the video
+    // and group photo go under the text, beside the poster, instead of under the poster.
+    const placeExtras = () => {
+      const sideBySide = mainEl.offsetTop === mediaEl.offsetTop && mediaEl.offsetLeft > mainEl.offsetLeft;
+      const room = !posterEl.hidden && posterEl.offsetHeight > 0 && parasEl.offsetHeight < posterEl.offsetHeight;
+      const target = sideBySide && room ? mainEl : mediaEl;
+      if (extrasEl.parentElement !== target) target.append(extrasEl);
+    };
+    let placing = 0;
+    const schedulePlace = () => {
+      cancelAnimationFrame(placing);
+      placing = requestAnimationFrame(placeExtras);
+    };
+    posterEl.addEventListener('load', schedulePlace);
+    addEventListener('resize', schedulePlace);
+    root.closest('details')?.addEventListener('toggle', schedulePlace);
     let index = startIndex;
     // A poster or photo that fails to load (e.g. a broken external link) is hidden, not shown broken.
     [posterEl, photoEl].forEach((img) => img.addEventListener('error', () => { img.hidden = true; }));
@@ -451,6 +481,7 @@ const startEdition = editionOptions[startIndex];
         photoEl.removeAttribute('src');
         photoEl.hidden = true;
       }
+      schedulePlace();
     };
 
     root.querySelectorAll('[data-year-step]').forEach((btn) => {

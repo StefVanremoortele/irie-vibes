@@ -17,7 +17,7 @@ export function heroUrl(page: { hero?: string; showHero?: boolean }, field: stri
 
 // Simple content pages (tickets, when, where, camping, drinks, kids, volunteer, and pages made from
 // menu links) — one JSON file each, keyed by file name (the URL).
-type PageSource = Partial<Omit<ContentPage, 'hero'>> & { hero?: string; showHero?: boolean; circulatieplan?: string };
+type PageSource = Partial<Omit<ContentPage, 'hero'>> & { hero?: string; showHero?: boolean; circulatieplan?: string; useCustomHtml?: boolean };
 const pageModules = import.meta.glob<PageSource>('/content/pages/*.json', {
   eager: true,
   import: 'default',
@@ -25,7 +25,8 @@ const pageModules = import.meta.glob<PageSource>('/content/pages/*.json', {
 
 function toContentPage(slug: string, p: PageSource, fallbackTitle = slug): ContentPage {
   const title = p.title?.trim() || fallbackTitle;
-  return { slug, title, hero: heroUrl(p, title), blocks: p.blocks ?? [], showSocials: p.showSocials === true };
+  const customHtml = p.useCustomHtml === true && p.customHtml?.trim() ? p.customHtml : undefined;
+  return { slug, title, hero: heroUrl(p, title), blocks: p.blocks ?? [], showSocials: p.showSocials === true, customHtml };
 }
 
 const pageSources: Record<string, PageSource> = Object.fromEntries(

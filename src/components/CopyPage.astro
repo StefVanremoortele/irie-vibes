@@ -15,11 +15,17 @@ const { page, width = 'narrow' } = Astro.props;
   <Hero src={page.hero} alt={page.title} size="md" />
   <div class={`section section--${width}`}>
     <h1 class="title">{page.title}</h1>
-    <div class="copy copy--center">
-      <CopyBlocks blocks={page.blocks} />
-    </div>
     {
-      page.showSocials && socials.length > 0 && (
+      page.customHtml ? (
+        <div class="copy copy--center custom-html" set:html={page.customHtml} />
+      ) : (
+        <div class="copy copy--center">
+          <CopyBlocks blocks={page.blocks} />
+        </div>
+      )
+    }
+    {
+      !page.customHtml && page.showSocials && socials.length > 0 && (
         <ul class="socials-list">
           {socials.map((s) => (
             <li>
