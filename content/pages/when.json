@@ -6,27 +6,27 @@
   "blocks": [
     {
       "type": "p",
-      "html": "Camping and campingbar open on <strong>Thursday</strong>, 22 July at 12h."
+      "html": "Camping and campingbar open on <strong>thursday</strong>, 22 July at 12h."
     },
     {
       "type": "p",
-      "html": "The festival area opens on <strong>Thursday</strong> at 18h with Kortemark Congé, a free entrance festival day. The festival area closes at 1h."
+      "html": "The festival area opens on <strong>thursday</strong> at 18h with Kortemark Congé, a free entrance festival day. The festival area closes at 1h. The campingbar remains open till friday 11h30."
     },
     {
       "type": "p",
-      "html": "On <strong>Friday</strong> the festival area opens at 17h and closes at 4h."
+      "html": "On <strong>friday</strong> the festival area opens at 17h and closes at 4h. The campingbar remains open till sturday, 12h30."
     },
     {
       "type": "p",
-      "html": "On <strong>Saturday</strong> the festival area opens at 12h and closes at 4h."
+      "html": "On <strong>saturday</strong> the festival area opens at 12h and closes at 4h. The campingbar remains open till sunday, 12h30."
     },
     {
       "type": "p",
-      "html": "The camping bar at the Chilling Lion stage opens every festival day from ??h?? till ??h??. Breakfast is also served here, from 8h till we are out."
+      "html": "Breakfast is served at the campingbar,e very day from 8h till we are out."
     },
     {
       "type": "p",
-      "html": "The camping closes on <strong>Sunday</strong>, 25 July at 11h."
+      "html": "The camping closes on <strong>sunday</strong>, 25 July at 11h."
     }
   ],
   "showSocials": false
