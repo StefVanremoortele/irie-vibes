@@ -323,7 +323,7 @@ async function regenerateIndex(dir) {
   if (!entries.length) lines.push('No feedback yet.');
   for (const entry of entries) {
     lines.push(`## ${entry.status} — ${typeof entry.title === 'string' && entry.title.trim() ? `${entry.title.trim()} — ` : ''}${PSEUDONYM} — ${entry.createdAt}`);
-    if (entry.page) lines.push(`Page: ${entry.page}${entry.scope === 'site' ? ' (applies to every page)' : ''}`);
+    if (entry.page) lines.push(`Page: ${entry.page}${entry.scope === 'site' ? ' (applies to every page)' : entry.scope === 'admin' ? ' (concerns the admin interface / Sveltia CMS)' : ''}`);
     lines.push('', entry.message, '');
     if (Array.isArray(entry.proposals?.options) && entry.proposals.options.length) {
       lines.push('Proposed interpretations:');
@@ -419,7 +419,7 @@ async function createEntry(req, dir) {
     id,
     name: PSEUDONYM,
     page: fields.page?.trim().slice(0, 500) || '',
-    ...(fields.scope === 'site' || fields.scope === 'page' ? { scope: fields.scope } : {}),
+    ...(['page', 'site', 'admin'].includes(fields.scope) ? { scope: fields.scope } : {}),
     message,
     status: 'New',
     createdAt: new Date().toISOString(),

@@ -453,8 +453,8 @@ try {
     id: string; name: string; page: string; message: string; status: string; createdAt: string;
     /** The goal of the request in a few words, written by the AI triage (optional). */
     title?: string;
-    /** 'site': the change concerns every page; 'page' (or missing on older entries): only `page`. */
-    scope?: 'page' | 'site';
+    /** 'site': the change concerns every page; 'admin': the CMS admin (Sveltia); 'page' (or missing on older entries): only `page`. */
+    scope?: 'page' | 'site' | 'admin';
     images: { name: string; url: string }[];
     comments?: Comment[];
     /** How the AI developer read the feedback (English), and the commit that addressed it. */
@@ -607,7 +607,7 @@ try {
           <span class="fbx-row__thumb">${shot ? `<img src="${shot.url}" alt="" loading="lazy">` : ''}</span>
           <span class="fbx-row__text">
             <span class="fbx-row__comment">${escapeHtml(entry.title?.trim() || entry.message)}</span>
-            <span class="fbx-row__meta"><span class="fbx-sdot${dot ? ` fbx-sdot--${dot}` : ''}" title="${dotTitle}"></span><span class="fbx-row__path">${escapeHtml(entry.scope === 'site' ? 'Every page' : entry.page || '—')}</span><span aria-hidden="true">·</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
+            <span class="fbx-row__meta"><span class="fbx-sdot${dot ? ` fbx-sdot--${dot}` : ''}" title="${dotTitle}"></span><span class="fbx-row__path">${escapeHtml(entry.scope === 'site' ? 'Every page' : entry.scope === 'admin' ? 'Admin interface' : entry.page || '—')}</span><span aria-hidden="true">·</span><span class="fbx-row__time" title="${new Date(entry.createdAt).toLocaleString()}">${shortAgo(entry.createdAt)}</span></span>
           </span>
         </button>`;
     }).join('');
@@ -645,7 +645,8 @@ try {
     const chips = [
       entry.page ? `<span class="fbx-metachip">${escapeHtml(entry.page)}</span>` : '',
       viewport ? `<span class="fbx-metachip">${viewport.width}×${viewport.height}</span>` : '',
-      entry.scope === 'site' ? '<span class="fbx-metachip fbx-metachip--plain" title="This feedback applies to every page, not just the one it was sent from">Every page</span>' : '',
+      entry.scope === 'site' ? '<span class="fbx-metachip fbx-metachip--plain" title="This feedback applies to every page, not just the one it was sent from">Every page</span>'
+        : entry.scope === 'admin' ? '<span class="fbx-metachip fbx-metachip--plain" title="This feedback concerns the admin interface (Sveltia CMS), not the public site">Admin interface</span>' : '',
       entry.metadata?.screenshotFailed ? '<span class="fbx-metachip fbx-metachip--danger">Screenshot failed</span>' : '',
       shot || entry.metadata?.screenshotFailed ? '' : '<span>No screenshot attached</span>',
       ...(entry.metadata?.embeds || []).map((embed) => `<a class="fbx-metalink" href="${escapeHtml(embed.url)}" target="_blank" rel="noreferrer" title="${escapeHtml(embed.title || embed.url)}">${EMBED_LABELS[embed.kind] || 'Embed'} on screen</a>`),
