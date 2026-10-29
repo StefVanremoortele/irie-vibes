@@ -13,16 +13,21 @@
       "html": "These are paid upon entry in cash or electronecly. Prices are:"
     },
     {
-      "type": "p",
-      "html": "<strong>Camping</strong>: 15€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Vehicle fee parking</strong>: 5€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Vehicle fee camping</strong>: 15€"
+      "type": "cols",
+      "rows": [
+        {
+          "left": "<strong>Camping</strong>",
+          "right": "15€"
+        },
+        {
+          "left": "<strong>Vehicle fee parking</strong>",
+          "right": "5€"
+        },
+        {
+          "left": "<strong>Vehicle fee camping</strong>",
+          "right": "15€"
+        }
+      ]
     },
     {
       "type": "p",

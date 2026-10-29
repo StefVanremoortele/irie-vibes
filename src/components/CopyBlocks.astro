@@ -10,7 +10,22 @@ const { blocks } = Astro.props;
 
 {
   blocks.map((b) =>
-    b.type === 'h' ? <h2 class="copy__h" set:html={inlineHtml(b.html)} /> : paragraphsHtml(b.html).map((html) => <p set:html={html} />),
+    b.type === 'cols' ? (
+      <dl class="copy__cols">
+        {(b.rows ?? [])
+          .filter((r) => r.left?.trim() || r.right?.trim())
+          .map((r) => (
+            <>
+              <dt set:html={inlineHtml(r.left)} />
+              <dd set:html={inlineHtml(r.right)} />
+            </>
+          ))}
+      </dl>
+    ) : b.type === 'h' ? (
+      <h2 class="copy__h" set:html={inlineHtml(b.html)} />
+    ) : (
+      paragraphsHtml(b.html).map((html) => <p set:html={html} />)
+    ),
   )
 }
 
@@ -22,5 +37,28 @@ const { blocks } = Astro.props;
     color: var(--secondary);
     text-transform: uppercase;
     margin: 28px 0 12px;
+  }
+  /* Two-column list: one grid so every row shares the column widths. */
+  .copy__cols {
+    display: grid;
+    grid-template-columns: fit-content(55%) 1fr;
+    max-width: 36rem;
+    margin: 0 auto 22px;
+  }
+  .copy__cols:last-child {
+    margin-bottom: 0;
+  }
+  .copy__cols dt,
+  .copy__cols dd {
+    margin: 0;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .copy__cols dt {
+    text-align: left;
+  }
+  .copy__cols dd {
+    padding-left: 24px;
+    text-align: right;
   }
 </style>

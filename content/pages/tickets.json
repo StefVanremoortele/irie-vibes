@@ -13,8 +13,42 @@
       "html": "Prices"
     },
     {
-      "type": "p",
-      "html": "<strong>Thursday</strong>:                                      Free entrance\n<strong>Weekend</strong>:                                 60€ presale, 70€ at the gates\n<strong>Friday</strong>:                                      30€ presale, 40€ at the gates\n<strong>Saturday</strong>:                                 40€ presale, 50€ at the gates\n\n<strong>Camping per person</strong>:                    10€, at the gates only\n<strong>Parking vehicle</strong>:                            10€, at the gates only\n<strong>Camping vehicle</strong>:                          10€, at the gates only"
+      "type": "cols",
+      "rows": [
+        {
+          "left": "<strong>Thursday</strong>",
+          "right": "Free entrance"
+        },
+        {
+          "left": "<strong>Weekend</strong>",
+          "right": "60€ presale, 70€ at the gates"
+        },
+        {
+          "left": "<strong>Friday</strong>",
+          "right": "30€ presale, 40€ at the gates"
+        },
+        {
+          "left": "<strong>Saturday</strong>",
+          "right": "40€ presale, 50€ at the gates"
+        }
+      ]
+    },
+    {
+      "type": "cols",
+      "rows": [
+        {
+          "left": "<strong>Camping per person</strong>",
+          "right": "10€, at the gates only"
+        },
+        {
+          "left": "<strong>Parking vehicle</strong>",
+          "right": "10€, at the gates only"
+        },
+        {
+          "left": "<strong>Camping vehicle</strong>",
+          "right": "10€, at the gates only"
+        }
+      ]
     },
     {
       "type": "p",

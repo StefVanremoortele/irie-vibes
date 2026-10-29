@@ -109,10 +109,31 @@ collections:
             required: false
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: &copyBlockFields
-              - { name: type, label: "Type", widget: select, options: [{ label: "Paragraph", value: "p" }, { label: "Heading", value: "h" }], default: "p" }
-              - { name: html, label: "Text", widget: text, hint: "Paragraph: Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>` (also in headings)." }
+            types: &copyBlockTypes
+              - name: p
+                label: "Paragraph"
+                summary: "{{fields.html}}"
+                fields:
+                  - { name: html, label: "Text", widget: text, hint: "Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
+              - name: h
+                label: "Heading"
+                summary: "Heading: {{fields.html}}"
+                fields:
+                  - { name: html, label: "Text", widget: string, hint: "Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
+              - name: cols
+                label: "Two-column list"
+                summary: "Two-column list"
+                fields:
+                  - name: rows
+                    label: "Rows"
+                    widget: list
+                    collapsed: true
+                    minimize_collapsed: true
+                    summary: "{{fields.left}} | {{fields.right}}"
+                    hint: "For lists like prices: left text aligned left, right text aligned right, one row per line. Both allow `<strong>bold</strong>` and `<a href=\"…\">link</a>`."
+                    fields:
+                      - { name: left, label: "Left", widget: string, required: false }
+                      - { name: right, label: "Right", widget: string, required: false }
           - { name: showSocials, label: "Show social links", widget: boolean, default: false, required: false, hint: "Lists the Social links of Site settings (icon + name) under the content blocks." }
           - { name: useCustomHtml, label: "Use custom HTML", widget: boolean, default: false, required: false, hint: "When on, the Custom HTML below is shown instead of the content blocks (and social links)." }
           - { name: customHtml, label: "Custom HTML", widget: text, required: false, hint: "Shown as-is (no line-break handling): use `<p>`, `<br>`, `<strong>`, `<a href=\"…\">` etc." }
@@ -130,8 +151,7 @@ collections:
             required: false
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
+            types: *copyBlockTypes
           - { name: showSocials, label: "Show social links", widget: boolean, default: false, required: false, hint: "Lists the Social links of Site settings (icon + name) under the content blocks." }
       - name: where
         label: "Where"
@@ -148,8 +168,7 @@ collections:
             widget: list
             collapsed: true
             minimize_collapsed: true
-            summary: "{{fields.html}}"
-            fields: *copyBlockFields
+            types: *copyBlockTypes
       - name: camping
         label: "Parking & camping"
         file: "content/pages/camping.json"

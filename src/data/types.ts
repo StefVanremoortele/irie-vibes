@@ -65,11 +65,17 @@ export interface LineupDay {
  * such as <strong>/<a>) or a heading. Rich enough to stay faithful to the
  * original while mapping onto a CMS rich-text/heading field.
  */
-export interface CopyBlock {
-  type: 'p' | 'h';
-  /** Inline HTML permitted for 'p' blocks (bold, links). */
-  html: string;
-}
+export type CopyBlock =
+  | {
+      type: 'p' | 'h';
+      /** Inline HTML permitted for 'p' blocks (bold, links). */
+      html: string;
+    }
+  | {
+      /** Two-column list (e.g. prices): left text aligned left, right text aligned right. */
+      type: 'cols';
+      rows?: { left?: string; right?: string }[];
+    };
 
 /** A simple content page driven by a hero image and a list of copy blocks. */
 export interface ContentPage {
