@@ -304,6 +304,32 @@ collections:
                     required: false
                     field: { name: item, label: "Item", widget: string, hint: "Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
 
+  # ---- Extra pages: new pages editors create (one file each) -----------
+  - name: extra
+    label: "Extra pages"
+    label_singular: "Page"
+    description: "New pages for the site, with header and footer; they can start empty. The page's address is made from its title when it's created (\"Socials\" → /socials). To put it in the burger menu: Settings → Site settings → Page navigation → Add Page → Extra page."
+    folder: "content/extra"
+    extension: json
+    format: json
+    identifier_field: title
+    slug: "{{slug}}"
+    create: true
+    icon: note_add
+    fields:
+      - { name: title, label: "Title", widget: string }
+      - { name: hero, label: "Hero image", widget: image, required: false, hint: "Banner at the top of this page. Leave empty for no banner." }
+      - { name: showHero, label: "Show hero image", widget: boolean, default: true, required: false, hint: "Switch off to hide the banner without removing the image." }
+      - name: blocks
+        label: "Content blocks"
+        widget: list
+        required: false
+        collapsed: true
+        minimize_collapsed: true
+        summary: "{{fields.html}}"
+        hint: "Optional: a page without blocks shows only its title."
+        fields: *copyBlockFields
+
   # ---- Line-up acts (one file per act) ---------------------------------
   - name: acts
     label: "Line-up — acts"
@@ -375,11 +401,40 @@ collections:
             collapsed: true
             minimize_collapsed: true
             summary: "{{fields.label}}"
-            hint: "Top to bottom is the order of the burger menu. Switch off \"Show in burger menu\" to keep a page out of the menu."
-            fields:
-              - { name: label, label: "Label", widget: string }
-              - { name: href, label: "Link", widget: string }
-              - { name: showInMenu, label: "Show in burger menu", widget: boolean, default: true, required: false }
+            hint: "Top to bottom is the order of the burger menu. Add a Site page, an Extra page (create it first under Extra pages) or another link. Switch off \"Show in burger menu\" to keep a page out of the menu."
+            types:
+              - name: page
+                label: "Site page"
+                fields:
+                  - { name: label, label: "Label", widget: string }
+                  - name: href
+                    label: "Page"
+                    widget: select
+                    options:
+                      - { label: "Home", value: "/" }
+                      - { label: "Tickets", value: "/tickets" }
+                      - { label: "Line-up", value: "/lineup" }
+                      - { label: "When", value: "/when" }
+                      - { label: "Where", value: "/where" }
+                      - { label: "Parking & camping", value: "/camping" }
+                      - { label: "Drinks, food & market", value: "/drinks" }
+                      - { label: "Kids corner", value: "/kids" }
+                      - { label: "Volunteer", value: "/volunteer" }
+                      - { label: "All about Irie Vibes", value: "/about" }
+                      - { label: "Regulations", value: "/regulations" }
+                  - { name: showInMenu, label: "Show in burger menu", widget: boolean, default: true, required: false }
+              - name: extra
+                label: "Extra page"
+                fields:
+                  - { name: label, label: "Label", widget: string }
+                  - { name: page, label: "Page", widget: relation, collection: extra, value_field: "{{slug}}", search_fields: [title], display_fields: [title], hint: "One of the pages under Extra pages." }
+                  - { name: showInMenu, label: "Show in burger menu", widget: boolean, default: true, required: false }
+              - name: link
+                label: "Other link"
+                fields:
+                  - { name: label, label: "Label", widget: string }
+                  - { name: href, label: "Link", widget: string, hint: "A full address (https://…) or a path on this site (/…)." }
+                  - { name: showInMenu, label: "Show in burger menu", widget: boolean, default: true, required: false }
           - name: socials
             label: "Social links"
             widget: list

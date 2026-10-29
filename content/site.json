@@ -19,63 +19,75 @@
   },
   "nav": [
     {
+      "type": "page",
       "label": "Home",
       "href": "/",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Tickets",
       "href": "/tickets",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Line up",
       "href": "/lineup",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "When",
       "href": "/when",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Where",
       "href": "/where",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Parking & Camping",
       "href": "/camping",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Drinks, Foods & Market",
       "href": "/drinks",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Kids Corner",
       "href": "/kids",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Volunteer",
       "href": "/volunteer",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "All About Irie Vibes",
       "href": "/about",
       "showInMenu": true
     },
     {
+      "type": "page",
       "label": "Regulations",
       "href": "/regulations",
       "showInMenu": false
     },
     {
+      "type": "extra",
       "label": "Socials",
-      "href": "/socials",
+      "page": "socials",
       "showInMenu": false
     }
   ],

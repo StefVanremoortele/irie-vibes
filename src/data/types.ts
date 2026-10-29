@@ -9,7 +9,7 @@
 /** A navigation entry in the header drawer. */
 export interface NavItem {
   label: string;
-  /** Route path, e.g. "/", "/tickets". */
+  /** Route path, e.g. "/", "/tickets", or a full URL. */
   href: string;
   /** Off: listed in Site settings but left out of the burger menu (e.g. Regulations). */
   showInMenu?: boolean;

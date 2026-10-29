@@ -1,0 +1,17 @@
+---
+// Extra pages (CMS: Extra pages, content/extra/<slug>.json): title, optional banner and content blocks.
+import Base from '../layouts/Base.astro';
+import CopyPage from '../components/CopyPage.astro';
+import { extraPages } from '../data/pages';
+import type { ContentPage } from '../data/types';
+
+export function getStaticPaths() {
+  return extraPages.map((page) => ({ params: { page: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: ContentPage };
+---
+
+<Base title={page.title}>
+  <CopyPage page={page} width="narrow" />
+</Base>

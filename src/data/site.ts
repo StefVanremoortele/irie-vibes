@@ -54,8 +54,15 @@ export const site = {
   },
 };
 
+// A menu entry in the CMS is a site page (href), an extra page (slug of content/extra/<slug>.json)
+// or another link (href); entries saved before the types existed only have href.
+type NavSource = { type?: 'page' | 'extra' | 'link'; label: string; href?: string; page?: string; showInMenu?: boolean };
+
 /** Header navigation (drawer), in CMS order; pages switched off for the burger menu are left out. */
-export const nav: NavItem[] = (siteData.nav as NavItem[]).filter((item) => item.showInMenu !== false);
+export const nav: NavItem[] = (siteData.nav as NavSource[])
+  .filter((item) => item.showInMenu !== false)
+  .map((item) => ({ label: item.label, href: item.type === 'extra' ? (item.page ? `/${item.page}` : '') : (item.href ?? '') }))
+  .filter((item) => item.href);
 
 /** Social channels (footer). */
 export const socials: Social[] = siteData.socials.map((s) => ({
