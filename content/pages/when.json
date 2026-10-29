@@ -6,7 +6,7 @@
   "blocks": [
     {
       "type": "p",
-      "html": "Camping opens on <strong>Thursday</strong>, 22 July at ??h??"
+      "html": "Camping opens on <strong>Thursday</strong>, 22 July at 12h."
     },
     {
       "type": "p",
@@ -22,11 +22,12 @@
     },
     {
       "type": "p",
-      "html": "The camping bar at the Chilling Lion stage opens every festival day from ??h?? till ??h??. Breakfast is also served here, from ??h?? till we are out."
+      "html": "The camping bar at the Chilling Lion stage opens every festival day from ??h?? till ??h??. Breakfast is also served here, from 8h till we are out."
     },
     {
       "type": "p",
-      "html": "The camping closes on <strong>Sunday</strong>, 25 July at 14h."
+      "html": "The camping closes on <strong>Sunday</strong>, 25 July at 11h."
     }
-  ]
+  ],
+  "showSocials": false
 }
