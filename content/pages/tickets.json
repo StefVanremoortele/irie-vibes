@@ -10,43 +10,11 @@
     },
     {
       "type": "h",
-      "html": "Passes"
+      "html": "Prices"
     },
     {
       "type": "p",
-      "html": "<strong>Thursday</strong>: Free entrance"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Friday</strong>: 50€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Saturday</strong>: 50€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Weekend</strong>: 75€"
-    },
-    {
-      "type": "p",
-      "html": "To be paid upon entry"
-    },
-    {
-      "type": "h",
-      "html": "Camping & parking"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Camping</strong>: 15€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Vehicle fee parking</strong>: 5€"
-    },
-    {
-      "type": "p",
-      "html": "<strong>Vehicle fee camping</strong>: 15€"
+      "html": "<strong>Thursday</strong>:                                      Free entrance\n<strong>Weekend</strong>:                                 60€ presale, 70€ at the gates\n<strong>Friday</strong>:                                      30€ presale, 40€ at the gates\n<strong>Saturday</strong>:                                 40€ presale, 50€ at the gates\n\n<strong>Camping per person</strong>:                    10€, at the gates only\n<strong>Parking vehicle</strong>:                            10€, at the gates only\n<strong>Camping vehicle</strong>:                          10€, at the gates only"
     },
     {
       "type": "p",
