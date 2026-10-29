@@ -72,6 +72,11 @@
       "label": "Regulations",
       "href": "/regulations",
       "showInMenu": false
+    },
+    {
+      "label": "Socials",
+      "href": "/socials",
+      "showInMenu": false
     }
   ],
   "socials": [
