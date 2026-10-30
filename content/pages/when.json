@@ -1,7 +1,7 @@
 {
   "slug": "when",
   "title": "When",
-  "hero": "/assets/hero-where.png",
+  "hero": "/assets/heroes/hero-where.png",
   "showHero": true,
   "blocks": [
     {

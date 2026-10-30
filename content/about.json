@@ -1,5 +1,5 @@
 {
-  "hero": "/assets/hero-about.png",
+  "hero": "/assets/heroes/hero-about.png",
   "showHero": true,
   "order": [
     "greenforward",
@@ -159,7 +159,7 @@
     "items": [
       {
         "year": "2009",
-        "poster": "/assets/2009.webp",
+        "poster": "/assets/editions/2009.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -170,7 +170,7 @@
       },
       {
         "year": "2002",
-        "poster": "/assets/poster2002.jpg",
+        "poster": "/assets/editions/poster2002.jpg",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -183,7 +183,7 @@
       },
       {
         "year": "2003",
-        "poster": "/assets/2003.webp",
+        "poster": "/assets/editions/2003.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -194,7 +194,7 @@
       },
       {
         "year": "2004",
-        "poster": "/assets/2004.webp",
+        "poster": "/assets/editions/2004.webp",
         "video": "https://www.youtube.com/watch?v=lYCrzG_migQ",
         "showVideo": true,
         "photo": "",
@@ -205,7 +205,7 @@
       },
       {
         "year": "2005",
-        "poster": "/assets/2005.webp",
+        "poster": "/assets/editions/2005.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -216,7 +216,7 @@
       },
       {
         "year": "2007",
-        "poster": "/assets/2007.webp",
+        "poster": "/assets/editions/2007.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -227,7 +227,7 @@
       },
       {
         "year": "2008",
-        "poster": "/assets/2008.webp",
+        "poster": "/assets/editions/2008.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -238,7 +238,7 @@
       },
       {
         "year": "2009",
-        "poster": "/assets/2009.webp",
+        "poster": "/assets/editions/2009.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -249,7 +249,7 @@
       },
       {
         "year": "2010",
-        "poster": "/assets/2010.webp",
+        "poster": "/assets/editions/2010.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -260,7 +260,7 @@
       },
       {
         "year": "2011",
-        "poster": "/assets/2011.webp",
+        "poster": "/assets/editions/2011.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -271,7 +271,7 @@
       },
       {
         "year": "2012",
-        "poster": "/assets/2012.webp",
+        "poster": "/assets/editions/2012.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -282,7 +282,7 @@
       },
       {
         "year": "2013",
-        "poster": "/assets/2013.webp",
+        "poster": "/assets/editions/2013.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -293,7 +293,7 @@
       },
       {
         "year": "2014",
-        "poster": "/assets/2014.webp",
+        "poster": "/assets/editions/2014.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -304,7 +304,7 @@
       },
       {
         "year": "2015",
-        "poster": "/assets/2015.webp",
+        "poster": "/assets/editions/2015.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -315,7 +315,7 @@
       },
       {
         "year": "2016",
-        "poster": "/assets/2016.webp",
+        "poster": "/assets/editions/2016.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -326,7 +326,7 @@
       },
       {
         "year": "2017",
-        "poster": "/assets/2017.webp",
+        "poster": "/assets/editions/2017.webp",
         "video": "https://www.youtube.com/watch?v=3N87dntyQbY",
         "showVideo": true,
         "photo": "",
@@ -337,7 +337,7 @@
       },
       {
         "year": "2018",
-        "poster": "/assets/2018.webp",
+        "poster": "/assets/editions/2018.webp",
         "video": "",
         "showVideo": false,
         "photo": "",
@@ -348,16 +348,16 @@
       },
       {
         "year": "2019",
-        "poster": "/assets/2019.webp",
+        "poster": "/assets/editions/2019.webp",
         "video": "https://www.youtube.com/watch?v=iwGpNoRK_sw",
         "showVideo": true,
-        "photo": "/assets/2019-1.webp",
+        "photo": "/assets/editions/2019-1.webp",
         "showPhoto": true,
         "paragraphs": []
       },
       {
         "year": "2022",
-        "poster": "/assets/2022.webp",
+        "poster": "/assets/editions/2022.webp",
         "video": "https://www.youtube.com/watch?v=6-ulVOmKp0Q",
         "showVideo": true,
         "photo": "",
@@ -368,10 +368,10 @@
       },
       {
         "year": "2023",
-        "poster": "/assets/2023.webp",
+        "poster": "/assets/editions/2023.webp",
         "video": "https://www.youtube.com/watch?v=JI1EagfujOk",
         "showVideo": true,
-        "photo": "/assets/team 2023.webp",
+        "photo": "/assets/editions/team 2023.webp",
         "showPhoto": true,
         "paragraphs": [
           "2023...\n\n20 years of irie vibes!"
@@ -379,16 +379,16 @@
       },
       {
         "year": "2024",
-        "poster": "/assets/2024.webp",
+        "poster": "/assets/editions/2024.webp",
         "video": "https://www.youtube.com/watch?v=-wymjGPnSZM&t=1s",
         "showVideo": true,
-        "photo": "/assets/2024-1.webp",
+        "photo": "/assets/editions/2024-1.webp",
         "showPhoto": true,
         "paragraphs": []
       },
       {
         "year": "2025",
-        "poster": "/assets/2025.webp",
+        "poster": "/assets/editions/2025.webp",
         "video": "https://www.youtube.com/watch?v=knswTYKdwh0&t=3s",
         "showVideo": true,
         "photo": "",
@@ -397,7 +397,7 @@
       },
       {
         "year": "2026",
-        "poster": "/assets/Irie vibes 26 DigiRelease met vibewinnaar 1080x1350.webp",
+        "poster": "/assets/editions/Irie vibes 26 DigiRelease met vibewinnaar 1080x1350.webp",
         "video": "https://www.youtube.com/watch?v=knswTYKdwh0",
         "showVideo": true,
         "photo": "",
@@ -414,12 +414,12 @@
       {
         "name": "Festival t-shirt",
         "description": "100% organic cotton, screen-printed edition artwork on front and back lineup.",
-        "image": "/assets/tshirt medewerkers af.webp"
+        "image": "/assets/shop/tshirt medewerkers af.webp"
       },
       {
         "name": "Hoodie",
         "description": "Premium heavy fleece hoodie with kangaroo pocket and embroidered chest badge.",
-        "image": "/assets/greenforward-transp-geen-rand.png"
+        "image": "/assets/site/greenforward-transp-geen-rand.png"
       }
     ]
   },
@@ -435,7 +435,7 @@
       },
       {
         "type": "photo",
-        "photo": "/assets/Irie_Vibes_Band_And_Jah_Rej.webp",
+        "photo": "/assets/band/Irie_Vibes_Band_And_Jah_Rej.webp",
         "caption": "The Irie Vibes Band"
       }
     ]

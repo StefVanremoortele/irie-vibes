@@ -1,7 +1,7 @@
 {
-  "hero": "/assets/hero-lineup.png",
+  "hero": "/assets/heroes/hero-lineup.png",
   "showHero": true,
-  "actHero": "/assets/hero-lineup.png",
+  "actHero": "/assets/heroes/hero-lineup.png",
   "showActHero": true,
   "stages": [
     {
