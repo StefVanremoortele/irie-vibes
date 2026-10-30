@@ -1,7 +1,7 @@
 {
   "slug": "camping",
   "title": "Camping & parking",
-  "hero": "/assets/hero-camping.png",
+  "hero": "/assets/heroes/hero-camping.png",
   "showHero": true,
   "blocks": [
     {

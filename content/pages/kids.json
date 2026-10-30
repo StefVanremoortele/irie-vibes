@@ -1,7 +1,7 @@
 {
   "slug": "kids",
   "title": "Kids corner",
-  "hero": "/assets/hero-kids.png",
+  "hero": "/assets/heroes/hero-kids.png",
   "showHero": true,
   "blocks": [
     {

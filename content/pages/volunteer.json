@@ -1,7 +1,7 @@
 {
   "slug": "volunteer",
   "title": "Volunteer",
-  "hero": "/assets/hero-volunteer.png",
+  "hero": "/assets/heroes/hero-volunteer.png",
   "showHero": true,
   "blocks": [
     {

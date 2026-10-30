@@ -1,7 +1,7 @@
 {
   "slug": "drinks",
   "title": "Drinks, foods & market",
-  "hero": "/assets/hero-drinks.png",
+  "hero": "/assets/heroes/hero-drinks.png",
   "showHero": true,
   "blocks": [
     {

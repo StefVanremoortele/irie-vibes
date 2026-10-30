@@ -268,7 +268,7 @@ irie-vibes/
 │   └── pages/*.json          #   Tickets / When / Where / Camping / Drinks / Kids / Volunteer copy
 ├── public/
 │   ├── admin/                # Sveltia CMS (index.html, config.yml, bundle)
-│   └── assets/               # all images (heroes, sponsors, socials, posters)
+│   └── assets/               # images in folders: heroes, sponsors, editions, acts, shop, band, site
 ├── scripts/
 │   ├── production.mjs        # self-updating production server (npm run production)
 │   ├── feedback-server.mjs   # feedback API + storage (dev and production)

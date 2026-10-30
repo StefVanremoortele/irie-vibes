@@ -1,9 +1,9 @@
 {
   "slug": "where",
   "title": "Where",
-  "hero": "/assets/hero-where.png",
+  "hero": "/assets/heroes/hero-where.png",
   "showHero": true,
-  "circulatieplan": "/assets/circulatieplan.png",
+  "circulatieplan": "/assets/site/circulatieplan.png",
   "blocks": [
     {
       "type": "p",

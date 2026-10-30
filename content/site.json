@@ -11,9 +11,9 @@
   "menuAnimation": true,
   "themeColor": "#fabc4d",
   "assets": {
-    "headerBanner": "/assets/header-banner.png",
-    "footerBg": "/assets/footer.png",
-    "greenforward": "/assets/greenforward-transp-geen-rand.png",
+    "headerBanner": "/assets/site/header-banner.png",
+    "footerBg": "/assets/site/footer.png",
+    "greenforward": "/assets/site/greenforward-transp-geen-rand.png",
     "ticketButton": "",
     "menuButton": ""
   },
@@ -88,22 +88,22 @@
     {
       "label": "Facebook",
       "href": "https://www.facebook.com/IrieVibesRootsFestival",
-      "icon": "/assets/social-facebook.png"
+      "icon": "/assets/site/social-facebook.png"
     },
     {
       "label": "Instagram",
       "href": "https://www.instagram.com/irievibesroots/",
-      "icon": "/assets/social-instagram.png"
+      "icon": "/assets/site/social-instagram.png"
     },
     {
       "label": "YouTube",
       "href": "https://www.youtube.com/@irievibesrootsfestival9001",
-      "icon": "/assets/social-youtube.png"
+      "icon": "/assets/site/social-youtube.png"
     },
     {
       "label": "Spotify",
       "href": "https://open.spotify.com/user/g8ixeapl5313lbru3b9o7ygdk",
-      "icon": "/assets/social-spotify.png"
+      "icon": "/assets/site/social-spotify.png"
     }
   ]
 }

@@ -51,6 +51,14 @@ one-line fields allow the same tags, no line breaks. (`src/lib/richtext.ts`)
 
 ## Images and uploads
 
+- **Folders.** Images are grouped in folders under `public/assets/`: `heroes`
+  (page banners), `sponsors` (logos), `editions` (posters + crew photos), `acts`
+  (artist images), `shop`, `band` and `site` (header, footer, logos, social
+  icons, circulation plan). In Assets → *Global Assets* (and in the image picker)
+  double-click a folder to open it; **Upload** saves into the open folder, and the
+  folder button next to it creates a new folder. *All Assets* is one flat list
+  of every image. The CMS can't move a file between folders: open the right
+  folder, upload it there and pick it in the field.
 - **Upload limit 5 MB.** Photos (JPEG, PNG, HEIC, WebP) are scaled to at most
   2000px and converted to WebP in the browser *before* uploading, so phone photos
   end up a few hundred KB. GIFs and SVGs are uploaded as they are. (Large files
