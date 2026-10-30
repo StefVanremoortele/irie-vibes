@@ -1,0 +1,12 @@
+{
+  "title": "Website test",
+  "hero": "",
+  "showHero": true,
+  "blocks": [
+    {
+      "type": "p",
+      "html": "<strong>Website testen</strong>\n\n<strong>Info</strong>\n-\tEr zijn 2 weergaves; breedt scherm (computer, tablet en gsm plat gehouden) en small scherm (tablet en gsm recht gehouden). \n-\tDe content op de paginas tickets en line-up kan vlug geschakeld worden naar enkel ‘Available soon’, ‘To be announced’ ofzo.\n-\tDe header en footer afbeelding worden aangepast naar het thema van dit jaar van zodra deze beschikbaar is, liefst voor het online zetten\n-\tEr is een lijst nodig met hoofdsponsors en gewone sponsors die nu op de website moeten komen.\n\n<strong>Te testen</strong>\n-\tMinstens 1x breed en 1x small scherm testen (maar liefst alle mogelijke toestel en weergave combinaties).\n-\tCampingregelement nalezen en correcties doorgeven (= kopie wadada).\n-\tKijken of er Partnerships & Affiliations ontbreken (wat deden we samen met Asylum Centre in Poelkapelle en ‘t Schoederkloptje)\n\n\nAlle opmerkingen met betreffende pagina opschrijven en doorgeven.\nAlle commentaar is welkom."
+    }
+  ],
+  "showSocials": false
+}
