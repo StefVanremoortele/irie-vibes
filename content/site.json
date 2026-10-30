@@ -82,6 +82,11 @@
       "label": "Websitetest",
       "href": "/websitetest",
       "showInMenu": false
+    },
+    {
+      "label": "Test website",
+      "href": "/testwebsite",
+      "showInMenu": false
     }
   ],
   "socials": [
