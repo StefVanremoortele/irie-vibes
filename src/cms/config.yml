@@ -397,13 +397,14 @@ collections:
           - { name: volunteerUrl, label: "Volunteer link", widget: string }
           - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
           - { name: themeColor, label: "Theme text colour", widget: color, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
+          - { name: backgroundColor, label: "Page background colour", widget: color, default: "#101510", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards and panels keep their colours. Pick a dark colour: the text is light. Empty: #101510." }
           - name: assets
             label: "Sticky images"
             widget: object
             collapsed: true
             fields:
               - { name: headerBanner, label: "Header banner", widget: image, hint: "Shown at full page width from the top of the page, not cropped. The header ends at 15.3% of the image width (for 3840 px wide: 588 px down); make everything below that transparent, or it hangs over the page." }
-              - { name: footerBg, label: "Footer background", widget: image }
+              - { name: footerBg, label: "Footer background", widget: image, hint: "Full page width at the very bottom of the page, behind all content, not cropped. Fade its top to the page background colour." }
               - { name: greenforward, label: "Greenforward logo", widget: image }
               - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }
               - { name: menuButton, label: "Menu button image", widget: image, required: false, hint: "Optional. Replaces the record icon of the round menu button (top left); a square image works best. Leave empty for the animated record." }

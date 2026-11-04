@@ -78,7 +78,11 @@ button {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
+  background-color: var(--surface);
+  /* The footer image: full width at the very bottom of the page, behind all content. */
+  background-size: 100% auto;
+  background-position: center bottom;
+  background-repeat: no-repeat;
 }
 
 .main {

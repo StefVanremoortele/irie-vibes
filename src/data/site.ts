@@ -4,7 +4,8 @@ import homeData from '../../content/home.json';
 import { assetUrl } from '../lib/assets';
 
 const DEFAULT_THEME_COLOR = '#fabc4d';
-const SURFACE = '#101510';
+const DEFAULT_BACKGROUND = '#101510';
+const BODY_TEXT = '#dfe4db';
 
 /** WCAG relative luminance of a #rrggbb colour. */
 function luminance(hex: string): number {
@@ -15,6 +16,26 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** The CMS page background when it's a valid colour other than the default; warns at build when text reads poorly on it. */
+function backgroundColor(value: string | undefined): string | undefined {
+  const color = value?.trim().toLowerCase();
+  if (!color || color === DEFAULT_BACKGROUND) return undefined;
+  if (!/^#[0-9a-f]{6}$/.test(color)) {
+    console.warn(`[site] Site settings → Page background colour: "${value}" is not a #rrggbb colour; using the default.`);
+    return undefined;
+  }
+  const ratio = contrast(BODY_TEXT, color);
+  if (ratio < 4.5) console.warn(`[site] Site settings → Page background colour ${color} has low contrast with the text (${ratio.toFixed(1)}:1, needs 4.5:1).`);
+  return color;
+}
+
+const pageBackground = backgroundColor((siteData as { backgroundColor?: string }).backgroundColor);
+
 /** The CMS theme colour when it's a valid colour other than the default; warns at build when it reads poorly. */
 function themeColor(value: string | undefined): string | undefined {
   const color = value?.trim().toLowerCase();
@@ -23,8 +44,8 @@ function themeColor(value: string | undefined): string | undefined {
     console.warn(`[site] Site settings → Theme text colour: "${value}" is not a #rrggbb colour; using the default.`);
     return undefined;
   }
-  const contrast = (luminance(color) + 0.05) / (luminance(SURFACE) + 0.05);
-  if (contrast < 4.5) console.warn(`[site] Site settings → Theme text colour ${color} has low contrast on the dark background (${contrast.toFixed(1)}:1, needs 4.5:1).`);
+  const ratio = contrast(color, pageBackground ?? DEFAULT_BACKGROUND);
+  if (ratio < 4.5) console.warn(`[site] Site settings → Theme text colour ${color} has low contrast on the page background (${ratio.toFixed(1)}:1, needs 4.5:1).`);
   return color;
 }
 
@@ -43,6 +64,8 @@ export const site = {
   menuAnimation: (siteData as { menuAnimation?: boolean }).menuAnimation !== false,
   // Theme text colour (the gold accent); undefined keeps the design default from tokens.css.
   themeColor: themeColor((siteData as { themeColor?: string }).themeColor),
+  // Page background; undefined keeps the design default from tokens.css.
+  backgroundColor: pageBackground,
   assets: {
     headerBanner: assetUrl(siteData.assets.headerBanner),
     footerBg: assetUrl(siteData.assets.footerBg),

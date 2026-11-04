@@ -65,6 +65,8 @@ Settled through tester feedback; they apply to new work too.
 
 - **Banners:** every page except home shows its banner in one shape (the Where
   banner, 512:67), 4/5 of the page width, centred. The home hero is full width.
+- **Footer image:** full page width, bottom aligned to the page, behind all content and
+  uncropped; only the background colour lies under it.
 - **Header:** the banner image shows at full page width, top aligned and uncropped. The
   header ends at its solid part, with no fill behind it; the transparent lower part
   and the roots hang over the page. The menu and ticket buttons are the same size on every screen,
