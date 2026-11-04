@@ -10,12 +10,29 @@ import { join } from 'node:path';
 // new URL, so browsers can cache /assets/ forever and still see changes immediately.
 const fingerprints = new Map<string, string>();
 
+/** Paths may be stored plain or already encoded; a literal % in a file name is kept as is. */
+function decodePath(path: string): string {
+  try {
+    return decodeURI(path);
+  } catch {
+    return path;
+  }
+}
+
+/** Safe in HTML attributes and CSS url(), whatever characters the file name has. */
+function encodePath(path: string): string {
+  return path
+    .split('/')
+    .map((part) => encodeURIComponent(part).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
+    .join('/');
+}
+
 function fingerprint(url: string): string {
   if (!fingerprints.has(url)) {
     let hash = '';
     try {
       // Builds run from the project root; bundling makes import.meta.url unreliable here.
-      const file = join(process.cwd(), 'public', decodeURI(url));
+      const file = join(process.cwd(), 'public', url);
       hash = createHash('sha1').update(readFileSync(file)).digest('hex').slice(0, 10);
     } catch {
       // Missing file: leave the URL as is (served with no-cache).
@@ -33,7 +50,7 @@ function fingerprint(url: string): string {
 export function existingAssetUrl(path: string | null | undefined, field: string): string | undefined {
   if (!path) return undefined;
   if (/^https?:\/\//i.test(path)) return path;
-  const url = '/' + path.replace(/^\/+/, '').split('?')[0];
+  const url = decodePath('/' + path.replace(/^\/+/, '').split('?')[0]);
   if (fingerprint(url)) return assetUrl(path);
   console.warn(`[assets] ${field}: ${url} not found in public/ (never uploaded?); left out of the page.`);
   return undefined;
@@ -42,7 +59,7 @@ export function existingAssetUrl(path: string | null | undefined, field: string)
 export function assetUrl(path: string | null | undefined): string {
   if (!path) return '';
   if (/^https?:\/\//i.test(path)) return path;
-  const url = '/' + path.replace(/^\/+/, '').split('?')[0];
+  const url = decodePath('/' + path.replace(/^\/+/, '').split('?')[0]);
   const hash = fingerprint(url);
-  return hash ? `${url}?v=${hash}` : url;
+  return hash ? `${encodePath(url)}?v=${hash}` : encodePath(url);
 }
