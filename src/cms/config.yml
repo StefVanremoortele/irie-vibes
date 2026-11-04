@@ -83,7 +83,7 @@ collections:
               - { name: key, label: "Key (inner/den/chill)", widget: string }
               - { name: name, label: "Name", widget: string }
               - { name: sub, label: "Sub-label", widget: string }
-              - { name: color, label: "Accent colour", widget: string }
+              - { name: color, label: "Accent colour", widget: color, allowInput: true, preview: false, hint: "Hex, for example #ef4444." }
           - name: days
             label: "Days"
             widget: list
@@ -396,8 +396,8 @@ collections:
           - { name: ticketUrl, label: "Ticket shop URL", widget: string }
           - { name: volunteerUrl, label: "Volunteer link", widget: string }
           - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
-          - { name: themeColor, label: "Theme text colour", widget: color, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
-          - { name: backgroundColor, label: "Page background colour", widget: color, default: "#101510", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards and panels keep their colours. Pick a dark colour: the text is light. Empty: #101510." }
+          - { name: themeColor, label: "Theme text colour", widget: color, allowInput: true, preview: false, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
+          - { name: backgroundColor, label: "Page background colour", widget: color, allowInput: true, preview: false, default: "#101510", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards and panels keep their colours. Pick a dark colour: the text is light. Empty: #101510." }
           - name: assets
             label: "Sticky images"
             widget: object
