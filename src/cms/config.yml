@@ -402,7 +402,7 @@ collections:
             widget: object
             collapsed: true
             fields:
-              - { name: headerBanner, label: "Header banner", widget: image }
+              - { name: headerBanner, label: "Header banner", widget: image, hint: "Shown at full page width from the top of the page, not cropped. The header ends at 15.3% of the image width (for 3840 px wide: 588 px down); make everything below that transparent, or it hangs over the page." }
               - { name: footerBg, label: "Footer background", widget: image }
               - { name: greenforward, label: "Greenforward logo", widget: image }
               - { name: ticketButton, label: "Ticket button image", widget: image, required: false, hint: "Optional. Shown as the round ticket button in the header (top right); a square image works best. Leave empty for the \"GET YOUR TICKET\" text button." }

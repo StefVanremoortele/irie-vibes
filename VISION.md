@@ -65,7 +65,9 @@ Settled through tester feedback; they apply to new work too.
 
 - **Banners:** every page except home shows its banner in one shape (the Where
   banner, 512:67), 4/5 of the page width, centred. The home hero is full width.
-- **Header:** the menu and ticket buttons are the same size on every screen,
+- **Header:** the banner image shows at full page width, top aligned and uncropped. The
+  header ends at its solid part, with no fill behind it; the transparent lower part
+  and the roots hang over the page. The menu and ticket buttons are the same size on every screen,
   growing with the screen between 3.25rem (phones) and 7rem. The record animation,
   the menu button image and the ticket button image are Site settings.
 - **CMS layout:** every page has its own entry under Content pages, in the order of
