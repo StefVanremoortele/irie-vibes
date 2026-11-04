@@ -10,6 +10,7 @@
   "volunteerUrl": "mailto:info@irievibes.be",
   "menuAnimation": true,
   "themeColor": "#fabc4d",
+  "backgroundColor": "#4B3D3D",
   "assets": {
     "headerBanner": "/assets/27 IV WS Footer 3840x1000 px.webp",
     "footerBg": "/assets/27 IV WS Footer 3840x3000px fade naar 111213-01.webp",
