@@ -242,6 +242,7 @@ collections:
               - { name: title, label: "Title", widget: string, hint: "Accordion title on the site." }
               - { name: visible, label: "Show on the site", widget: boolean, default: true, required: false }
               - { name: intro, label: "Intro text", widget: text, required: false, hint: "Optional. Shown above the year picker, the same for every year. Enter = new line, empty line = new paragraph. Allows `<strong>bold</strong>` and `<a href=\"…\">link</a>`." }
+              - { name: navigation, label: "Year navigation", widget: select, options: [{ label: "Classic", value: "classic" }, { label: "Swipeable year strip", value: "swipe" }], default: "classic", required: false }
               - name: items
                 label: "Editions"
                 widget: list
@@ -396,6 +397,15 @@ collections:
           - { name: ticketUrl, label: "Ticket shop URL", widget: string }
           - { name: volunteerUrl, label: "Volunteer link", widget: string }
           - { name: menuAnimation, label: "Menu button animation", widget: boolean, default: true, required: false, hint: "The spinning record on the menu button (top left). Visitors whose device asks for fewer animations always see the still button." }
+          - name: headerShadow
+            label: "Header shadow"
+            widget: object
+            collapsed: true
+            required: false
+            fields:
+              - { name: enabled, label: "Show shadow", widget: boolean, default: true, required: false }
+              - { name: height, label: "Height (px)", widget: number, value_type: int, min: 0, max: 2000, default: 40, required: false }
+              - { name: top, label: "Top position (px)", widget: number, value_type: int, min: 0, max: 2000, required: false, hint: "Distance from the top of the visible page. Leave empty to follow the header automatically. A fixed position needs checking on phones and desktop." }
           - { name: themeColor, label: "Theme text colour", widget: color, allowInput: true, preview: false, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
           - { name: backgroundColor, label: "Page background colour", widget: color, allowInput: true, preview: false, default: "#101510", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards and panels keep their colours. Pick a dark colour: the text is light. Empty: #101510." }
           - name: assets

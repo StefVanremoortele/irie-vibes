@@ -14,6 +14,7 @@ export const greenforward: AboutBlock[] = data.greenforward.blocks as AboutBlock
 export const initiatives: AboutBlock[] = data.initiatives.blocks as AboutBlock[];
 
 // Accordion — Previous editions (year navigator).
+export const editionNavigation = (data.editions as { navigation?: string }).navigation === 'swipe' ? 'swipe' : 'classic';
 
 /** Optional text above the year picker (HTML paragraphs). */
 export const editionsIntro: string[] = paragraphsHtml((data.editions as { intro?: string }).intro);

@@ -134,3 +134,14 @@ seed — `content/` is now the source of truth and should be edited via the CMS
   CMS-managed content inside the existing page shell.
 - Act names are placeholders; real artists can be added/edited in *Line-up —
   acts* as they're announced.
+
+## Header shadow and year navigation
+
+- **Settings → Site settings → Header shadow** controls visibility, height in
+  pixels, and an optional top position measured from the viewport top. Leave
+  the top position empty to follow the responsive header automatically. A fixed
+  pixel position should be checked on both phones and desktop.
+- **Content pages → All about Irie Vibes → Previous editions → Year navigation**
+  offers Classic (the default dropdown and arrows) or Swipeable year strip.
+  Swipe the strip to browse years, then tap a year to select it. The strip also
+  supports keyboard arrows, Home/End, and the existing navigation buttons.

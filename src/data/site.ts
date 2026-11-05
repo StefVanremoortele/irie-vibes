@@ -34,6 +34,12 @@ function backgroundColor(value: string | undefined): string | undefined {
   return color;
 }
 
+type HeaderShadow = { enabled?: boolean; height?: number; top?: number | null };
+const headerShadow = (siteData as { headerShadow?: HeaderShadow }).headerShadow ?? {};
+function pixels(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.min(2000, value)) : fallback;
+}
+
 const pageBackground = backgroundColor((siteData as { backgroundColor?: string }).backgroundColor);
 
 /** The CMS theme colour when it's a valid colour other than the default; warns at build when it reads poorly. */
@@ -54,6 +60,12 @@ function themeColor(value: string | undefined): string | undefined {
  * CMS as the "Site settings" document).
  */
 export const site = {
+  headerShadow: {
+    enabled: headerShadow.enabled !== false,
+    height: pixels(headerShadow.height, 40),
+    top: typeof headerShadow.top === 'number' && Number.isFinite(headerShadow.top)
+      ? `${pixels(headerShadow.top, 0)}px` : 'calc(var(--header-h) - 1px)',
+  },
   name: siteData.name,
   organisation: siteData.organisation,
   location: siteData.location,

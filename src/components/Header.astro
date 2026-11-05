@@ -21,7 +21,8 @@ function canonicalHref(href: string): string {
 }
 ---
 
-<header class="hdr site-header">
+<header class="hdr site-header" style={`--header-shadow-height:${site.headerShadow.height}px;--header-shadow-top:${site.headerShadow.top}`}>
+  {site.headerShadow.enabled && <div class="hdr__shadow" aria-hidden="true"></div>}
   <div class="hdr__inner">
     <div class="hdr__bannerwrap">
       <img class="hdr__banner" src={site.assets.headerBanner} alt={site.name} />
@@ -120,7 +121,17 @@ function canonicalHref(href: string): string {
     left: 0;
     right: 0;
     z-index: 9000;
-    box-shadow: var(--shadow-header);
+    isolation: isolate;
+  }
+  .hdr__shadow {
+    position: absolute;
+    top: var(--header-shadow-top);
+    left: 0;
+    right: 0;
+    height: var(--header-shadow-height);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), transparent);
+    pointer-events: none;
+    z-index: -1;
   }
   .hdr__inner {
     position: relative;

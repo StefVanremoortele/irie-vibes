@@ -7,6 +7,7 @@ import {
   initiatives,
   editions,
   editionsIntro,
+  editionNavigation,
   aboutSections,
   shop,
   band,
@@ -63,14 +64,22 @@ const startEdition = editionOptions[startIndex];
           </summary>
           <div class="acc__panel rich">
             {editionsIntro.length > 0 && <div class="acc__intro">{editionsIntro.map((html) => <p class="acc__p" set:html={html} />)}</div>}
-            <div class="years" data-years data-archive>
+            <div class="years" data-years data-archive data-navigation={editionNavigation}>
               <div class="years__nav">
                 <button type="button" class="years__btn" data-year-step="-1" aria-label="Previous year">‹</button>
-                <select id="edition-year" class="years__select" data-year aria-label="Edition year">
+                <select hidden={editionNavigation === 'swipe'} id="edition-year" class="years__select" data-year aria-label="Edition year">
                   {[...editionOptions].reverse().map((edition) => <option value={edition.year} selected={edition === startEdition}>{edition.year}</option>)}
                 </select>
+                {editionNavigation === 'swipe' && <span class="years__value" data-year-label aria-live="polite">{startEdition.year}</span>}
                 <button type="button" class="years__btn" data-year-step="1" aria-label="Next year">›</button>
               </div>
+              {editionNavigation === 'swipe' && (
+                <div class="years__strip" data-year-strip role="group" aria-label="Edition year">
+                  {[...editionOptions].reverse().map((edition) => (
+                    <button type="button" class="years__chip" data-year-choice={edition.year} aria-pressed={edition === startEdition ? 'true' : 'false'} tabindex={edition === startEdition ? 0 : -1}>{edition.year}</button>
+                  ))}
+                </div>
+              )}
               <div class="years__content">
                 <div class="years__main" data-year-main>
                   <div class="years__paras" data-year-paras>
@@ -273,6 +282,33 @@ const startEdition = editionOptions[startIndex];
     min-width: 92px;
     text-align: center;
   }
+  .years__strip {
+    display: flex;
+    gap: 8px;
+    max-width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    padding: 4px 4px 12px;
+    margin-bottom: 16px;
+  }
+  .years__chip {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    min-width: 64px;
+    min-height: 44px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-container-high);
+    color: var(--on-surface);
+    font: inherit;
+    cursor: pointer;
+  }
+  .years__chip[aria-pressed="true"] {
+    background: var(--secondary);
+    color: var(--on-secondary, #101510);
+  }
+  .years__chip:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
   .years__content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -452,12 +488,30 @@ const startEdition = editionOptions[startIndex];
     addEventListener('resize', schedulePlace);
     root.closest('details')?.addEventListener('toggle', schedulePlace);
     let index = startIndex;
+    const strip = root.querySelector('[data-year-strip]');
+    const choices = Array.from(root.querySelectorAll('[data-year-choice]'));
+    const revealSelected = () => {
+      const selected = strip?.querySelector('[aria-pressed="true"]');
+      if (!strip || !selected || strip.clientWidth === 0) return;
+      // Scroll only the strip; scrollIntoView would also move the page/header.
+      strip.scrollTo({ left: selected.offsetLeft - strip.offsetLeft - (strip.clientWidth - selected.clientWidth) / 2, behavior: 'instant' });
+    };
+    root.closest('details')?.addEventListener('toggle', revealSelected);
+    addEventListener('resize', revealSelected);
     // A poster or photo that fails to load (e.g. a broken external link) is hidden, not shown broken.
     [posterEl, photoEl].forEach((img) => img.addEventListener('error', () => { img.hidden = true; }));
 
     const render = () => {
       const edition = editionsData[index];
       selectEl.value = String(edition?.year ?? '');
+      const yearLabel = root.querySelector('[data-year-label]');
+      if (yearLabel) yearLabel.textContent = selectEl.value;
+      choices.forEach((button) => {
+        const active = button.dataset.yearChoice === selectEl.value;
+        button.setAttribute('aria-pressed', String(active));
+        button.tabIndex = active ? 0 : -1;
+      });
+      revealSelected();
       root.querySelectorAll('[data-year-step]').forEach((button) => {
         const step = Number(button.dataset.yearStep);
         button.toggleAttribute('disabled', (index === 0 && step < 0) || (index === editionsData.length - 1 && step > 0));
@@ -500,6 +554,21 @@ const startEdition = editionOptions[startIndex];
         const step = Number(btn.dataset.yearStep);
         index = Math.min(editionsData.length - 1, Math.max(0, index + (step < 0 ? -1 : 1) * Math.min(Math.abs(step), 1)));
         render();
+      });
+    });
+    choices.forEach((button, position) => {
+      button.addEventListener('click', () => {
+        index = editionsData.findIndex((edition) => String(edition.year) === button.dataset.yearChoice);
+        render();
+      });
+      button.addEventListener('keydown', (event) => {
+        const destinations = { ArrowLeft: position - 1, ArrowRight: position + 1, Home: 0, End: choices.length - 1 };
+        const destination = destinations[event.key];
+        if (destination === undefined) return;
+        event.preventDefault();
+        const target = choices[Math.max(0, Math.min(choices.length - 1, destination))];
+        target.click();
+        target.focus({ preventScroll: true });
       });
     });
     selectEl.addEventListener('change', () => {
