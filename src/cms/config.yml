@@ -406,8 +406,8 @@ collections:
               - { name: enabled, label: "Show shadow", widget: boolean, default: true, required: false }
               - { name: height, label: "Height (px)", widget: number, value_type: int, min: 0, max: 2000, default: 40, required: false }
               - { name: top, label: "Top position (px)", widget: number, value_type: int, min: 0, max: 2000, required: false, hint: "Distance from the top of the visible page. Leave empty to follow the header automatically. A fixed position needs checking on phones and desktop." }
-          - { name: themeColor, label: "Theme text colour", widget: color, allowInput: true, preview: false, default: "#fabc4d", required: false, hint: "The yellow of titles, links, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
-          - { name: backgroundColor, label: "Page background colour", widget: color, allowInput: true, preview: false, default: "#101510", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards and panels keep their colours. Pick a dark colour: the text is light. Empty: #101510." }
+          - { name: themeColor, label: "Theme text colour", widget: color, allowInput: true, preview: false, default: "#fabc4d", required: false, hint: "The primary colour (gold) of titles, links, active menu items, buttons and the countdown on every page (stage colours are set per stage under Line-up). Pick a light colour: dark colours are hard to read on the dark background. Empty: the festival gold #fabc4d." }
+          - { name: backgroundColor, label: "Page background colour", widget: color, allowInput: true, preview: false, default: "#150e0e", required: false, hint: "Behind all pages, the sticky line-up labels and the phone's browser bar. Cards, panels and the menu are mixed from it, so they follow. Pick a dark colour: the text is light. Empty: the dark earth #150e0e." }
           - name: assets
             label: "Sticky images"
             widget: object

@@ -165,11 +165,22 @@ const startEdition = editionOptions[startIndex];
     gap: 16px;
   }
   .acc {
-    background: var(--card-alt);
-    border: 1px solid var(--border);
+    background: var(--surface-1);
+    border: 1px solid var(--line);
     border-radius: var(--radius-xl);
     overflow: hidden;
     scroll-margin-top: var(--header-h);
+    transition: border-color 0.15s ease;
+  }
+  .acc:hover {
+    border-color: var(--line-primary);
+  }
+  /* An open section gets the Rasta stripe along its top edge. */
+  .acc[open] {
+    border-color: var(--line-primary);
+    background-image: var(--rasta-stripe);
+    background-size: 100% var(--stripe-h);
+    background-repeat: no-repeat;
   }
   .acc[hidden] {
     display: none;
@@ -190,7 +201,7 @@ const startEdition = editionOptions[startIndex];
     font-family: var(--font-display);
     font-size: clamp(14px, 1.8vw, 18px);
     letter-spacing: 0.06em;
-    color: #ffffff;
+    color: var(--text-strong);
     text-transform: uppercase;
   }
   .acc__chev {
@@ -198,8 +209,8 @@ const startEdition = editionOptions[startIndex];
     width: 28px;
     height: 28px;
     border-radius: var(--radius-full);
-    background: var(--surface-container-high);
-    color: var(--on-surface);
+    background: var(--surface-2);
+    color: var(--text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -208,6 +219,8 @@ const startEdition = editionOptions[startIndex];
   }
   .acc[open] .acc__chev {
     transform: rotate(180deg);
+    background: var(--primary);
+    color: var(--on-primary);
   }
   .acc__panel {
     padding: 0 24px 26px;
@@ -216,12 +229,12 @@ const startEdition = editionOptions[startIndex];
     font-family: var(--font-display);
     font-size: 14px;
     letter-spacing: 0.1em;
-    color: var(--secondary);
+    color: var(--primary);
     text-transform: uppercase;
     margin: 22px 0 10px;
   }
   .acc__p {
-    color: var(--on-surface);
+    color: var(--text);
     font-size: 15px;
     line-height: 1.75;
     margin: 0 0 14px;
@@ -232,7 +245,7 @@ const startEdition = editionOptions[startIndex];
   }
   /* Year paragraphs are re-rendered by the script below, outside Astro's scoped styles. */
   .years__paras :global(p) {
-    color: var(--on-surface);
+    color: var(--text);
     font-size: 15px;
     line-height: 1.75;
     margin: 0 0 14px;
@@ -255,30 +268,30 @@ const startEdition = editionOptions[startIndex];
     margin: 18px 0 22px;
   }
   .years__btn {
-    background: var(--surface-container-high);
-    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
-    color: var(--on-surface);
+    color: var(--text);
     padding: 8px 14px;
     font-size: 14px;
     cursor: pointer;
   }
   .years__btn:hover {
-    border-color: var(--secondary);
+    border-color: var(--primary);
   }
   .years__select {
     min-height: 38px;
     padding: 7px 30px 7px 10px;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
-    background: var(--surface-container-high);
-    color: var(--on-surface);
+    background: var(--surface-2);
+    color: var(--text);
     font: inherit;
   }
   .years__value {
     font-family: var(--font-display);
     font-size: 26px;
-    color: var(--secondary);
+    color: var(--primary);
     min-width: 92px;
     text-align: center;
   }
@@ -297,18 +310,18 @@ const startEdition = editionOptions[startIndex];
     scroll-snap-align: center;
     min-width: 64px;
     min-height: 44px;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-sm);
-    background: var(--surface-container-high);
-    color: var(--on-surface);
+    background: var(--surface-2);
+    color: var(--text);
     font: inherit;
     cursor: pointer;
   }
   .years__chip[aria-pressed="true"] {
-    background: var(--secondary);
-    color: var(--on-secondary, #101510);
+    background: var(--primary);
+    color: var(--on-primary);
   }
-  .years__chip:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+  .years__chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
   .years__content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -319,7 +332,7 @@ const startEdition = editionOptions[startIndex];
     width: 100%;
     border-radius: var(--radius-lg);
     display: block;
-    border: 1px solid var(--border-hairline);
+    border: 1px solid var(--line);
   }
   .years__main,
   .years__media,
@@ -350,7 +363,7 @@ const startEdition = editionOptions[startIndex];
     width: 100%;
     border-radius: var(--radius-lg);
     display: block;
-    border: 1px solid var(--border-hairline);
+    border: 1px solid var(--line);
   }
   .years__photo[hidden] {
     display: none;
@@ -375,7 +388,7 @@ const startEdition = editionOptions[startIndex];
     margin: 0;
   }
   .band__caption {
-    color: var(--on-surface);
+    color: var(--text);
     font-size: 14px;
     line-height: 1.5;
   }
@@ -403,7 +416,7 @@ const startEdition = editionOptions[startIndex];
     margin: 0;
     font-size: clamp(16px, 2vw, 19px);
     font-weight: 700;
-    color: var(--secondary);
+    color: var(--primary);
   }
   /* The whole product, in its own proportions (never cropped); very tall images are scaled down. */
   .shop__image {

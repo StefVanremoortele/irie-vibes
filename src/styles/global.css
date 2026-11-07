@@ -16,7 +16,7 @@ body {
   margin: 0;
   padding: 0;
   background: var(--surface);
-  color: var(--on-surface);
+  color: var(--text);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
@@ -30,11 +30,11 @@ img {
 }
 
 a {
-  color: var(--secondary);
+  color: var(--primary);
   text-decoration: none;
 }
 a:hover {
-  color: var(--secondary-hover);
+  color: var(--primary-hover);
 }
 
 h1,
@@ -50,7 +50,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--secondary);
+  outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -61,8 +61,8 @@ button {
   z-index: 10000;
   padding: 8px 14px;
   border-radius: var(--radius);
-  background: var(--secondary);
-  color: var(--surface);
+  background: var(--primary);
+  color: var(--on-primary);
   font-weight: 700;
   transform: translateY(-140%);
   transition: transform 0.15s ease;
@@ -70,7 +70,7 @@ button {
 
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline-color: #fff;
+  outline-color: var(--text-strong);
 }
 
 /* App shell --------------------------------------------------------------- */
@@ -146,7 +146,7 @@ button {
   font-family: var(--font-display);
   font-size: clamp(28px, 5vw, 42px);
   letter-spacing: 0.06em;
-  color: var(--secondary);
+  color: var(--primary);
   text-transform: uppercase;
   text-align: center;
   margin: 0 0 30px;
@@ -156,7 +156,7 @@ button {
 
 /* Copy -------------------------------------------------------------------- */
 .copy {
-  color: var(--on-surface);
+  color: var(--text);
   font-size: clamp(15px, 1.7vw, 17px);
   line-height: 1.75;
 }
@@ -171,29 +171,29 @@ button {
   margin-bottom: 0;
 }
 .copy strong {
-  color: var(--on-surface-strong);
+  color: var(--text-strong);
   font-weight: 700;
 }
 .copy a {
-  color: var(--secondary);
+  color: var(--primary);
   text-decoration: underline;
   font-weight: 700;
 }
 .copy a:hover {
-  color: var(--secondary-hover);
+  color: var(--primary-hover);
 }
 /* Bold and links typed in admin texts (lib/richtext) outside .copy. */
 .rich strong {
-  color: var(--on-surface-strong);
+  color: var(--text-strong);
   font-weight: 700;
 }
 .rich a {
-  color: var(--secondary);
+  color: var(--primary);
   text-decoration: underline;
   font-weight: 700;
 }
 .rich a:hover {
-  color: var(--secondary-hover);
+  color: var(--primary-hover);
 }
 
 /* Price tables ------------------------------------------------------------ */
@@ -217,13 +217,13 @@ button {
   font-weight: 700;
 }
 .prices__value--accent {
-  color: var(--secondary);
+  color: var(--primary);
 }
 .prices__note {
   font-family: var(--font-display);
   font-size: 13px;
   letter-spacing: 0.16em;
-  color: var(--muted);
+  color: var(--text-muted);
   text-transform: uppercase;
   text-align: center;
   margin: 0 0 14px;
@@ -231,8 +231,8 @@ button {
 
 /* Cards ------------------------------------------------------------------- */
 .card {
-  background: var(--card);
-  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
   border-radius: var(--radius-lg);
 }
 

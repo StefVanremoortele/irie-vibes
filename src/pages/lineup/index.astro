@@ -35,7 +35,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
             </div>
             <div class="day__grid stage-grid">
               {stages.map((stage) => (
-                <div class="day__col stage">
+                <div class="day__col stage" style={`--stage:${stage.color};`}>
                   <div class="day__stagelabel stage-heading iv-mob" style={`color:${stage.color};`}>
                     {stage.name}
                     <span class="stage__sub">{stage.sub}</span>
@@ -90,7 +90,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
   .stagebar__sub {
     font-size: 10px;
     letter-spacing: 0.16em;
-    color: var(--muted);
+    color: var(--text-muted);
     text-transform: uppercase;
     margin-top: 4px;
     font-weight: 600;
@@ -113,13 +113,13 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
     font-family: var(--font-display);
     font-size: clamp(20px, 2.6vw, 26px);
     letter-spacing: 0.1em;
-    color: #ffffff;
+    color: var(--text-strong);
     text-transform: uppercase;
   }
   .day__sub {
     font-size: 10px;
     letter-spacing: 0.18em;
-    color: var(--muted);
+    color: var(--text-muted);
     text-transform: uppercase;
     margin-top: 5px;
     font-weight: 700;
@@ -145,7 +145,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
   }
   .stage__sub {
     display: block;
-    color: var(--muted);
+    color: var(--text-muted);
     font-family: var(--font-body);
     font-size: 10px;
     letter-spacing: 0.16em;
@@ -158,33 +158,36 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
     gap: 10px;
   }
   .muted {
-    color: var(--muted);
+    color: var(--text-muted);
     font-size: 12px;
     text-align: center;
   }
 
   .act {
     display: block;
-    background: var(--card);
-    border: 1px solid var(--border-soft);
+    background: var(--surface-1);
+    border: 1px solid var(--line);
+    /* Thin top edge in the stage's colour (Line-up → stage colour in the CMS). */
+    border-top: 3px solid var(--stage, var(--primary));
     border-radius: var(--radius-lg);
-    padding: 12px 14px;
+    padding: 10px 14px 12px;
     text-align: center;
     transition: background 0.15s ease, border-color 0.15s ease;
   }
   .act:hover {
-    background: #222a22;
-    border-color: color-mix(in srgb, var(--secondary) 45%, transparent);
+    background: var(--surface-2);
+    border-color: var(--line-primary);
+    border-top-color: var(--stage, var(--primary));
   }
   .act__name {
     font-size: 13px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-strong);
     letter-spacing: 0.01em;
   }
   .act__time {
     font-size: 11px;
-    color: var(--muted);
+    color: var(--text-muted);
     margin-top: 4px;
     font-weight: 600;
   }
@@ -208,7 +211,7 @@ import { stages, days, actsForStage, useCustomHtml, customHtml } from '../../dat
       background: var(--surface);
       padding: 10px 0;
       margin-bottom: 0;
-      border-bottom: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--line);
     }
     .day__col {
       gap: 0;

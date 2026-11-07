@@ -1,71 +1,105 @@
 /* ---------------------------------------------------------------------------
-   Roots Vanguard design tokens (from docs DESIGN.md), reconciled with the exact
-   rendered values used across the reference export. These CSS custom properties
-   are the single source of truth for colour, type and spacing.
+   Irie Vibes design system: warm Rasta palette on dark earth.
+   The single source of truth for colour, type, radius, elevation and layout.
+
+   Three layers, use them in this order:
+   1. Palette: the raw colours. Never use them directly in components.
+   2. Roles: what a colour means (primary, surfaces, text, lines). Components
+      use these only.
+   3. Patterns: a few shared looks (Rasta stripe, card, focus ring).
+
+   Site settings can override two values per environment (see Base.astro):
+   Theme text colour → --primary, Page background colour → --surface. All
+   surfaces and lines are mixed from --surface, so cards, menus and panels
+   follow a new background colour automatically.
    --------------------------------------------------------------------------- */
 :root {
-  /* Surfaces --------------------------------------------------------------- */
-  --surface: #101510; /* night-forest canvas */
-  --surface-container-lowest: #0a0f0b;
-  --surface-container-low: #181d18;
-  --surface-container: #1c211c;
-  --surface-container-high: #262b26;
-  --surface-container-highest: #313630;
+  /* 1. Palette -------------------------------------------------------------- */
+  /* Rasta red, gold and green; the -500 steps are the flag colours, also used by
+     the record button (src/lib/record-burger.ts COLORS). */
+  --red-300: #f2826b;
+  --red-500: #e2363b;
+  --red-700: #9c1f24;
+  --gold-200: #ffd98a;
+  --gold-400: #fabc4d;
+  --gold-500: #f2c230;
+  --gold-700: #c98a14;
+  --green-300: #7fcf7c;
+  --green-500: #2f9e4f;
+  --green-700: #1d6a33;
+  /* Earth and cream: warm neutrals instead of grey. */
+  --earth-950: #150e0e;
+  --earth-900: #1f1513;
+  --cream-50: #fdf6ea;
+  --cream-100: #f6ead6;
+  --cream-300: #e2cfb1;
+  --sand-500: #b9a183;
+  --sand-700: #6e5a48;
 
-  /* Card surfaces as used in the reference layout */
-  --card: #1a201a;
-  --card-alt: #181d18;
-  --card-panel: #182018;
-  --card-deep: #141a14;
+  /* 2. Roles ---------------------------------------------------------------- */
+  /* Brand */
+  --primary: var(--gold-400); /* titles, links, active states, key numbers */
+  --primary-hover: color-mix(in srgb, var(--primary) 65%, #fff);
+  --primary-deep: color-mix(in srgb, var(--primary) 85%, #000);
+  --on-primary: var(--earth-950); /* text on a primary fill */
+  --secondary: var(--red-500); /* fills, stripes, the ticket button */
+  --secondary-text: var(--red-300); /* red that reads on the dark surface */
+  --accent: var(--green-500); /* fills, stripes, success */
+  --accent-text: var(--green-300); /* green that reads on the dark surface */
 
-  /* Text ------------------------------------------------------------------- */
-  --on-surface: #dfe4db; /* warm canvas white */
-  --on-surface-strong: #ffffff;
-  --on-surface-variant: #c2c9bb;
-  --muted: #9aa596; /* desaturated sage — metadata, set times */
-  --outline: #8c9387;
-  --outline-variant: #42493e;
+  /* Surfaces: page, then three raised levels mixed from it with warm cream. */
+  --surface: var(--earth-950); /* page background */
+  --surface-1: color-mix(in srgb, var(--surface), var(--cream-300) 6%); /* cards, menu, panels */
+  --surface-2: color-mix(in srgb, var(--surface), var(--cream-300) 11%); /* hover, chips, controls */
+  --surface-3: color-mix(in srgb, var(--surface), var(--cream-300) 17%); /* pressed, highest */
+  --surface-light: var(--cream-50); /* light tiles, e.g. sponsor logos */
 
-  /* Borders ---------------------------------------------------------------- */
-  --border: #262b26;
-  --border-soft: rgba(255, 255, 255, 0.08);
-  --border-hairline: rgba(255, 255, 255, 0.12);
-  --border-strong: #2f372f;
+  /* Text */
+  --text: var(--cream-100); /* body copy */
+  --text-strong: #fffaf1; /* names, headings in white */
+  --text-muted: var(--sand-500); /* metadata, set times, labels */
+  --text-on-light: var(--earth-900); /* text on --surface-light */
+  --text-on-light-muted: var(--sand-700);
+  --text-on-light-accent: var(--red-700);
 
-  /* Accents ---------------------------------------------------------------- */
-  --primary: #a1d494; /* evergreen root highlight */
-  --secondary: #fabc4d; /* amber gold — the dominant accent */
-  --secondary-hover: #ffd782;
-  --secondary-deep: #f59e0b;
-  --tertiary: #ffb4a5; /* earthy clay */
+  /* Lines */
+  --line: color-mix(in srgb, var(--cream-300) 12%, transparent); /* card borders, dividers */
+  --line-strong: color-mix(in srgb, var(--cream-300) 22%, transparent); /* controls */
+  --line-primary: color-mix(in srgb, var(--primary) 50%, transparent); /* hover, open, selected */
 
-  /* Stage accent colours */
-  --stage-inner: #ef4444;
-  --stage-den: #fabc4d;
-  --stage-chill: #22c55e;
+  /* Stage colours (defaults; each stage sets its own colour in the CMS) */
+  --stage-inner: var(--red-500);
+  --stage-den: var(--gold-400);
+  --stage-chill: var(--green-500);
 
-  /* Reggae tri-colour (hamburger, ticket button) */
-  --reggae-red: #c82b2b;
-  --reggae-yellow: #e5c12f;
-  --reggae-green: #3b9343;
+  /* 3. Patterns ------------------------------------------------------------- */
+  /* The Rasta stripe: a thin red-gold-green band on top of menus and open panels. */
+  --rasta-stripe: linear-gradient(
+    90deg,
+    var(--red-500) 0 33.33%,
+    var(--gold-500) 33.33% 66.66%,
+    var(--green-500) 66.66% 100%
+  );
+  --stripe-h: 3px;
+  --focus-ring: 2px solid var(--primary);
 
-  /* Typography ------------------------------------------------------------- */
+  /* Typography -------------------------------------------------------------- */
   --font-display: 'Anton', system-ui, sans-serif;
   --font-body: 'Work Sans', system-ui, sans-serif;
 
-  /* Radii ------------------------------------------------------------------ */
+  /* Radii ------------------------------------------------------------------- */
   --radius-sm: 8px;
   --radius: 10px;
   --radius-lg: 12px;
   --radius-xl: 14px;
   --radius-full: 999px;
 
-  /* Elevation -------------------------------------------------------------- */
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.75);
-  --shadow-header: 0 10px 30px rgba(0, 0, 0, 0.65);
+  /* Elevation: warm black shadows ------------------------------------------- */
+  --shadow-card: 0 4px 12px rgba(10, 4, 2, 0.4);
+  --shadow-modal: 0 24px 60px rgba(10, 4, 2, 0.75);
+  --shadow-header: 0 10px 30px rgba(10, 4, 2, 0.65);
 
-  /* Layout ----------------------------------------------------------------- */
+  /* Layout ------------------------------------------------------------------ */
   /* The header ends where the banner's solid part ends (15.3% of its width);
      the banner's transparent lower part hangs over the page. */
   --header-h: 15.3vw;

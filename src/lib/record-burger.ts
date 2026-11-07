@@ -10,6 +10,7 @@ export const VIEWBOX = '-300 -300 600 600';
 /** Disc radius at rest, in viewBox units: the SVG is sized so this matches the button. */
 export const DISC_R = 180;
 export const LABEL_R = 72;
+// Same values as --red-500, --gold-500 and --green-500 in src/styles/tokens.css.
 export const COLORS = ['#e2363b', '#f2c230', '#2f9e4f'];
 export const GROOVES: number[] = [];
 for (let r = LABEL_R + 10; r < 208; r += 5) GROOVES.push(r);

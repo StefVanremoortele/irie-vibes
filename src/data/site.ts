@@ -4,8 +4,8 @@ import homeData from '../../content/home.json';
 import { assetUrl } from '../lib/assets';
 
 const DEFAULT_THEME_COLOR = '#fabc4d';
-const DEFAULT_BACKGROUND = '#101510';
-const BODY_TEXT = '#dfe4db';
+const DEFAULT_BACKGROUND = '#150e0e';
+const BODY_TEXT = '#f6ead6';
 
 /** WCAG relative luminance of a #rrggbb colour. */
 function luminance(hex: string): number {

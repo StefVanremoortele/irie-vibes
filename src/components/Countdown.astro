@@ -56,8 +56,8 @@ const units: [keyof typeof initial, string][] = [
     }
   }
   .cd {
-    background: var(--card-panel);
-    border: 1px solid var(--border-soft);
+    background: var(--surface-1);
+    border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     padding: clamp(10px, 2vw, 16px) clamp(4px, 3vw, 34px);
     min-width: 0;
@@ -71,14 +71,14 @@ const units: [keyof typeof initial, string][] = [
   .cd__num {
     font-family: var(--font-display);
     font-size: clamp(24px, 5vw, 44px);
-    color: var(--secondary);
+    color: var(--primary);
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
   .cd__label {
     font-size: clamp(9px, 2.4vw, 11px);
     letter-spacing: clamp(0.06em, 0.5vw, 0.18em);
-    color: var(--muted);
+    color: var(--text-muted);
     text-transform: uppercase;
     margin-top: 8px;
   }
@@ -86,7 +86,7 @@ const units: [keyof typeof initial, string][] = [
     font-family: var(--font-display);
     font-size: 14px;
     letter-spacing: 0.16em;
-    color: #ffffff;
+    color: var(--text-strong);
     text-transform: uppercase;
     margin: 0 0 28px;
     text-align: center;

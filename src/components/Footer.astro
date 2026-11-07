@@ -87,7 +87,7 @@ import { sponsorsMain, sponsorsReg } from '../data/sponsors';
     font-family: var(--font-display);
     font-size: clamp(19px, 2.6vw, 28px);
     letter-spacing: 0.2em;
-    color: var(--secondary-deep);
+    color: var(--primary-deep);
     text-transform: uppercase;
     text-align: center;
     margin: 0 0 30px;
@@ -107,21 +107,21 @@ import { sponsorsMain, sponsorsReg } from '../data/sponsors';
     width: 100%;
   }
   .sponsor {
-    background: #f5f5f5;
-    border: 1px solid #e0e0e0;
+    background: var(--surface-light);
+    border: 1px solid var(--cream-300);
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
   .sponsor--main {
     border-radius: var(--radius-lg);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--shadow-card);
     padding: 4px 12px;
     height: clamp(48px, 7vw, 80px);
   }
   .sponsor--reg {
     border-radius: var(--radius);
-    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 9px rgba(10, 4, 2, 0.35);
     padding: 4px clamp(8px, 1.5vw, 22px);
     height: clamp(38px, 5vw, 56px);
   }
@@ -140,7 +140,7 @@ import { sponsorsMain, sponsorsReg } from '../data/sponsors';
   .sponsor__label {
     font-family: var(--font-display);
     font-size: 14px;
-    color: #9f1239;
+    color: var(--text-on-light-accent);
     letter-spacing: 0.06em;
     white-space: nowrap;
   }
@@ -150,7 +150,7 @@ import { sponsorsMain, sponsorsReg } from '../data/sponsors';
   }
   .sponsor__sub {
     font-size: 9px;
-    color: #6b7280;
+    color: var(--text-on-light-muted);
     font-weight: 600;
     white-space: nowrap;
   }
@@ -193,7 +193,7 @@ import { sponsorsMain, sponsorsReg } from '../data/sponsors';
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.12em;
-    color: var(--secondary);
+    color: var(--primary);
     text-transform: uppercase;
   }
   .footer__creditlines a:hover {

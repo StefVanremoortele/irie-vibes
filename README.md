@@ -294,11 +294,23 @@ Data flow: **`content/*.json` → `src/data/*.ts` (typed) → `.astro` templates
 
 ## Design system
 
-Colour, type and spacing come from the "Roots Vanguard" system in the original
-`DESIGN.md`, encoded as CSS custom properties in `src/styles/tokens.css`
-(night-forest `#101510` surface, amber-gold `#fabc4d` accent (overridable as Site settings → Theme text colour), the reggae
-tri-colour, `Anton` display + `Work Sans` body). Exact rendered values were
-matched against the original export for fidelity.
+Colour, type, radius and elevation live in `src/styles/tokens.css`, in three
+layers (since 2026-11, feedback c9659e9b):
+
+1. **Palette:** Rasta red/gold/green steps plus warm earth and cream neutrals.
+   Components never use these directly.
+2. **Roles:** `--primary` (gold: titles, links, active states; Site settings →
+   Theme text colour), `--secondary` (red), `--accent` (green), with `-text`
+   variants that read on the dark page; `--surface` (page, Site settings → Page
+   background colour) and `--surface-1/2/3` (cards and menu, hover and controls,
+   pressed), mixed from `--surface` so they follow a new background; `--text`,
+   `--text-strong`, `--text-muted`; `--line`, `--line-strong`, `--line-primary`.
+3. **Patterns:** `--rasta-stripe` (thin red-gold-green band on the menu and open
+   About sections), stage-coloured top edge on line-up slots, `--focus-ring`.
+
+Type: `Anton` display + `Work Sans` body. New components use role tokens only; a
+raw hex value in a component is a bug (exceptions: the record illustration and
+video letterboxing).
 
 Layout rules agreed through feedback (2026-10):
 

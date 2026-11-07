@@ -52,7 +52,7 @@ const poster = act.image;
     font-family: var(--font-display);
     font-size: clamp(28px, 5.4vw, 46px);
     letter-spacing: 0.05em;
-    color: var(--secondary);
+    color: var(--primary);
     text-transform: uppercase;
     text-align: center;
     margin: 0 0 14px;
@@ -76,10 +76,10 @@ const poster = act.image;
   }
   .actpage__day,
   .actpage__time {
-    color: #ffffff;
+    color: var(--text-strong);
   }
   .actpage__dot {
-    color: var(--muted);
+    color: var(--text-muted);
   }
 
   .actpage__grid {
@@ -102,7 +102,7 @@ const poster = act.image;
     width: min(100%, 420px);
   }
   .actpage__lead {
-    color: #ffffff;
+    color: var(--text-strong);
     font-size: clamp(15px, 1.7vw, 18px);
     line-height: 1.7;
     font-weight: 600;
@@ -116,7 +116,7 @@ const poster = act.image;
     margin-bottom: 0;
   }
   .actpage__para {
-    color: var(--on-surface);
+    color: var(--text);
     font-size: clamp(14px, 1.6vw, 16px);
     line-height: 1.75;
     margin: 0 0 16px;
@@ -137,6 +137,6 @@ const poster = act.image;
     object-fit: cover;
     border-radius: var(--radius-lg);
     display: block;
-    border: 1px solid var(--border-hairline);
+    border: 1px solid var(--line);
   }
 </style>
